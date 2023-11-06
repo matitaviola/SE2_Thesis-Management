@@ -16,11 +16,20 @@ npm install
 cd ../client
 npm install
 ```
-- Run the server (inside of 'server' folder)
+### Run the server (inside of 'server' folder)
 ```bash
 node index.js
 ```
-- Run the client (inside of 'client' folder)
+### Run the client (inside of 'client' folder)
 ```bash
 npm run dev
+```
+### Populate the db (inside of 'server' folder)
+Note: it can be used to return the DB at the original state in case you mess it up while testing
+```bash
+npm run populate
+```
+### Run tests (either inside the 'server' or 'client' folder)
+```bash
+npm test
 ```
