@@ -1,9 +1,9 @@
 'use strict';
 const { db } = require('./db');
 
-exports.getApplicationsByProposal = (proposalId) => {
+exports.getProposalByProfessor = (professorId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM APPLICATION WHERE PROPOSAL_ID=?';
+        const sql = 'SELECT * FROM PROPOSAL WHERE SUPERVISOR=?';
         db.get(sql, [proposalId], (err, rows) => {
             if (err)
                 reject(err);
@@ -12,7 +12,7 @@ exports.getApplicationsByProposal = (proposalId) => {
             }
             else {
                 const applications = rows.map( r => 
-                    new { studentId:r.STUDENT_ID
+                    new { id:r.id
                     //Insert here the other fields for the application
                     }
                 );
