@@ -1,5 +1,6 @@
 // Sever's main file
 const appDao = require('./DB/applications-dao');
+const propDao = require('./DB/proposals-dao');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -19,13 +20,18 @@ app.get('/api/applications/:professorId',
   async (req, res) => {
     try {
         //gets all the professor's proposals
-        const proposals = propDao.getProposalsByProfessor(req.params.professorId);
-        //gets all the applications for the proposals
-        const applications = await Promise.all(
-            proposals.map(p => appDao.getApplicationsByProposal(p.id))
-        );
-        res.json(applications);
-    } catch {
+        let applications = [{}];
+        const proposals = await propDao.getProposalsByProfessor(req.params.professorId);
+        //gets all the applications for the proposals if we found any
+        if(proposals.length>0){
+          applications = await Promise.all(
+            proposals.map(p => appDao.getApplicationsByProposal(p))
+          );
+        }
+        //return json w/o empty results of all the proposals
+        res.json(applications.filter(value => Object.keys(value).length !== 0).flat());
+    } catch (err){
+      console.log(err);
       res.status(500).end();
   }
 });
