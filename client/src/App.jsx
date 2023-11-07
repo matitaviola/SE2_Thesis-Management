@@ -1,35 +1,111 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import './custom.scss';
+import { useCallback, useContext, useEffect, useState, createContext } from 'react';
+import { BrowserRouter, Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom';
+import NavHeader from './components/NavBarComponent.jsx';
+import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
+import NotFound from './components/NotFoundComponent';
+import ProposalComponent from './components/ProposalComponent.jsx';
+import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
+import ApplicationComponent from './components/ApplicationComponent.jsx';
+import ApplicationsTableComponent from './components/ApplicationsTablecComponent.jsx';
+import { LoginForm } from './components/LoginComponent.jsx';
+import ErrorToast from './components/ErrorToastComponent.jsx';
+
+export const AuthContext = createContext(null);
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [appName, setAppName] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
+
+
+useEffect(() => {
+    const checkAuth = async () => {
+      //const user = await API.getUserInfo(); // we have the user info here
+      let user = {
+        role: 'TEACHER'
+      }
+      setLoggedIn(user);
+
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogin = async (credentials) => {
+    try {
+      //let user = await API.login(credentials);
+      let user = {
+        role: 'TEACHER'
+      }
+      setLoggedIn(user)
+    } catch (err) {
+      setErrorMessage(`Error during log in : ${err}`);
+    }
+
+  };
+
+  const handleLogout = async () => {
+    try {
+      //await API.logout();
+      setLoggedIn(false)
+    } catch (err) {
+      setErrorMessage(`Error during log out : ${err}`);
+    }
+
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <AuthContext.Provider value={loggedIn}>
+    <BrowserRouter>
+      <Routes>
+        <Route element={
+          <>
+            <NavHeader handleLogout={handleLogout}/>
+            <Container fluid className="mt-3">
+
+              <Outlet />
+            </Container>
+          </>} >
+          <Route index
+            element={<Navigate replace to='/login' />} />
+
+          { loggedIn && loggedIn.role == 'STUDENT' &&
+           <><Route path='proposals'
+              element={<ProposalsTableComponent/>} />
+              <Route path='applications'
+              element={<ApplicationsTableComponent/>} />
+              </>
+              }
+          { loggedIn && loggedIn.role == 'TEACHER' &&
+           <><Route path='proposals'
+              element={<ProposalsTableComponent/>} />
+          <Route path='proposals/:proposalsId'
+              element={<ProposalComponent/>} />
+          <Route path='proposals/new'
+              element={<ProposalComponent />} />
+          <Route path='applications'
+              element={<ApplicationsTableComponent/>}/>
+              </>
+              }
+          <Route path='*' element={<NotFound />} />
+          <Route path='/login' element={
+            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm login={handleLogin} />
+          } />
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
+    </AuthContext.Provider>
+    <ErrorToast errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
     </>
-  )
+
+
+  );
+
+
 }
 
 export default App
