@@ -29,3 +29,7 @@ Note: it can be used to return the DB at the original state in case you mess it 
 ```bash
 npm run populate
 ```
+### Run tests (either inside the 'server' or 'client' folder)
+```bash
+npm test
+```
