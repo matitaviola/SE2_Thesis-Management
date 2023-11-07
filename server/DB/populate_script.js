@@ -66,6 +66,7 @@ const createTables = () => {
 
             //Proposal
             db.run(`CREATE TABLE IF NOT EXISTS PROPOSAL (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Title TEXT UNIQUE NOT NULL,
                 Supervisor TEXT NOT NULL,
                 Co_supervisor TEXT,
