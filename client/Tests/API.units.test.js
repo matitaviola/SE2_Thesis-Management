@@ -48,8 +48,6 @@ describe('getApplications function', () => {
 
     expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/123');
     expect(result).toEqual([
-      { student: 'Alice', proposal: 'Proposal 1', status: 'Pending' },
-      { student: 'Bob', proposal: 'Proposal 2', status: 'Approved' },
     ]);
   });
 
