@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "populate": "cd ./DB && node ./populate_script.js"
+    "populate": "node ./DB/populate_script.js"
   },
   "keywords": [],
   "author": "",
