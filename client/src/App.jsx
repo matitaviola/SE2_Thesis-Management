@@ -75,8 +75,8 @@ useEffect(() => {
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
-              <Route path='applications/student/:studentId'
-              element={<ApplicationsTable studentId={loggedIn.id}/>} />
+              <Route path='applications'
+              element={<ApplicationsTable/>} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
@@ -86,8 +86,8 @@ useEffect(() => {
               element={<ProposalComponent/>} />
           <Route path='proposals/new'
               element={<ProposalComponent />} />
-          <Route path='applications/teacher/:teacherId'
-              element={<ApplicationsTable professorId={loggedIn.id} />}/>
+          <Route path='applications'
+              element={<ApplicationsTable/>}/>
               </>
               }
           <Route path='*' element={<NotFound />} />

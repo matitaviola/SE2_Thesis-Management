@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../App';
 import API from '../API';
 
-export default function ApplicationTable(props) {
+export default function ApplicationTable() {
     const [applications, setApplications] = useState([]);
+    const loggedInUser = useContext(AuthContext);
 
     useEffect(() => {
         const getApplications = async () => {
             try {
-                const retrievedApplications = await API.getApplications(props.professorId);
+                const retrievedApplications = await API.getApplications(loggedInUser.id);
                 setApplications(retrievedApplications);
             } catch (err) {
                 console.log("Applications getting an error: " + err);

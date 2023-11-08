@@ -13,7 +13,7 @@ function NavHeader(props) {
       <Link to='/' className='navbar-brand'>POLITO Thesis</Link>
       <Nav className="me-auto">
       <Nav.Link href="/proposals">Proposals</Nav.Link>
-        <Nav.Link href={(loggedInUser.role=='TEACHER'? "/applications/teacher/":"/applications/student/")+loggedInUser.id}>Applications</Nav.Link>
+        <Nav.Link href="/applications">Applications</Nav.Link>
         </Nav>
       {loggedInUser ? 
         <LogoutButton logout={props.handleLogout} user={loggedInUser} /> :
