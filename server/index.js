@@ -35,3 +35,15 @@ app.get('/api/applications/teacher/:professorId',
       res.status(500).end();
   }
 });
+
+//GET /api/application/:proposalsId/:studentId
+app.get('/api/applications/teacher/:studentId',
+  async (req, res) => {
+    try {
+      const studentData = await appDao.getStudentDataByProposal(req.params.studentId);
+      res.json(studentData);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while retrieving student data' });
+  }
+});

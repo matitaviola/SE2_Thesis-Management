@@ -10,7 +10,7 @@ import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
-import ProposalDetailComponent from './components/ProposalDetailComponent.jsx';
+import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -78,8 +78,6 @@ useEffect(() => {
               element={<ProposalsTableComponent/>} />
               <Route path='applications'
               element={<ApplicationsTable/>} />
-              <Route path='application/:proposalsId/:studentId'
-              element={<ProposalDetailComponent/>} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
@@ -91,6 +89,8 @@ useEffect(() => {
               element={<ProposalComponent />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
+          <Route path='application/:proposalsId/:studentId'
+              element={<ApplicationDetailComponent/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />

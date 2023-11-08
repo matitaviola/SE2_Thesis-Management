@@ -15,6 +15,22 @@ const getApplications = async (professorId) =>{
       throw new Error("Error on getting the applications: "+applicationsJson);
     }
 }
+
+const getStudentData = async (studentId) =>{
+  const response = await fetch(SERVER_URL + `/api/applications/teacher/${studentId}`);
+  const studentDataJson = await response.json();
+  if(response.ok) {
+    return studentDataJson.map(app => {
+      return {"surname": app.surname, "name": app.name, "gender":app.gender, "nationality":app.nationality, "email":app.email, "code_degree":app.code_degree, "enrollment":app.enrollment
+      //Doubts
+      };
+    });
+  }
+  else{
+    throw new Error("Error on getting the studentsData: "+applicationsJson);
+  }
+}
+
 //#endregion
 
 const API = {getApplications};
