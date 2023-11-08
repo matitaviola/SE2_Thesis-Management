@@ -15,8 +15,8 @@ describe('getApplications function', () => {
   it('fetches applications successfully and returns the mapped data - found somenthing', async () => {
     const professorId = 123;
     const applicationsData = [
-      { id:0, student: 'Alice', proposal: 'Proposal 1', status: 'Pending' },
-      { id:1, student: 'Bob', proposal: 'Proposal 2', status: 'Approved' },
+      { studentId: 's200000', proposal: 'Proposal 1', status: 'Pending' },
+      { studentId: 's300000', proposal: 'Proposal 2', status: 'Approved' },
     ];
 
     // Mocking a successful response from fetch
@@ -27,10 +27,10 @@ describe('getApplications function', () => {
 
     const result = await API.getApplications(professorId);
 
-    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/123');
+    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/teacher/123');
     expect(result).toEqual([
-      { student: 'Alice', proposal: 'Proposal 1', status: 'Pending' },
-      { student: 'Bob', proposal: 'Proposal 2', status: 'Approved' },
+      { studentId: 's200000', proposal: 'Proposal 1', status: 'Pending' },
+      { studentId: 's300000', proposal: 'Proposal 2', status: 'Approved' },
     ]);
   });
 
@@ -46,7 +46,7 @@ describe('getApplications function', () => {
 
     const result = await API.getApplications(professorId);
 
-    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/123');
+    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/teacher/123');
     expect(result).toEqual([
     ]);
   });
