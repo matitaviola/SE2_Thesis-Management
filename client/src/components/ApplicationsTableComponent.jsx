@@ -35,7 +35,7 @@ export default function ApplicationTable() {
 function ApplicationRow(props) {
     return (
         <Container fluid>
-            <Link to={`/application/${props.application.proposal}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/application/${props.application.proposal.replace(/\s/g, '')}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
