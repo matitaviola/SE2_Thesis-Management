@@ -42,6 +42,7 @@ app.get('/api/applications/teacher/:studentId',
     try {
       const studentData = await appDao.getStudentDataByProposal(req.params.studentId);
       res.json(studentData);
+      //console.log("in index.js"+res);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'An error occurred while retrieving student data' });

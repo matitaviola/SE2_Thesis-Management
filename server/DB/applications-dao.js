@@ -47,6 +47,7 @@ exports.getStudentDataByProposal = (student) => {
                         enrollment: r.enrollment
                     };
                 });
+                console.log(rows);
                 resolve(studentData);
             }
         });

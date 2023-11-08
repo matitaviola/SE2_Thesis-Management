@@ -20,6 +20,7 @@ const getStudentData = async (studentId) =>{
   const response = await fetch(SERVER_URL + `/api/applications/teacher/${studentId}`);
   const studentDataJson = await response.json();
   if(response.ok) {
+    console.log("nelle API"+studentDataJson);
     return studentDataJson.map(app => {
       return {"surname": app.surname, "name": app.name, "gender":app.gender, "nationality":app.nationality, "email":app.email, "code_degree":app.code_degree, "enrollment":app.enrollment
       //Doubts
@@ -27,12 +28,12 @@ const getStudentData = async (studentId) =>{
     });
   }
   else{
-    throw new Error("Error on getting the studentsData: "+applicationsJson);
+    throw new Error("Error on getting the studentsData: "+studentDataJson);
   }
 }
 
 //#endregion
 
-const API = {getApplications};
+const API = {getApplications, getStudentData};
 export default API;
 

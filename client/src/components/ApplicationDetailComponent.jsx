@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import API from '../API';
 
 function ApplicationDetailComponent() {
     const [studentData, setStudentData] = useState(null);
     const { proposalId, studentId } = useParams();
 
     useEffect(() => {
-        const getStudentData = async () => {
+        const getStudentDatas = async () => {
             try {
                 const retrievedStudentData = await API.getStudentData(studentId);
                 setStudentData(retrievedStudentData);
+                console.log(studentData);
             } catch (err) {
                 console.log("Applications getting an error: " + err);
             }
         };
-        getStudentData();
+        getStudentDatas();
     }, []);
 
     if (!studentId) {
