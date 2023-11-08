@@ -16,7 +16,7 @@ app.listen(PORT, () => {
 
 
 //GET /api/applications/:professorId
-app.get('/api/applications/:professorId', 
+app.get('/api/applications/teacher/:professorId', 
   async (req, res) => {
     try {
         //gets all the professor's proposals

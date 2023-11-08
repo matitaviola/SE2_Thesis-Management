@@ -3,3 +3,28 @@
     justify-content: center;
   }
   
+
+/*Applications Table and Rows*/
+.application-table {
+  margin-top: 20px; /* Adjust as needed */
+  padding: 20px; /* Increase padding */
+}
+
+.application-row {
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px; /* Adjust as needed */
+  padding: 10px;
+}
+
+.application-info {
+  font-size: 20px;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.student {
+  font-weight: bold;
+}
