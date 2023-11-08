@@ -24,7 +24,7 @@ export default function ApplicationTable() {
         <div className="application-table">
             <p className="lead" style={{ fontSize: '30px' }}>Applications Table</p>
             {applications.map((p) => (
-                <div key={p.title + p.student} className="application-row">
+                <div key={p.title + p.studentId} className="application-row">
                     <ApplicationRow application={p} />
                 </div>
             ))}
@@ -35,19 +35,19 @@ export default function ApplicationTable() {
 function ApplicationRow(props) {
     return (
         <Container fluid>
+            <Link to={`/application/${props.application.proposal}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
                         <span className="title">
-                          <Link to={`/application/${props.application.proposal}/${props.application.student}`} style={{marginRight:'5px'}}>
-                            {props.application.proposal} 
-                          </Link>
+                            "{props.application.proposal}" 
                         </span>
-                        application by student:{' '}
-                        <span className="student">{props.application.student}</span>
+                        application by student 
+                        <span className="student"> {props.application.studentId}</span>
                     </p>
                 </Col>
             </Row>
+            </Link>
         </Container>
     );
 }
