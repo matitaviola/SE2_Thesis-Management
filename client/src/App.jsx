@@ -7,8 +7,7 @@ import './App.css'
 import NotFound from './components/NotFoundComponent';
 import ProposalComponent from './components/ProposalComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
-import ApplicationComponent from './components/ApplicationComponent.jsx';
-import ApplicationsTableComponent from './components/ApplicationsTablecComponent.jsx';
+import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
 
@@ -25,7 +24,8 @@ useEffect(() => {
     const checkAuth = async () => {
       //const user = await API.getUserInfo(); // we have the user info here
       let user = {
-        role: 'TEACHER'
+        role: 'TEACHER',
+        id: 3
       }
       setLoggedIn(user);
 
@@ -75,8 +75,8 @@ useEffect(() => {
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
-              <Route path='applications'
-              element={<ApplicationsTableComponent/>} />
+              <Route path='applications/student/:studentId'
+              element={<ApplicationsTable studentId={loggedIn.id}/>} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
@@ -86,8 +86,8 @@ useEffect(() => {
               element={<ProposalComponent/>} />
           <Route path='proposals/new'
               element={<ProposalComponent />} />
-          <Route path='applications'
-              element={<ApplicationsTableComponent/>}/>
+          <Route path='applications/teacher/:teacherId'
+              element={<ApplicationsTable professorId={loggedIn.id} />}/>
               </>
               }
           <Route path='*' element={<NotFound />} />

@@ -15,8 +15,8 @@ describe('getApplications function', () => {
   it('fetches applications successfully and returns the mapped data - found somenthing', async () => {
     const professorId = 123;
     const applicationsData = [
-      { student: 'Alice', proposal: 'Proposal 1', status: 'Pending' },
-      { student: 'Bob', proposal: 'Proposal 2', status: 'Approved' },
+      { id:0, student: 'Alice', proposal: 'Proposal 1', status: 'Pending' },
+      { id:1, student: 'Bob', proposal: 'Proposal 2', status: 'Approved' },
     ];
 
     // Mocking a successful response from fetch

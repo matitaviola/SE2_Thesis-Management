@@ -2,7 +2,7 @@ const SERVER_URL = 'http://localhost:3001';
 
 //#region Application
 const getApplications = async (professorId) =>{
-    const response = await fetch(SERVER_URL + `/api/applications/${professorId}`);
+    const response = await fetch(SERVER_URL + `/api/applications/teacher/${professorId}`);
     const applicationsJson = await response.json();
     if(response.ok) {
       return applicationsJson.map(app => {
