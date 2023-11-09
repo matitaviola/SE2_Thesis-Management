@@ -25,7 +25,7 @@ const createTables = () => {
 
             //Teacher
             db.run(`CREATE TABLE IF NOT EXISTS TEACHER (
-                ID INTEGER PRIMARY KEY,
+                ID TEXT PRIMARY KEY,
                 SURNAME TEXT NOT NULL,
                 NAME TEXT NOT NULL,
                 EMAIL TEXT UNIQUE NOT NULL,
@@ -68,8 +68,7 @@ const createTables = () => {
 
             //Proposal
             db.run(`CREATE TABLE IF NOT EXISTS PROPOSAL (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                Title TEXT UNIQUE NOT NULL,
+                Title TEXT PRIMARY KEY UNIQUE NOT NULL,
                 Supervisor TEXT NOT NULL,
                 Co_supervisor TEXT,
                 Keywords TEXT,
@@ -92,12 +91,12 @@ const createTables = () => {
 
             //Application
             db.run(`CREATE TABLE IF NOT EXISTS APPLICATION (
-                Student_ID,
-                Proposal,
+                Student_ID TEXT,
+                Proposal TEXT,
                 Status TEXT NOT NULL,
-                PRIMARY KEY (Student_ID, Proposal_ID),
+                PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal_ID) REFERENCES PROPOSAL(Title)
+                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -175,16 +174,16 @@ const insertData = () => {
             const insertTeacherData = () => {
                 // Sample data to be inserted into the TEACHER table
                 const teachersData = [
-                    [1, 'Johnson', 'Michael', 'michael@example.com', 'GroupA', 'DEP101'],
-                    [2, 'Brown', 'Emily', 'emily@example.com', 'GroupB', 'DEP202'],
-                    [3, 'Martinez', 'David', 'david@example.com', 'GroupC', 'DEP303'],
-                    [4, 'Garcia', 'Luis', 'luis@example.com', 'GroupD', 'DEP101'],
-                    [5, 'Chen', 'Wei', 'wei@example.com', 'GroupE', 'DEP202'],
-                    [6, 'Ali', 'Fatima', 'fatima@example.com', 'GroupF', 'DEP303'],
-                    [7, 'Smith', 'Jack', 'jack@example.com', 'GroupG', 'DEP101'],
-                    [8, 'Park', 'Ji-Hoon', 'jihoon@example.com', 'GroupH', 'DEP202'],
-                    [9, 'Gomes', 'Ana', 'ana@example.com', 'GroupI', 'DEP303'],
-                    [10, 'Abe', 'Kenji', 'kenji@example.com', 'GroupJ', 'DEP101'],
+                    ['d100001', 'Johnson', 'Michael', 'michael@example.com', 'GroupA', 'DEP101'],
+                    ['d200002', 'Brown', 'Emily', 'emily@example.com', 'GroupB', 'DEP202'],
+                    ['d100003', 'Martinez', 'David', 'david@example.com', 'GroupC', 'DEP303'],
+                    ['d200004', 'Garcia', 'Luis', 'luis@example.com', 'GroupD', 'DEP101'],
+                    ['d100005', 'Chen', 'Wei', 'wei@example.com', 'GroupE', 'DEP202'],
+                    ['d200006', 'Ali', 'Fatima', 'fatima@example.com', 'GroupF', 'DEP303'],
+                    ['d100007', 'Smith', 'Jack', 'jack@example.com', 'GroupG', 'DEP101'],
+                    ['d200008', 'Park', 'Ji-Hoon', 'jihoon@example.com', 'GroupH', 'DEP202'],
+                    ['d100009', 'Gomes', 'Ana', 'ana@example.com', 'GroupI', 'DEP303'],
+                    ['d200010', 'Abe', 'Kenji', 'kenji@example.com', 'GroupJ', 'DEP101'],
                     // Add more data as needed
                 ];
 
@@ -255,16 +254,16 @@ const insertData = () => {
 
             const insertProposalData = () => {
                 const proposalData = [
-                    ['Proposal 1', 1, 'Co-Supervisor A', 'programming, algorithms, null', 'Type A', 'Group X', 'Description for Proposal 1', 'Knowledge about programming', 'Some notes', '2023-12-31', 'BSc', 'CS101'],
-                    ['Proposal 2', 2, 'Co-Supervisor C', null, 'Type B', 'Group Y', 'Description for Proposal 2', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
-                    ['Proposal 3', 3, 'Co-Supervisor B', 'design, architecture, development', 'Type C', 'Group Z', 'Description for Proposal 3', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101'],
-                    ['Proposal 4', 1, 'Co-Supervisor D', 'networks, security, protocols', 'Type D', 'Group W', 'Description for Proposal 4', 'Knowledge about cybersecurity', 'Important notes', '2023-06-30', 'MSc', 'CS101'],
-                    ['Proposal 5', 2, 'Co-Supervisor A', 'statistics, analysis, modeling', 'Type E', 'Group V', 'Description for Proposal 5', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404'],
-                    ['Proposal 6', 3, 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 6', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
-                    ['Proposal 7', 1, 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 7', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101'],
-                    ['Proposal 8', 2, 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 8', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909'],
-                    ['Proposal 9', 3, 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 9', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202'],
-                    ['Proposal 10', 1, 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 10', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303'],
+                    ['Proposal 1', 'd100001', 'Co-Supervisor A', 'programming, algorithms, null', 'Type A', 'Group X', 'Description for Proposal 1', 'Knowledge about programming', 'Some notes', '2023-12-31', 'BSc', 'CS101'],
+                    ['Proposal 2', 'd200002', 'Co-Supervisor C', null, 'Type B', 'Group Y', 'Description for Proposal 2', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
+                    ['Proposal 3', 'd100003', 'Co-Supervisor B', 'design, architecture, development', 'Type C', 'Group Z', 'Description for Proposal 3', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101'],
+                    ['Proposal 4', 'd100001', 'Co-Supervisor D', 'networks, security, protocols', 'Type D', 'Group W', 'Description for Proposal 4', 'Knowledge about cybersecurity', 'Important notes', '2023-06-30', 'MSc', 'CS101'],
+                    ['Proposal 5', 'd200002', 'Co-Supervisor A', 'statistics, analysis, modeling', 'Type E', 'Group V', 'Description for Proposal 5', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404'],
+                    ['Proposal 6', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 6', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
+                    ['Proposal 7', 'd100001', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 7', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101'],
+                    ['Proposal 8', 'd200002', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 8', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909'],
+                    ['Proposal 9', 'd100003', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 9', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202'],
+                    ['Proposal 10', 'd100001', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 10', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303'],
                     // Add more data as needed
                 ];
 
@@ -295,7 +294,7 @@ const insertData = () => {
                     // Add more data as needed
                 ];
 
-                const stmt = db.prepare('INSERT INTO APPLICATION (Student_ID, Proposal_ID, Status) VALUES (?, ?, ?)');
+                const stmt = db.prepare('INSERT INTO APPLICATION (Student_ID, Proposal, Status) VALUES (?, ?, ?)');
                 applicationData.forEach(application => {
                     stmt.run(application, (err) => {
                         if (err) {
