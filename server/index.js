@@ -15,7 +15,7 @@ app.listen(PORT, () => {
 
 
 
-//GET /api/applications/:professorId
+//GET /api/applications/teacher/:professorId
 app.get('/api/applications/teacher/:professorId', 
   async (req, res) => {
     try {
@@ -35,12 +35,13 @@ app.get('/api/applications/teacher/:professorId',
       res.status(500).end();
   }
 });
-//GET /api/applications/:professorId
+
+//GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId', 
   async (req, res) => {
     try {
         //gets all the student's proposals
-        const applications = appDao.getApplicationsByStudent(req.params.studentId);
+        const applications = await appDao.getApplicationsByStudent(req.params.studentId);
         res.json(applications);
     } catch (err){
       console.log(err);

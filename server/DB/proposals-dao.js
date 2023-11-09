@@ -12,7 +12,7 @@ exports.getProposalsByProfessor = (professorId) => {
             }
             else {
                 const proposals = rows.map( r => {
-                    return { id:r.ID,
+                    return { 
                         title:r.Title
                     //Insert here the other fields for the application
                     }
