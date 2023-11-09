@@ -16,16 +16,12 @@ const getApplications = async (professorId) =>{
     }
 }
 
-const getStudentData = async (studentId) =>{
-  const response = await fetch(SERVER_URL + `/api/applications/teacher/${studentId}`);
+const getStudentData = async (proposalId, studentId) =>{
+  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`);
   const studentDataJson = await response.json();
   if(response.ok) {
-    console.log("nelle API"+studentDataJson);
-    return studentDataJson.map(app => {
-      return {"surname": app.surname, "name": app.name, "gender":app.gender, "nationality":app.nationality, "email":app.email, "code_degree":app.code_degree, "enrollment":app.enrollment
-      //Doubts
-      };
-    });
+    //console.log("nelle API"+JSON.stringify(studentDataJson)); //stringify needed, otherwise we'd have an [object Object]
+    return studentDataJson;
   }
   else{
     throw new Error("Error on getting the studentsData: "+studentDataJson);

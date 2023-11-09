@@ -89,7 +89,7 @@ useEffect(() => {
               element={<ProposalComponent />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
-          <Route path='application/:proposalsId/:studentId'
+          <Route path='application/:proposalId/:studentId'
               element={<ApplicationDetailComponent/>} />
               </>
               }

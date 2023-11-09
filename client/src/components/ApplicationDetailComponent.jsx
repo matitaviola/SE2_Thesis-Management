@@ -9,9 +9,8 @@ function ApplicationDetailComponent() {
     useEffect(() => {
         const getStudentDatas = async () => {
             try {
-                const retrievedStudentData = await API.getStudentData(studentId);
+                const retrievedStudentData = await API.getStudentData(proposalId,studentId);
                 setStudentData(retrievedStudentData);
-                console.log(studentData);
             } catch (err) {
                 console.log("Applications getting an error: " + err);
             }

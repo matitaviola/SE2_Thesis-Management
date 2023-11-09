@@ -1,6 +1,7 @@
 // Sever's main file
 const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
+const studDao = require('./DB/students-dao');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -32,17 +33,16 @@ app.get('/api/applications/teacher/:professorId',
         res.json(applications.filter(value => Object.keys(value).length !== 0).flat());
     } catch (err){
       console.log(err);
-      res.status(500).end();
+      res.status(500).json({ error: 'An error occurred while retrieving the applications data' });
   }
 });
 
 //GET /api/application/:proposalsId/:studentId
-app.get('/api/applications/teacher/:studentId',
+app.get('/api/application/:proposalsId/:studentId',
   async (req, res) => {
     try {
-      const studentData = await appDao.getStudentDataByProposal(req.params.studentId);
+      const studentData = await studDao.getStudentDataByProposal(req.params.studentId);
       res.json(studentData);
-      //console.log("in index.js"+res);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
