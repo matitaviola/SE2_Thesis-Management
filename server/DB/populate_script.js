@@ -90,11 +90,11 @@ const createTables = () => {
             //Application
             db.run(`CREATE TABLE IF NOT EXISTS APPLICATION (
                 Student_ID,
-                Proposal_ID,
+                Proposal,
                 Status TEXT NOT NULL,
                 PRIMARY KEY (Student_ID, Proposal_ID),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal_ID) REFERENCES PROPOSAL(PROPOSAL_ID)
+                FOREIGN KEY(Proposal_ID) REFERENCES PROPOSAL(Title)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -295,16 +295,16 @@ const insertData = () => {
 
             const insertApplicationData = () => {
                 const applicationData = [
-                    ['s200000', 1, 'Pending'],
-                    ['s200000', 2, 'Accepted'],
-                    ['s200001', 1, 'Pending'],
-                    ['s200002', 2, 'Rejected'],
-                    ['s200003', 3, 'Pending'],
-                    ['s200004', 4, 'Accepted'],
-                    ['s200005', 5, 'Pending'],
-                    ['s200006', 6, 'Rejected'],
-                    ['s200007', 6, 'Pending'],
-                    ['s200008', 8, 'Accepted'],
+                    ['s200000', 'Proposal 1', 'Pending'],
+                    ['s200000', 'Proposal 2', 'Accepted'],
+                    ['s200001', 'Proposal 3', 'Pending'],
+                    ['s200002', 'Proposal 2', 'Rejected'],
+                    ['s200003', 'Proposal 3', 'Pending'],
+                    ['s200004', 'Proposal 4', 'Accepted'],
+                    ['s200005', 'Proposal 5', 'Pending'],
+                    ['s200006', 'Proposal 6', 'Rejected'],
+                    ['s200007', 'Proposal 7', 'Pending'],
+                    ['s200008', 'Proposal 8', 'Accepted'],
                     // Add more data as needed
                 ];
 

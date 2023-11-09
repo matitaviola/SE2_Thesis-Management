@@ -35,3 +35,15 @@ app.get('/api/applications/teacher/:professorId',
       res.status(500).end();
   }
 });
+//GET /api/applications/:professorId
+app.get('/api/applications/student/:studentId', 
+  async (req, res) => {
+    try {
+        //gets all the student's proposals
+        const applications = appDao.getApplicationsByStudent(req.params.studentId);
+        res.json(applications);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
+});
