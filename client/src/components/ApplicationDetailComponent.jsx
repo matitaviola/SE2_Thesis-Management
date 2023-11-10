@@ -7,7 +7,7 @@ function ApplicationDetailComponent() {
     const { proposalId, studentId } = useParams();
 
     useEffect(() => {
-        const getStudentDatas = async () => {
+        const getStudentData = async () => {
             try {
                 const retrievedStudentData = await API.getStudentData(proposalId,studentId);
                 setStudentData(retrievedStudentData);
@@ -15,21 +15,35 @@ function ApplicationDetailComponent() {
                 console.log("Applications getting an error: " + err);
             }
         };
-        getStudentDatas();
+        getStudentData();
     }, []);
 
-    if (!studentId) {
+    if (!studentData) {
         return <div>Loading...</div>;
+    }
+    else {
+        console.log(studentData);
     }
 
     return (
         <div>
-            <h1>Acceptance Detail</h1>
-            {/* Display the proposal details */}
-            {/*<p>Proposal ID: {application.id}</p>
-            <p>Student ID: {application.studentId}</p>
-            <p>Title: {application.title}</p>*/}
-            {/* Add more fields as needed */}
+        <p className="lead" style={{ fontSize: '30px' }}>{studentData.name + " " + studentData.surname + " " + studentId}</p>
+        <p className="lead" style={{ fontSize: '30px' }}>Career:</p>
+            {studentData.career.map((careerItem, index) => (
+                <table key={index} style={{ marginBottom: '30px', fontSize: '20px', width: '25%' }}>
+                    <tbody style={{ backgroundColor: '#f0f0f0', borderRadius: '5px', padding: '20px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)' }}>
+                        <tr>
+                            <td>{careerItem.title_c} ({careerItem.code_c})</td>
+                        </tr>
+                        <tr>
+                            <td>CFU: {careerItem.cfu} - GRADE: {careerItem.grade}</td>
+                        </tr>
+                        <tr>
+                            <td>DATE: {careerItem.date}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            ))}
         </div>
     );
 }
