@@ -30,7 +30,9 @@ const createTables = () => {
                 NAME TEXT NOT NULL,
                 EMAIL TEXT UNIQUE NOT NULL,
                 COD_GROUP TEXT NOT NULL,
-                COD_DEPARTMENT TEXT NOT NULL
+                COD_DEPARTMENT TEXT NOT NULL,
+                FOREIGN KEY(COD_DEPARTMENT) REFERENCES DEPARTMENT(COD_DEPARTMENT),
+                FOREIGN KEY(COD_GROUP) REFERENCES DEPARTMENT(COD_GROUP)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -102,13 +104,11 @@ const createTables = () => {
                 resolve();
             });
 
-            //StudentCareer
-            db.run(`CREATE TABLE IF NOT EXISTS StudentCareer (
-                Student_ID,
-                Career_ID,
-                PRIMARY KEY (Student_ID,Career_ID),
-                FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Career_ID) REFERENCES CAREER(ID)
+            //Departments
+            db.run(`CREATE TABLE IF NOT EXISTS DEPARTMENT (
+                COD_DEPARTMENT TEXT NOT NULL,
+                COD_GROUP TEXT NOT NULL,
+                PRIMARY KEY (COD_DEPARTMENT, COD_GROUP)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -142,8 +142,8 @@ const emptyTables = () => {
             // Empty the APPLICATION table
             db.run('DELETE FROM APPLICATION');
 
-            // Empty the StudentCareer table
-            db.run('DELETE FROM StudentCareer');
+            // Empty the DEPARTMENT table
+            db.run('DELETE FROM DEPARTMENT');
             resolve();
         }
         catch(error){
@@ -214,16 +214,17 @@ const insertData = () => {
 
             const insertCareerData = () => {
                 const careerData = [
-                    [1, 'COURSE101', 'Introduction to Programming', 5, 'A', '2022-05-15'],
-                    [2, 'COURSE202', 'Data Structures', 6, 'B', '2023-01-20'],
-                    [3, 'COURSE303', 'Advanced Biology', 7, 'A-', '2021-11-30'],
-                    [4, 'COURSE404', 'Algorithms', 6, 'B+', '2022-08-25'],
-                    [5, 'COURSE505', 'Organic Chemistry', 7, 'A', '2023-12-10'],
-                    [6, 'COURSE606', 'Artificial Intelligence', 6, 'B', '2021-06-05'],
-                    [7, 'COURSE707', 'Literary Theory', 5, 'A-', '2023-09-28'],
-                    [8, 'COURSE808', 'Genetics', 7, 'B', '2022-04-17'],
-                    [9, 'COURSE909', 'Database Management', 6, 'A', '2021-10-22'],
-                    [10, 'COURSE1010', 'Electrical Engineering', 7, 'A+', '2023-02-14'],
+                    ["s200001", 'COURSE101', 'Introduction to Programming', 5, '30', '2022-05-15'],
+                    ["s200003", 'COURSE101', 'Introduction to Programming', 5, '30', '2022-05-15'],
+                    ["s200003", 'COURSE202', 'Data Structures', 6, '27', '2023-01-20'],
+                    ["s200007", 'COURSE303', 'Advanced Biology', 7, '29', '2021-11-30'],
+                    ["s200003", 'COURSE404', 'Algorithms', 6, '28', '2022-08-25'],
+                    ["s200006", 'COURSE505', 'Organic Chemistry', 7, '30', '2023-12-10'],
+                    ["s200006", 'COURSE606', 'Artificial Intelligence', 6, '27', '2021-06-05'],
+                    ["s200007", 'COURSE707', 'Literary Theory', 5, '29', '2023-09-28'],
+                    ["s200009", 'COURSE808', 'Genetics', 7, '23', '2022-04-17'],
+                    ["s200008", 'COURSE909', 'Database Management', 6, '24', '2021-10-22'],
+                    ["s200009", 'COURSE1010', 'Electrical Engineering', 7, '30L', '2023-02-14'],
                     // Add more data as needed
                 ];
 
@@ -320,23 +321,23 @@ const insertData = () => {
                 
             };
 
-            const insertStudentCareerData = () => {
-                const stucarData = [
-                    ['s200000', 1],  // Student ID: s200000 - Career ID: 1
-                    ['s200000', 2],  // Student ID: s200000 - Career ID: 2
-                    ['s200000', 3],  // Student ID: s200000 - Career ID: 3
-                    ['s200001', 4],  // Student ID: s200001 - Career ID: 4
-                    ['s200001', 5],  // Student ID: s200001 - Career ID: 5
-                    ['s200001', 6],  // Student ID: s200001 - Career ID: 6
-                    ['s200002', 7],  // Student ID: s200002 - Career ID: 7
-                    ['s200002', 8],  // Student ID: s200002 - Career ID: 8
-                    ['s200002', 9],  // Student ID: s200002 - Career ID: 9
-                    ['s200003', 10], // Student ID: s200003 - Career ID: 10
+            const insertDepartmentData = () => {
+                const departData = [
+                    ['DEP101','GroupA'],  
+                    ['DEP101','GroupA'],  
+                    ['DEP101','GroupA'],  
+                    ['DEP101','GroupA'], 
+                    ['DEP101','GroupA'], 
+                    ['DEP101','GroupA'],
+                    ['DEP101','GroupA'], 
+                    ['DEP101','GroupA'], 
+                    ['DEP101','GroupA'],
+                    ['DEP101','GroupA'], 
                     // Add more entries as needed
                 ];
 
-                const stmt = db.prepare('INSERT INTO StudentCareer(Student_ID, Career_ID) VALUES (?, ?)');
-                stucarData.forEach(stucar => {
+                const stmt = db.prepare('INSERT INTO DEPARTMENT(COD_DEPARTMENT, COD_GROUP) VALUES (?, ?)');
+                departData.forEach(stucar => {
                     stmt.run(stucar, (err) => {
                         if (err) {
                             reject(err);
@@ -356,7 +357,7 @@ const insertData = () => {
             insertDegreeData();
             insertProposalData();
             insertApplicationData();
-            insertStudentCareerData();
+            insertDepartmentData();
             resolve();
         });
     });

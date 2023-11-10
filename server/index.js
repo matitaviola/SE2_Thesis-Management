@@ -41,7 +41,11 @@ app.get('/api/applications/teacher/:professorId',
 app.get('/api/application/:proposalsId/:studentId',
   async (req, res) => {
     try {
-      const studentData = await studDao.getStudentDataByProposal(req.params.studentId);
+      const studentData = await studDao.getStudentData(req.params.studentId);
+      if(studentData === undefined)
+        throw(new Error("Student not found"));
+      studentData.career  = await studDao.getCarreerByStudent(req.params.studentId);
+      console.log(studentData)
       res.json(studentData);
     } catch (err) {
       console.error(err);

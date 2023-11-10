@@ -20,7 +20,7 @@ const getStudentData = async (proposalId, studentId) =>{
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`);
   const studentDataJson = await response.json();
   if(response.ok) {
-    //console.log("nelle API"+JSON.stringify(studentDataJson)); //stringify needed, otherwise we'd have an [object Object]
+    console.log("nelle API"+JSON.stringify(studentDataJson)); //stringify needed, otherwise we'd have an [object Object]
     return studentDataJson;
   }
   else{
