@@ -1,4 +1,4 @@
-// Mocking the dependencies
+//Mocking the dependencies
 const { getProposalsByProfessor } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 
@@ -34,7 +34,7 @@ describe('getProposalsByProfessor Function Tests', () => {
     const mockedRows = [
       { title: 'Proposal 1' },
       { title: 'Proposal 2' }
-      // Add more sample proposal data as needed
+      //Add more sample proposal data as needed
     ];
     const expectedProposals = mockedRows.map(r => ({ title: r.Title }));
 
