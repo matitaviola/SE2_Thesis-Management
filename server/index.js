@@ -45,7 +45,11 @@ app.get('/api/application/:proposalsId/:studentId',
       if(studentData === undefined)
         throw(new Error("Student not found"));
       studentData.career  = await studDao.getCarreerByStudent(req.params.studentId);
-      console.log(studentData)
+      //we remove private/useless data:
+      delete studentData.gender;
+      delete studentData.nationality;
+      delete studentData.enrollment;
+      
       res.json(studentData);
     } catch (err) {
       console.error(err);

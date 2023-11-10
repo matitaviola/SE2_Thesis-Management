@@ -98,7 +98,7 @@ const createTables = () => {
                 Status TEXT NOT NULL,
                 PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal_ID) REFERENCES PROPOSAL(PROPOSAL_ID)
+                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(PROPOSAL)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -336,15 +336,15 @@ const insertData = () => {
             const insertDepartmentData = () => {
                 const departData = [
                     ['DEP101','GroupA'],  
-                    ['DEP101','GroupA'],  
-                    ['DEP101','GroupA'],  
-                    ['DEP101','GroupA'], 
-                    ['DEP101','GroupA'], 
-                    ['DEP101','GroupA'],
-                    ['DEP101','GroupA'], 
-                    ['DEP101','GroupA'], 
-                    ['DEP101','GroupA'],
-                    ['DEP101','GroupA'], 
+                    ['DEP101','GroupD'],  
+                    ['DEP101','GroupG'],  
+                    ['DEP101','GroupJ'], 
+                    ['DEP202','GroupB'], 
+                    ['DEP202','GroupE'],
+                    ['DEP202','GroupH'], 
+                    ['DEP303','GroupC'], 
+                    ['DEP303','GroupF'],
+                    ['DEP303','GroupI'], 
                     // Add more entries as needed
                 ];
 

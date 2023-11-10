@@ -39,11 +39,11 @@ exports.getCarreerByStudent = (studentId) => {
             else {
                 const applications = rows.map( r => {
                     return { 
-                        code_c:r.COD_COURSE,
-                        title_c: proposal.TITLE_COURSE,
-                        cfu:r.CFU,
-                        grade:r.GRADE,
-                        date:r.DATE
+                        code_c: r.COD_COURSE,
+                        title_c: r.TITLE_COURSE,
+                        cfu: r.CFU,
+                        grade: r.GRADE,
+                        date: r.DATE
                     };
                 });
                 resolve(applications);
