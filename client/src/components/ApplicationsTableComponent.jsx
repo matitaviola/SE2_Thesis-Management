@@ -11,7 +11,7 @@ export default function ApplicationTable() {
     useEffect(() => {
         const getApplications = async () => {
             try {
-                const retrievedApplications = await API.getApplications(loggedInUser.id);
+                const retrievedApplications = await API.getApplications(loggedInUser);
                 setApplications(retrievedApplications);
             } catch (err) {
                 console.log("Applications getting an error: " + err);
@@ -24,7 +24,7 @@ export default function ApplicationTable() {
         <div className="application-table">
             <p className="lead" style={{ fontSize: '30px' }}>Applications Table</p>
             {applications.map((p) => (
-                <div key={p.title + p.studentId} className="application-row">
+                <div key={p.proposal + p.studentId} className="application-row">
                     <ApplicationRow application={p} />
                 </div>
             ))}
@@ -33,9 +33,13 @@ export default function ApplicationTable() {
 }
 
 function ApplicationRow(props) {
+    const loggedInUser = useContext(AuthContext);
     return (
         <Container fluid>
-            <Link to={`/application/${props.application.proposal.replace(/\s/g, '')}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
+        {
+            loggedInUser.role == 'TEACHER'?
+
+            <Link to={`/application/${props.application.proposal}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
@@ -48,6 +52,28 @@ function ApplicationRow(props) {
                 </Col>
             </Row>
             </Link>
+            :
+            <Link to={`proposals/${props.application.proposal}`} style={{ textDecoration: 'none' }}>
+            <Row className="d-flex align-items-center">
+                <Col className="pt-2 application-info">
+                    <p>
+                        <span className="title">
+                            "{props.application.proposal}" 
+                        </span>
+                    </p>
+                </Col>
+                <Col className="pt-2 application-info">
+                <span className="student" style={{ color: 
+                    props.application.status === 'Rejected' ? 'red' :
+                    props.application.status === 'Accepted' ? 'green' :
+                    'black'
+                }}>
+                        Status: {props.application.status}
+                </span>
+                </Col>
+            </Row>
+            </Link>
+        }
         </Container>
     );
 }
