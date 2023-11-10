@@ -32,11 +32,11 @@ describe('getProposalsByProfessor Function Tests', () => {
     const professorId = 2;
     const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
     const mockedRows = [
-      { ID: 1, Title: 'Proposal 1' },
-      { ID: 2, Title: 'Proposal 2' }
+      { title: 'Proposal 1' },
+      { title: 'Proposal 2' }
       // Add more sample proposal data as needed
     ];
-    const expectedProposals = mockedRows.map(r => ({ id: r.ID, title: r.Title }));
+    const expectedProposals = mockedRows.map(r => ({ title: r.Title }));
 
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
