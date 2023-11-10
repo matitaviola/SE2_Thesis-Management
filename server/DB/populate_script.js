@@ -30,7 +30,9 @@ const createTables = () => {
                 NAME TEXT NOT NULL,
                 EMAIL TEXT UNIQUE NOT NULL,
                 COD_GROUP TEXT NOT NULL,
-                COD_DEPARTMENT TEXT NOT NULL
+                COD_DEPARTMENT TEXT NOT NULL,
+                FOREIGN KEY(COD_DEPARTMENT) REFERENCES DEPARTMENT(COD_DEPARTMENT),
+                FOREIGN KEY(COD_GROUP) REFERENCES DEPARTMENT(COD_GROUP)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -96,7 +98,19 @@ const createTables = () => {
                 Status TEXT NOT NULL,
                 PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title)
+                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(PROPOSAL)
+            )`, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+
+            //Departments
+            db.run(`CREATE TABLE IF NOT EXISTS DEPARTMENT (
+                COD_DEPARTMENT TEXT NOT NULL,
+                COD_GROUP TEXT NOT NULL,
+                PRIMARY KEY (COD_DEPARTMENT, COD_GROUP)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -130,6 +144,8 @@ const emptyTables = () => {
             // Empty the APPLICATION table
             db.run('DELETE FROM APPLICATION');
 
+            // Empty the DEPARTMENT table
+            db.run('DELETE FROM DEPARTMENT');
             resolve();
         }
         catch(error){
@@ -210,6 +226,17 @@ const insertData = () => {
                     ['s200008', 'COURSE808', 'Genetics', 7, 'B', '2022-04-17'],
                     ['s200000', 'COURSE909', 'Database Management', 6, 'A', '2021-10-22'],
                     ['s200004', 'COURSE1010', 'Electrical Engineering', 7, 'A+', '2023-02-14'],
+                    ["s200001", 'COURSE101', 'Introduction to Programming', 5, '30', '2022-05-15'],
+                    ["s200003", 'COURSE101', 'Introduction to Programming', 5, '30', '2022-05-15'],
+                    ["s200003", 'COURSE202', 'Data Structures', 6, '27', '2023-01-20'],
+                    ["s200007", 'COURSE303', 'Advanced Biology', 7, '29', '2021-11-30'],
+                    ["s200003", 'COURSE404', 'Algorithms', 6, '28', '2022-08-25'],
+                    ["s200006", 'COURSE505', 'Organic Chemistry', 7, '30', '2023-12-10'],
+                    ["s200006", 'COURSE606', 'Artificial Intelligence', 6, '27', '2021-06-05'],
+                    ["s200007", 'COURSE707', 'Literary Theory', 5, '29', '2023-09-28'],
+                    ["s200009", 'COURSE808', 'Genetics', 7, '23', '2022-04-17'],
+                    ["s200008", 'COURSE909', 'Database Management', 6, '24', '2021-10-22'],
+                    ["s200009", 'COURSE1010', 'Electrical Engineering', 7, '30L', '2023-02-14'],
                     // Add more data as needed
                 ];
 
@@ -306,7 +333,33 @@ const insertData = () => {
                 
             };
 
-            
+            const insertDepartmentData = () => {
+                const departData = [
+                    ['DEP101','GroupA'],  
+                    ['DEP101','GroupD'],  
+                    ['DEP101','GroupG'],  
+                    ['DEP101','GroupJ'], 
+                    ['DEP202','GroupB'], 
+                    ['DEP202','GroupE'],
+                    ['DEP202','GroupH'], 
+                    ['DEP303','GroupC'], 
+                    ['DEP303','GroupF'],
+                    ['DEP303','GroupI'], 
+                    // Add more entries as needed
+                ];
+
+                const stmt = db.prepare('INSERT INTO DEPARTMENT(COD_DEPARTMENT, COD_GROUP) VALUES (?, ?)');
+                departData.forEach(stucar => {
+                    stmt.run(stucar, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                });
+                stmt.finalize();
+                
+            };
+
             // Call the function for each table
             insertStudentData();
             
@@ -316,7 +369,8 @@ const insertData = () => {
             insertDegreeData();
             insertProposalData();
             insertApplicationData();
-
+            insertDepartmentData();
+            
             resolve();
         });
     });
