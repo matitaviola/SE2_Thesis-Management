@@ -33,7 +33,7 @@ function ApplicationDetailComponent() {
                 <table key={index} style={{ marginBottom: '30px', fontSize: '20px', width: '25%' }}>
                     <tbody style={{ backgroundColor: '#f0f0f0', borderRadius: '5px', padding: '20px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)' }}>
                         <tr>
-                            <td>{careerItem.title_c} ({careerItem.code_c})</td>
+                            <td><strong>{careerItem.title_c}</strong> ({careerItem.code_c})</td>
                         </tr>
                         <tr>
                             <td>CFU: {careerItem.cfu} - GRADE: {careerItem.grade}</td>
@@ -44,6 +44,8 @@ function ApplicationDetailComponent() {
                     </tbody>
                 </table>
             ))}
+            <button style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Accept</button>
+            <button style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
         </div>
     );
 }
