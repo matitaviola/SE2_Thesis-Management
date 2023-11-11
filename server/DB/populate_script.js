@@ -82,8 +82,11 @@ const createTables = () => {
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
                 CdS TEXT,
+                Status TEXT NOT NULL,
+                Thesist TEXT,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
-                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE)
+                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
+                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -117,32 +120,6 @@ const createTables = () => {
                 }
                 resolve();
             });
-
-            //Proposal
-            db.run(`CREATE TABLE IF NOT EXISTS ARCHIVED_PROPOSAL (
-                Title TEXT PRIMARY KEY UNIQUE NOT NULL,
-                Supervisor TEXT NOT NULL,
-                Co_supervisor TEXT,
-                Keywords TEXT,
-                Type TEXT NOT NULL,
-                Groups TEXT NOT NULL,
-                Description TEXT NOT NULL,
-                Req_knowledge TEXT,
-                Notes TEXT,
-                Expiration TEXT NOT NULL,
-                Level TEXT NOT NULL,
-                CdS TEXT,
-                Thesist TEXT,
-                FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
-                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
-                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID)
-            )`, (err) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve();
-            });
-
         });
     });
 };
@@ -172,8 +149,6 @@ const emptyTables = () => {
             // Empty the DEPARTMENT table
             db.run('DELETE FROM DEPARTMENT');
 
-            // Empty the ARCHIVED_PROPOSAL table
-            db.run('DELETE FROM ARCHIVED_PROPOSAL');
             resolve();
         }
         catch(error){

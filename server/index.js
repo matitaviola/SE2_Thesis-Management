@@ -25,7 +25,7 @@ app.get('/api/applications/teacher/:professorId',
     try {
         //gets all the professor's proposals
         let applications = [{}];
-        const proposals = await propDao.getProposalsByProfessor(req.params.professorId);
+        const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
         //gets all the applications for the proposals if we found any
         if(proposals.length>0){
           applications = await Promise.all(
