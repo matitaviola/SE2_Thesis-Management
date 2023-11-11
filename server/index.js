@@ -3,6 +3,7 @@ const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser') ;
 const app = express();
 const PORT = 3001;
 
@@ -12,6 +13,9 @@ app.use(cors()); // Enable CORS for all routes
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+//middleman to every call
+app.use(bodyParser.json()); //to read from req.body
 
 
 
