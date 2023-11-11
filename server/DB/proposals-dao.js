@@ -1,7 +1,7 @@
 'use strict';
 const { db } = require('./db');
 
-exports.getProposalsByProfessor = (professorId) => {
+exports.getActiveProposalsByProfessor = (professorId) => {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
         db.all(sql, [professorId], (err, rows) => {
@@ -54,42 +54,21 @@ exports.archiveProposal = (proposal, studentId) => {
                 }
                 // Step 3: Insert data into ARCHIVED_PROPOSAL table
                 db.run(
-                    'INSERT INTO ARCHIVED_PROPOSAL VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    'UPDATE PROPOSAL SET Status = "Archived", Thesist = ? WHERE Title = ? ',
                     [
-                        row.Title,
-                        row.Supervisor,
-                        row.Co_supervisor,
-                        row.Keywords,
-                        row.Type,
-                        row.Groups,
-                        row.Description,
-                        row.Req_knowledge,
-                        row.Notes,
-                        row.Expiration,
-                        row.Level,
-                        row.CdS,
                         studentId, // Set Thesist with the provided studentId
+                        proposal
                     ],
                     (err) => {
                         if (err) {
                             console.log(err.message)
-                            reject(err)
                             db.close();
-                            return;
+                            reject(err);
                         }
 
-                        // Step 4: Delete the corresponding row from PROPOSAL table
-                        db.run('DELETE FROM PROPOSAL WHERE Title = ?', [proposal], (err) => {
-                            if (err) {
-                                console.log(err.message);
-                                reject(err)
-                            } else {
-                                console.log('Proposal successfully archived and deleted.');
-                            }
-
-                            // Step 4: Close the database connection
-                            db.close();
-                        });
+                        // Step 4: Close the database connection
+                        db.close();
+                        resolve('Proposal successfully archived.');
                     }
                 );
             });
