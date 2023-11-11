@@ -3,6 +3,7 @@ const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const express = require('express');
+const bodyParser = require ('body-parser')
 const cors = require('cors');
 const app = express();
 const PORT = 3001;
@@ -13,6 +14,9 @@ app.use(cors()); // Enable CORS for all routes
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+//middleman to every call
+app.use(bodyParser.json()); //to read from req.body
 
 
 
@@ -75,8 +79,8 @@ app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try {
         // Update the application status
-        console.log(req.params);
-        const result = await appDao.acceptApplicationStatus(req.params.proposalsId, req.params.studentId);
+        console.log(req.params.proposalsId,req.body);
+        const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
 
         if (result.affectedRows === 0) {
             throw new Error('Application not found');

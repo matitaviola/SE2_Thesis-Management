@@ -36,19 +36,25 @@ const getStudentData = async (proposalId, studentId) =>{
   }
 }
 
-const updateApplicationStatus = async (proposalId, studentId) => {
+const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
+  //Choose if accept or reject based on the status passed
+  const status = statusSet? "Accepted" : "Rejected";
+  console.log(status);
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
       headers: {
           'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        'status': status
+      }),
   });
 
   if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
   }
-
-  return response.json();
+    
+  return {ok:true};
 };
 
 
