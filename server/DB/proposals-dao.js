@@ -3,8 +3,8 @@ const { db } = require('./db');
 
 exports.getActiveProposalsByProfessor = (professorId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
-        db.all(sql, [professorId], (err, rows) => {
+        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
+        db.all(sql, [professorId, "Active"], (err, rows) => {
             if (err)
                 reject(err);
             else if (rows === undefined || rows.length === 0) {
