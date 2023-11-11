@@ -66,7 +66,10 @@ describe('getProposalsByProfessor Function Tests', () => {
 });
 
 describe('archiveProposal', () => {
-  it('should reject with an error when the proposal is not found', async () => {
+  const mockedProposal = {Title:"Proposal 1"};
+  const mockedApplication = {Proposal:"Proposal 1", Student_ID:"s200000", Status:"Accepted"};
+
+  it('should reject with a message when the proposal is not found', async () => {
       // Mock the get method to simulate a scenario where the proposal is not found
       db.get.mockImplementationOnce((query, params, callback) => {
           callback(null, null); // Simulating that the proposal is not found
@@ -75,17 +78,100 @@ describe('archiveProposal', () => {
       // Mock the close method
       db.close.mockImplementationOnce(jest.fn());
 
-      // Mock the reject method
-      const rejectMock = jest.fn();
-
-      try {
-          // Call the function with a proposal that doesn't exist
-          await archiveProposal('Nonexistent Proposal', 'someStudentId');
-      } catch (error) {
-          expect(error).toBeDefined();
-          expect(error.message).toBe('Proposal not found.');
-          expect(rejectMock).toHaveBeenCalledWith(error);
-      }
+      await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual('Proposal not found.');
+      
   });
+  
+  it('should reject with an error when the application for that proposal has not been found', async () => {
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockedProposal); // Simulating that the proposal found
+    });
+
+    db.get.mockImplementationOnce((query, params, callback) => {
+      callback(null, null); // Simulating that the proposal found
+    });
+
+    // Mock the close method
+    db.close.mockImplementationOnce(jest.fn());
+
+    await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual("Application not found.");
+    
+  });
+
+  it('should reject with an error when the inserting of a proposal goes bad', async () => {
+    mockedInsertError = {message:"Impossible to insert"};
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockedProposal); // Simulating that the proposal found
+    });
+
+    db.get.mockImplementationOnce((query, params, callback) => {
+      callback(null, mockedApplication); // Simulating that the proposal found
+    });
+
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback(mockedInsertError); // Simulating that the proposal found
+    });
+
+    // Mock the close method
+    db.close.mockImplementationOnce(jest.fn());
+
+    await expect(archiveProposal(mockedProposal.title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
+    
+  });
+
+  it('should reject with an error when the deleting of the old proposal goes bad', async () => {
+    mockedInsertError = {message:"Impossible to delete"};
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockedProposal); // Simulating that the proposal found
+    });
+
+    db.get.mockImplementationOnce((query, params, callback) => {
+      callback(null, mockedApplication); // Simulating that the proposal found
+    });
+
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback(null); // Simulating that the proposal found
+    });
+
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback(mockedInsertError); // Simulating that the proposal found
+    });
+
+    // Mock the close method
+    db.close.mockImplementationOnce(jest.fn());
+
+    await expect(archiveProposal(mockedProposal.title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
+    
+  });
+
+  it('should reject with an error when the deleting of the old proposal goes bad', async () => {
+    mockedSuccess = {message:"Succesful archiviation"};
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockedProposal); // Simulating that the proposal found
+    });
+
+    db.get.mockImplementationOnce((query, params, callback) => {
+      callback(null, mockedApplication); // Simulating that the proposal found
+    });
+
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback(null); // Simulating that the proposal found
+    });
+
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback(null); // Simulating that the proposal found
+    });
+
+    // Mock the close method
+    db.close.mockImplementationOnce(jest.fn());
+
+    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).resolves.toBe(mockedSuccess.message);
+    
+  });
+
 });
 

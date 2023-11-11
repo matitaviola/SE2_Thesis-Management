@@ -27,32 +27,17 @@ exports.archiveProposal = (proposal, studentId) => {
     return new Promise((resolve, reject) => {
         // Step 1: Retrieve data from PROPOSAL table
         db.get('SELECT * FROM PROPOSAL WHERE Title = ?', [proposal], (err, row) => {
-            if (err) {
-                console.log(err.message);
-                reject(err)
-                return;
-            }
-
-            if (!row) {
-                console.log('Proposal not found.');
-                db.close();
-                return;
+            if (err || !row) {
+                reject(err? err : 'Proposal not found.');
             }
 
             // Step 2: Check if student has an application for that proposal
             db.get('SELECT * FROM APPLICATION WHERE Proposal = ? AND Student_ID = ?', [proposal, studentId], (err, row) => {
-                if (err) {
-                    console.log(err.message);
-                    reject(err)
-                    return;
+                if (err || !row) {
+                    reject(err? err : 'Application not found.')
                 }
         
-                if (!row) {
-                    console.log('Proposal not found.');
-                    db.close();
-                    return;
-                }
-                // Step 3: Insert data into ARCHIVED_PROPOSAL table
+                // Step 3: Update Proposal table
                 db.run(
                     'UPDATE PROPOSAL SET Status = "Archived", Thesist = ? WHERE Title = ? ',
                     [
@@ -61,16 +46,14 @@ exports.archiveProposal = (proposal, studentId) => {
                     ],
                     (err) => {
                         if (err) {
-                            console.log(err.message)
                             db.close();
                             reject(err);
                         }
 
                         // Step 4: Close the database connection
                         db.close();
-                        resolve('Proposal successfully archived.');
-                    }
-                );
+                        resolve('Succesful archiviation');
+                });
             });
         });
     });
