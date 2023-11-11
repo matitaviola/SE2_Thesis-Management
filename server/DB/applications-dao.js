@@ -48,3 +48,19 @@ exports.getApplicationsByStudent = (studentId) => {
         });
     });
 }
+
+exports.acceptApplicationStatus = (proposal, studentId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE APPLICATION SET Status = "Accepted" WHERE Proposal = ? AND Student_Id = ? AND Status = "Pending"';
+        db.run(sql, [proposal.title, studentId], function (err) {
+            if (err) {
+                reject(err);
+            } else if (this.changes === 0) {
+                resolve({ error: 'The application is not in Pending status or does not exist' });
+            } else {
+                resolve({ success: true });
+            }
+        });
+    });
+}
+

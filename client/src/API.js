@@ -36,8 +36,24 @@ const getStudentData = async (proposalId, studentId) =>{
   }
 }
 
+const updateApplicationStatus = async (proposalId, studentId) => {
+  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
+      method: 'PATCH',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+  });
+
+  if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return response.json();
+};
+
+
 //#endregion
 
-const API = {getApplications, getStudentData};
+const API = {getApplications, getStudentData, updateApplicationStatus};
 export default API;
 

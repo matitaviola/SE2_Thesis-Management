@@ -69,3 +69,21 @@ app.get('/api/applications/student/:studentId',
       res.status(500).end();
   }
 });
+
+// PATCH /api/application/:proposalsId/:studentId
+app.patch('/api/application/:proposalsId/:studentId',
+   async (req, res) => {
+    try {
+        // Update the application status
+        console.log(req.params);
+        const result = await appDao.acceptApplicationStatus(req.params.proposalsId, req.params.studentId);
+
+        if (result.affectedRows === 0) {
+            throw new Error('Application not found');
+        }
+        res.status(200).end();
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while updating application status' });
+    }
+});

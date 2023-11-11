@@ -18,6 +18,19 @@ function ApplicationDetailComponent() {
         getStudentData();
     }, []);
 
+    const acceptApplication = async () => {
+        // TODO - Update application status
+        const response = await API.updateApplicationStatus(proposalId, studentId);
+    
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        // Refresh student data after status update
+        const updatedStudentData = await API.getStudentData(proposalId,studentId);
+        setStudentData(updatedStudentData);
+    };
+
     if (!studentData) {
         return <div>Loading...</div>;
     }
@@ -44,7 +57,7 @@ function ApplicationDetailComponent() {
                     </tbody>
                 </table>
             ))}
-            <button style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Accept</button>
+            <button onClick={acceptApplication} style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer', transition: 'transform 0.1s' }}>Accept</button>
             <button style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
         </div>
     );
