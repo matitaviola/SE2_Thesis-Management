@@ -1,10 +1,13 @@
 // Mocking the dependencies
-const { getProposalsByProfessor } = require('../DB/proposals-dao');
+const { getProposalsByProfessor, archiveProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
   const mockedDB = {
-    all: jest.fn()
+    all: jest.fn(),    
+    get: jest.fn(),
+    run: jest.fn(),
+    close: jest.fn()
   };
   return { db: mockedDB };
 });
@@ -61,3 +64,28 @@ describe('getProposalsByProfessor Function Tests', () => {
     await expect(getProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
   });
 });
+
+describe('archiveProposal', () => {
+  it('should reject with an error when the proposal is not found', async () => {
+      // Mock the get method to simulate a scenario where the proposal is not found
+      db.get.mockImplementationOnce((query, params, callback) => {
+          callback(null, null); // Simulating that the proposal is not found
+      });
+
+      // Mock the close method
+      db.close.mockImplementationOnce(jest.fn());
+
+      // Mock the reject method
+      const rejectMock = jest.fn();
+
+      try {
+          // Call the function with a proposal that doesn't exist
+          await archiveProposal('Nonexistent Proposal', 'someStudentId');
+      } catch (error) {
+          expect(error).toBeDefined();
+          expect(error.message).toBe('Proposal not found.');
+          expect(rejectMock).toHaveBeenCalledWith(error);
+      }
+  });
+});
+
