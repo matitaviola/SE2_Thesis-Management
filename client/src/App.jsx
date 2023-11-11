@@ -29,7 +29,8 @@ useEffect(() => {
         id: 'd100003'
         */
         role: 'STUDENT',
-        id: 's200000'
+        id: 's200000',
+        cds: 'CS101'
       }
       setLoggedIn(user);
 
@@ -46,7 +47,8 @@ useEffect(() => {
         id: 'd100003'
         */
         role: 'STUDENT',
-        id: 's200000'
+        id: 's200000',
+        cds: 'CS101'
       }
       setLoggedIn(user)
     } catch (err) {

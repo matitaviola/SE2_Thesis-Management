@@ -26,6 +26,33 @@ const getApplications = async (user) =>{
 }
 //#endregion
 
-const API = {getApplications};
+// #region Proposals
+
+const getProposals = async (studentId, filter) =>{
+  let path = '?';
+  Object.keys(filter).filter(k => filter[k]).forEach(k =>{
+    path = path.concat(`${k}=${filter[k]}&`);
+  })
+  path = path.slice(0, -1);
+  console.log(path);
+
+  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`);
+  let responseJson = await response.json();
+
+
+  if(response.ok) {
+    console.log(responseJson);
+    return responseJson;
+  }
+  else{
+    throw new Error("Error on getting the proposals: "+applicationsJson);
+  }
+}
+
+
+// #endregion
+
+
+const API = {getApplications, getProposals};
 export default API;
 
