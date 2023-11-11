@@ -28,17 +28,14 @@ exports.archiveProposal = (proposal, studentId) => {
         // Step 1: Retrieve data from PROPOSAL table
         db.get('SELECT * FROM PROPOSAL WHERE Title = ?', [proposal], (err, row) => {
             if (err || !row) {
-                console.log(err? err.message: 'Proposal not found.');
                 reject(err? err : 'Proposal not found.');
             }
 
             // Step 2: Check if student has an application for that proposal
             db.get('SELECT * FROM APPLICATION WHERE Proposal = ? AND Student_ID = ?', [proposal, studentId], (err, row) => {
                 if (err || !row) {
-                    console.log(err? err.message: 'Application not found.');
                     reject(err? err : 'Application not found.')
                 }
-                console.log("shouldn't be here");
         
                 // Step 3: Insert data into ARCHIVED_PROPOSAL table
                 db.run(
@@ -60,7 +57,6 @@ exports.archiveProposal = (proposal, studentId) => {
                     ],
                     (err) => {
                         if (err) {
-                            console.log(err.message)
                             db.close();
                             reject(err);
                         }
@@ -68,14 +64,13 @@ exports.archiveProposal = (proposal, studentId) => {
                         // Step 4: Delete the corresponding row from PROPOSAL table
                         db.run('DELETE FROM PROPOSAL WHERE Title = ?', [proposal], (err) => {
                             if (err) {
-                                console.log(err.message);
+                                db.close();
                                 reject(err)
-                            } else {
-                                console.log('Proposal successfully archived and deleted.');
                             }
 
-                            // Step 4: Close the database connection
+                            // Step 5: Close the database connection
                             db.close();
+                            resolve('Succesful archiviation');
                         });
                     }
                 );
