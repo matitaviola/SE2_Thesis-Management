@@ -1,0 +1,8 @@
+// change the theme
+$theme-colors: (
+  "primary": #fc7a08,
+);
+
+// Import Bootstrap and its default variables
+@import './../node_modules/bootstrap/scss/bootstrap.scss';
+

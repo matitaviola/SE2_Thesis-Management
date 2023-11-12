@@ -40,10 +40,10 @@
   font-size: 20px;
 }
 
-.card {
-  padding: 2em;
+.title {
+  font-weight: bold;
 }
 
-.read-the-docs {
-  color: #888;
+.student {
+  font-weight: bold;
 }

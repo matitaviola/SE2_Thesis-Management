@@ -1,6 +1,9 @@
 // Sever's main file
+const appDao = require('./DB/applications-dao');
+const propDao = require('./DB/proposals-dao');
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser') ;
 const app = express();
 const PORT = 3001;
 

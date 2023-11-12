@@ -12,6 +12,14 @@ import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
 
 export const AuthContext = createContext(null);
+import NotFound from './components/NotFoundComponent';
+import ProposalComponent from './components/ProposalComponent.jsx';
+import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
+import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
+import { LoginForm } from './components/LoginComponent.jsx';
+import ErrorToast from './components/ErrorToastComponent.jsx';
+
+export const AuthContext = createContext(null);
 
 function App() {
 
@@ -67,6 +75,48 @@ useEffect(() => {
 
   return (
     <>
+    <AuthContext.Provider value={loggedIn}>
+    <BrowserRouter>
+      <Routes>
+        <Route element={
+          <>
+            <NavHeader handleLogout={handleLogout}/>
+            <Container fluid className="mt-3">
+
+              <Outlet />
+            </Container>
+          </>} >
+          <Route index
+            element={<Navigate replace to='/login' />} />
+
+          { loggedIn && loggedIn.role == 'STUDENT' &&
+           <><Route path='proposals'
+              element={<ProposalsTableComponent/>} />
+              <Route path='applications'
+              element={<ApplicationsTable/>} />
+              </>
+              }
+          { loggedIn && loggedIn.role == 'TEACHER' &&
+           <><Route path='proposals'
+              element={<ProposalsTableComponent/>} />
+          <Route path='proposals/:proposalsId'
+              element={<ProposalComponent/>} />
+          <Route path='proposals/new'
+              element={<ProposalComponent />} />
+          <Route path='applications'
+              element={<ApplicationsTable/>}/>
+              </>
+              }
+          <Route path='*' element={<NotFound />} />
+          <Route path='/login' element={
+            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm login={handleLogin} />
+          } />
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
+    </AuthContext.Provider>
+    <ErrorToast errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
     <AuthContext.Provider value={loggedIn}>
     <BrowserRouter>
       <Routes>
