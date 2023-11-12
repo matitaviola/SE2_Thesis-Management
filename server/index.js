@@ -81,15 +81,16 @@ app.patch('/api/application/:proposalsId/:studentId',
         // Update the application status
         //console.log(req.params.proposalsId,req.body);
         const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
-
-        if (result.affectedRows === 0) {
+        if (!result.success) {
             throw new Error('Application not found');
         }
 
         // Archive the proposal
         const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
-        if (!archiveResult) {
+        if (!archiveResult.success) {
           throw new Error('An error occurred while archiving the proposal');
+        
+        //TODO: update all the applications where Proposal=proposal and Status=Pending setting the status to rejected
       }
 
         res.status(200).end();

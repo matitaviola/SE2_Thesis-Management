@@ -46,13 +46,11 @@ exports.archiveProposal = (proposal, studentId) => {
                     ],
                     (err) => {
                         if (err) {
-                            db.close();
                             reject(err);
                         }
 
                         // Step 4: Close the database connection
-                        db.close();
-                        resolve('Succesful archiviation');
+                        resolve({success:true});
                 });
             });
         });
