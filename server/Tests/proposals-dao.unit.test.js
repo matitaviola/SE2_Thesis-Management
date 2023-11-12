@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getProposalsByProfessor, archiveProposal } = require('../DB/proposals-dao');
+const { getActiveProposalsByProfessor, archiveProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -12,28 +12,28 @@ jest.mock('../DB/db', () => {
   return { db: mockedDB };
 });
 
-describe('getProposalsByProfessor Function Tests', () => {
+describe('getActiveProposalsByProfessor Function Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should resolve with empty object when no proposals found for a professor', async () => {
     const professorId = 1;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const mockedRows = [];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(null, mockedRows);
     });
 
-    const result = await getProposalsByProfessor(professorId);
+    const result = await getActiveProposalsByProfessor(professorId);
     expect(result).toEqual({});
   });
 
   it('should resolve with an array of proposals when they are found for a professor', async () => {
     const professorId = 2;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const mockedRows = [
       { title: 'Proposal 1' },
       { title: 'Proposal 2' }
@@ -43,25 +43,25 @@ describe('getProposalsByProfessor Function Tests', () => {
 
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(null, mockedRows);
     });
 
-    const result = await getProposalsByProfessor(professorId);
+    const result = await getActiveProposalsByProfessor(professorId);
     expect(result).toEqual(expectedProposals);
   });
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
     const professorId = 3;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const expectedError = 'Database error occurred';
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(expectedError, null);
     });
 
-    await expect(getProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
+    await expect(getActiveProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
   });
 });
 
@@ -92,14 +92,11 @@ describe('archiveProposal', () => {
       callback(null, null); // Simulating that the proposal found
     });
 
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
-
     await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual("Application not found.");
     
   });
 
-  it('should reject with an error when the inserting of a proposal goes bad', async () => {
+  it('should reject with an error when the updating of the proposal goes wrong', async () => {
     mockedInsertError = {message:"Impossible to insert"};
     // Mock the get method to simulate a scenario where the proposal is not found
     db.get.mockImplementationOnce((query, params, callback) => {
@@ -114,15 +111,13 @@ describe('archiveProposal', () => {
       callback(mockedInsertError); // Simulating that the proposal found
     });
 
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
 
-    await expect(archiveProposal(mockedProposal.title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
+    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
     
   });
 
   it('should reject with an error when the deleting of the old proposal goes bad', async () => {
-    mockedInsertError = {message:"Impossible to delete"};
+    mockedSuccess = {success:true};
     // Mock the get method to simulate a scenario where the proposal is not found
     db.get.mockImplementationOnce((query, params, callback) => {
         callback(null, mockedProposal); // Simulating that the proposal found
@@ -136,40 +131,7 @@ describe('archiveProposal', () => {
       callback(null); // Simulating that the proposal found
     });
 
-    db.run.mockImplementationOnce((query, params, callback) => {
-      callback(mockedInsertError); // Simulating that the proposal found
-    });
-
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
-
-    await expect(archiveProposal(mockedProposal.title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
-    
-  });
-
-  it('should reject with an error when the deleting of the old proposal goes bad', async () => {
-    mockedSuccess = {message:"Succesful archiviation"};
-    // Mock the get method to simulate a scenario where the proposal is not found
-    db.get.mockImplementationOnce((query, params, callback) => {
-        callback(null, mockedProposal); // Simulating that the proposal found
-    });
-
-    db.get.mockImplementationOnce((query, params, callback) => {
-      callback(null, mockedApplication); // Simulating that the proposal found
-    });
-
-    db.run.mockImplementationOnce((query, params, callback) => {
-      callback(null); // Simulating that the proposal found
-    });
-
-    db.run.mockImplementationOnce((query, params, callback) => {
-      callback(null); // Simulating that the proposal found
-    });
-
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
-
-    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).resolves.toBe(mockedSuccess.message);
+    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).resolves.toEqual(mockedSuccess);
     
   });
 
