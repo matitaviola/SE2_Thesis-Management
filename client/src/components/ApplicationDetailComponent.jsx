@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import API from '../API';
 
 function ApplicationDetailComponent() {
     const [studentData, setStudentData] = useState(null);
     const { proposalId, studentId } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getStudentData = async () => {
@@ -19,27 +20,25 @@ function ApplicationDetailComponent() {
     }, []);
 
     const acceptRejectApplication = async (status) => {
-        // TODO - Update application status
         const response = await API.updateApplicationStatus(proposalId, studentId, status);
     
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-    
-        /* Why would you refresh the student data? They did not change
-        // Refresh student data after status update
-        const updatedStudentData = await API.getStudentData(proposalId,studentId);
-        setStudentData(updatedStudentData);
-        */
-       /*It would be better something that makes you go back to the applications page*/
+        else{
+            // Navigate to the previous page
+            navigate('/applications');
+            
+        }
+       // navigate('/applications');
     };
 
     if (!studentData) {
         return <div>Loading...</div>;
     }
-    else {
+    /*else {
         console.log(studentData);
-    }
+    }*/
 
     return (
         <div>
@@ -61,7 +60,7 @@ function ApplicationDetailComponent() {
                 </table>
             ))}
             <button onClick={() => acceptRejectApplication(true)} style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer', transition: 'transform 0.1s' }}>Accept</button>
-            <button style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
+            <button onClick={() => acceptRejectApplication(false)} style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
         </div>
     );
 }
