@@ -10,31 +10,19 @@ export default function ProposalComponent() {
 		<Container>
 			<Row><h1 className='text-center mt-4'>{proposal.title}</h1></Row>
 			<Row>
-				<Col><p className='text-end'><strong>Expiration date:</strong> {proposal.expiration}</p></Col>
+				<p className='text-end'><strong>Expiration date:</strong> {proposal.expiration}</p>
 			</Row>
 			<Row>
-				<Col>
-					<p><strong>CdS:</strong> {proposal.cds}</p>
-				</Col>
-				<Col>
-					<p><strong>Level:</strong> {proposal.level}</p>
-				</Col>
+				<p><strong>CdS:</strong> {proposal.cds}</p>
+				<p><strong>Level:</strong> {proposal.level}</p>
 			</Row>
 			<Row>
-				<Col>
-					<p>{proposal.type}</p>
-				</Col>
-				<Col>
-					<p>{proposal.group}</p>
-				</Col>
+				<p>{proposal.type}</p>
+				<p>{proposal.group}</p>
 			</Row>
 			<Row>
-				<Col>
-					<p><strong>Thesist:</strong> {proposal.thesist ? proposal.thesist : "Not assigned"}</p>
-				</Col>
-				<Col>
-					<p><strong>Co-supervisor:</strong> {proposal.co_supervisor ? proposal.co_supervisor : "Not assigned"}</p>
-				</Col>
+				<p><strong>Thesist:</strong> {proposal.thesist ? proposal.thesist : "Not assigned"}</p>
+				<p><strong>Co-supervisor:</strong> {proposal.co_supervisor ? proposal.co_supervisor : "Not assigned"}</p>
 			</Row>
 			<Row style={{ marginTop: '20px' }}>
 				<p><strong>Description:</strong> {proposal.description}</p>
