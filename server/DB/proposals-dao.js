@@ -1,0 +1,71 @@
+'use strict';
+const { db } = require('./db');
+
+exports.getActiveProposalsByProfessor = (professorId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
+        db.all(sql, [professorId, "Active"], (err, rows) => {
+            if (err)
+                reject(err);
+            else if (rows === undefined || rows.length === 0) {
+                resolve({}); //if no applications yet for that 
+            }
+            else {
+                const proposals = rows.map( r => {
+                    return { 
+                        title:r.Title,
+                        co_supervisor:r.Co_Supervisor,
+                        keywords:r.Keywords,
+                        type:r.Type,
+                        group:r.Groups,
+                        description:r.Description,
+                        knowledge:r.Req_knowledge,
+                        notes:r.Notes,
+                        expiration:r.Expiration,
+                        level:r.Level,
+                        cds:r.CdS,
+                        thesist:r.Thesist
+                    //Inserted all the fields
+                    }
+                });
+                resolve(proposals);
+            }
+        });
+    });
+}
+
+exports.archiveProposal = (proposal, studentId) => {
+    return new Promise((resolve, reject) => {
+        // Step 1: Retrieve data from PROPOSAL table
+        db.get('SELECT * FROM PROPOSAL WHERE Title = ?', [proposal], (err, row) => {
+            if (err || !row) {
+                reject(err? err : 'Proposal not found.');
+            }
+
+            // Step 2: Check if student has an application for that proposal
+            db.get('SELECT * FROM APPLICATION WHERE Proposal = ? AND Student_ID = ?', [proposal, studentId], (err, row) => {
+                if (err || !row) {
+                    reject(err? err : 'Application not found.')
+                }
+        
+                // Step 3: Update Proposal table
+                db.run(
+                    'UPDATE PROPOSAL SET Status = "Archived", Thesist = ? WHERE Title = ? ',
+                    [
+                        studentId, // Set Thesist with the provided studentId
+                        proposal
+                    ],
+                    (err) => {
+                        if (err) {
+                            db.close();
+                            reject(err);
+                        }
+
+                        // Step 4: Close the database connection
+                        db.close();
+                        resolve('Succesful archiviation');
+                });
+            });
+        });
+    });
+}

@@ -4,7 +4,56 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [appName, setAppName] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
+
+
+useEffect(() => {
+    const checkAuth = async () => {
+      //const user = await API.getUserInfo(); // we have the user info here
+      let user = {
+        
+        role: 'TEACHER',
+        id: 'd100003'
+        /*
+        role: 'STUDENT',
+        id: 's200000'
+        */
+      }
+      setLoggedIn(user);
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogin = async (credentials) => {
+    try {
+      //let user = await API.login(credentials);
+      let user = {
+        role: 'TEACHER',
+        id: 'd100003'
+        /*
+        role: 'STUDENT',
+        id: 's200000'
+        */
+      }
+      setLoggedIn(user)
+    } catch (err) {
+      setErrorMessage(`Error during log in : ${err}`);
+    }
+
+  };
+
+  const handleLogout = async () => {
+    try {
+      //await API.logout();
+      setLoggedIn(false)
+    } catch (err) {
+      setErrorMessage(`Error during log out : ${err}`);
+    }
+
+  };
 
   return (
     <>
