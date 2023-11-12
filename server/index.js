@@ -5,7 +5,6 @@ const studDao = require('./DB/students-dao');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
-const bodyParser = require('body-parser') ;
 const app = express();
 const PORT = 3001;
 
@@ -75,17 +74,24 @@ app.get('/api/applications/student/:studentId',
   }
 });
 
-// PATCH /api/application/:proposalsId/:studentId
+//PATCH /api/application/:proposalsId/:studentId
 app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try {
         // Update the application status
-        console.log(req.params.proposalsId,req.body);
+        //console.log(req.params.proposalsId,req.body);
         const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
 
         if (result.affectedRows === 0) {
             throw new Error('Application not found');
         }
+
+        // Archive the proposal
+        const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+        if (!archiveResult) {
+          throw new Error('An error occurred while archiving the proposal');
+      }
+
         res.status(200).end();
     } catch (err) {
         console.error(err);
