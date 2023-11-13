@@ -79,7 +79,6 @@ app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try {
         // Update the application status
-        console.log(req.params.proposalsId,req.body);
         const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
         if (!result.success) {
             throw new Error('Application not found');
@@ -88,16 +87,17 @@ app.patch('/api/application/:proposalsId/:studentId',
         if(req.body.status === "Accepted"){
           // Archive the proposal
           const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
           }
 
-          const autoReject = await propDao.autoRejectApplication(req.params.proposalsId, req.params.studentId);
+          const autoReject = await appDao.autoRejectApplication(req.params.proposalsId, req.params.studentId);
           
           if (!autoReject.success) {
             throw new Error('An error occurred while auto rejecting the proposal');
-        }
-        //TODO: update all the applications where Proposal=proposal and Status=Pending setting the status to rejected
+          }
+
       }
 
         res.status(200).end();

@@ -3,8 +3,8 @@ const { db } = require('./db');
 
 exports.getActiveApplicationsByProposal = (proposal) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status = "Pending"';
-        db.all(sql, [proposal.title], (err, rows) => {
+        const sql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status=?';
+        db.all(sql, [proposal.title, "Pending"], (err, rows) => {
             if (err)
                 reject(err);
             else if (rows === undefined || rows.length === 0) {
@@ -60,6 +60,18 @@ exports.setApplicationStatus = (proposal, studentId, status) => {
             } else {
                 resolve({ success: true });
             }
+        });
+    });
+}
+
+exports.autoRejectApplication = (proposal, studentId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
+        db.run(sql, [proposal, studentId], (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve({success:true}); 
         });
     });
 }
