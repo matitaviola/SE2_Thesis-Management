@@ -28,9 +28,7 @@ function ApplicationDetailComponent() {
         else{
             // Navigate to the previous page
             navigate('/applications');
-            
         }
-       // navigate('/applications');
     };
 
     if (!studentData) {
