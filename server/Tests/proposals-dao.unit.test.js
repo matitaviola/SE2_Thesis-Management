@@ -37,7 +37,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
     const mockedRows = [
       { title: 'Proposal 1' },
       { title: 'Proposal 2' }
-      // Add more sample proposal data as needed
+      //Add more sample proposal data as needed
     ];
     const expectedProposals = mockedRows.map(r => ({ title: r.Title }));
 
@@ -81,6 +81,19 @@ describe('archiveProposal', () => {
       await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual('Proposal not found.');
       
   });
+
+  it('should reject with an error when the proposal is not found due to an error', async () => {
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback({message:"Error"}, null); // Simulating that the proposal is not found
+    });
+
+    // Mock the close method
+    db.close.mockImplementationOnce(jest.fn());
+
+    await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toStrictEqual({message:"Error"});
+    
+});
   
   it('should reject with an error when the application for that proposal has not been found', async () => {
     // Mock the get method to simulate a scenario where the proposal is not found
@@ -93,6 +106,20 @@ describe('archiveProposal', () => {
     });
 
     await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual("Application not found.");
+    
+  });
+
+  it('should reject with an error when the application for that proposal has not been found due to an error', async () => {
+    // Mock the get method to simulate a scenario where the proposal is not found
+    db.get.mockImplementationOnce((query, params, callback) => {
+        callback(null, mockedProposal); // Simulating that the proposal found
+    });
+
+    db.get.mockImplementationOnce((query, params, callback) => {
+      callback({message:"Errror"}, null); // Simulating that the proposal found
+    });
+
+    await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toStrictEqual({message:"Errror"});
     
   });
 

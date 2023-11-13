@@ -154,3 +154,116 @@ describe('getApplications API', () => {
     );
   });
 });
+
+describe('getStudentData API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock user data
+
+  // Mock response data
+  const studentData = {
+    studentId: 's200002',
+    surname: 'Doe',
+    name: 'John',
+    email: 'john.doe@example.com',
+    code_degree: 'CS101',
+    career: [{}]
+  };
+
+  // Mock fetch response for successful request
+  const successResponseE = {
+    ok: true,
+    json: async () => studentData,
+  };
+  // Mock fetch response for successful request
+  const successResponse = {
+    ok: true,
+    json: async () => {
+      const sdNE = studentData;
+      sdNE.career = [
+        {
+          code_c: 'COURSE101',
+          title_c: 'Introduction to Programming',
+          cfu: 5,
+          grade: '30',
+          date: '2022-05-15'
+        },
+        {
+          code_c: 'COURSE202',
+          title_c: 'Data Structures',
+          cfu: 6,
+          grade: '27',
+          date: '2023-01-20'
+        },
+        {
+          code_c: 'COURSE404',
+          title_c: 'Algorithms',
+          cfu: 6,
+          grade: 'B+',
+          date: '2022-08-25'
+        }
+      ];
+      return sdNE;
+    }
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should get student data for a valid request with empty career', async () => {
+    const proposalId = "Proposal 1";
+    fetch.mockResolvedValueOnce(successResponseE);
+
+    const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`);
+    expect(result).toEqual(studentData);
+  });
+
+  it('should get student data for a valid request with a non-empty career', async () => {
+    const proposalId = "Proposal 1";
+    const mockCareer = [{
+        code_c: 'COURSE101',
+        title_c: 'Introduction to Programming',
+        cfu: 5,
+        grade: '30',
+        date: '2022-05-15'
+      },{
+        code_c: 'COURSE202',
+        title_c: 'Data Structures',
+        cfu: 6,
+        grade: '27',
+        date: '2023-01-20'
+      },{
+        code_c: 'COURSE404',
+        title_c: 'Algorithms',
+        cfu: 6,
+        grade: 'B+',
+        date: '2022-08-25'
+      }
+    ]
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`);
+    expect(result.career).toEqual(mockCareer);
+  });
+
+  it('should throw an error on failed request', async () => {
+    const proposalId = "proposal F";
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getStudentData(proposalId, -1)).rejects.toThrow(
+      'Error on getting the studentsData: Error occurred'
+    );
+  });
+});
+

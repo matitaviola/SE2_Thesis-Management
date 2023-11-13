@@ -10,6 +10,7 @@ import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
+import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -98,6 +99,8 @@ useEffect(() => {
               element={<ProposalComponent />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
+          <Route path='application/:proposalId/:studentId'
+              element={<ApplicationDetailComponent/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />
