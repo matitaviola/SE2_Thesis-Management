@@ -22,3 +22,18 @@ exports.getProposalsByProfessor = (professorId) => {
         });
     });
 }
+
+exports.deleteProposal = (proposal) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM PROPOSAL WHERE ID = ?';
+        db.run(sql, [proposal], function (err) {
+            if (err) {
+                reject(err);
+            } else if (this.changes === 0) {
+                resolve({ error: 'Proposal not found' });
+            } else {
+                resolve({ success: true });
+            }
+        });
+    });
+}
