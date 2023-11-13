@@ -52,7 +52,7 @@ exports.getApplicationsByStudent = (studentId) => {
 exports.setApplicationStatus = (proposal, studentId, status) => {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal = ? AND Student_Id = ? AND Status = "Pending"';
-        db.run(sql, [status, proposal, studentId], function (err) {
+        db.run(sql, [String(status), proposal, studentId], function (err) {
             if (err) {
                 reject(err);
             } else if (this.changes === 0) {

@@ -89,7 +89,14 @@ app.patch('/api/application/:proposalsId/:studentId',
         const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
         if (!archiveResult.success) {
           throw new Error('An error occurred while archiving the proposal');
+        }
         
+        if(req.body.status === "Accepted"){
+          const autoReject = await propDao.autoRejectApplication(req.params.proposalsId, req.params.studentId);
+          
+          if (!autoReject.success) {
+            throw new Error('An error occurred while auto rejecting the proposal');
+        }
         //TODO: update all the applications where Proposal=proposal and Status=Pending setting the status to rejected
       }
 

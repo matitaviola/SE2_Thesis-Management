@@ -56,3 +56,16 @@ exports.archiveProposal = (proposal, studentId) => {
         });
     });
 }
+
+        
+exports.autoRejectApplication = (proposal, studentId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
+        db.run(sql, [proposal, studentId], (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve({success:true}); 
+        });
+    });
+}
