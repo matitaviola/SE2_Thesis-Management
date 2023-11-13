@@ -1,10 +1,13 @@
 // Sever's main file
 const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
+const supervisorDao = require('./DB/supervisors-dao');
+const degreeDao = require('./DB/degrees-dao');
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser') ;
+const bodyParser = require('body-parser');
 const app = express();
+const moment = require('moment');
 const PORT = 3001;
 
 app.use(cors()); // Enable CORS for all routes
@@ -50,5 +53,38 @@ app.get('/api/applications/student/:studentId',
     } catch (err){
       console.log(err);
       res.status(500).end();
+  }
+});
+
+app.post('/api/proposals', 
+  async (req, res) => {
+    try {
+      const { body } = req;
+      if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
+            body.keywords && body.type && body.groups && body.description && 
+            body.req_knowledge && body.notes && body.expiration && body.level))
+          throw new Error('Missing parameters');
+
+      if (moment(body.expiration).isBefore(moment()))
+        throw new Error('Invalid expiration date');
+      if (body.level !== 'BSc' && body.level !== 'MSc')
+        throw new Error('Invalid level');
+
+      const supervisor = await supervisorDao.getSupervisorById(body.supervisor);
+      if (!supervisor)
+        throw new Error('Invalid supervisor');
+
+      const degree = await degreeDao.getDegreeByCode(body.cds);
+      if (!degree)
+        throw new Error('Invalid degree');
+
+      const proposal = await propDao.addProposal(req.body);
+      res.json(proposal);
+  } catch (error) {
+      if (error === 'Duplicate title')
+        return res.status(400).json({ error: 'Duplicate title'});
+      if (error instanceof Error || error.code === 'SQLITE_ERROR')
+          return res.status(400).json({ error: error.message });
+      return res.status(500).json({ error: error.message || error })
   }
 });

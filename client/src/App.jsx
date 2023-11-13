@@ -6,6 +6,7 @@ import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
 import ProposalComponent from './components/ProposalComponent.jsx';
+import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
@@ -24,12 +25,10 @@ useEffect(() => {
     const checkAuth = async () => {
       //const user = await API.getUserInfo(); // we have the user info here
       let user = {
-        /*
         role: 'TEACHER',
         id: 'd100003'
-        */
-        role: 'STUDENT',
-        id: 's200000'
+        // role: 'STUDENT',
+        // id: 's200000'
       }
       setLoggedIn(user);
 
@@ -41,12 +40,10 @@ useEffect(() => {
     try {
       //let user = await API.login(credentials);
       let user = {
-        /*
         role: 'TEACHER',
         id: 'd100003'
-        */
-        role: 'STUDENT',
-        id: 's200000'
+        // role: 'STUDENT',
+        // id: 's200000'
       }
       setLoggedIn(user)
     } catch (err) {
@@ -94,7 +91,7 @@ useEffect(() => {
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent/>} />
           <Route path='proposals/new'
-              element={<ProposalComponent />} />
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage} />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
               </>
