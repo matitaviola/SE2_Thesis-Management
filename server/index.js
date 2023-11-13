@@ -30,7 +30,7 @@ app.get('/api/applications/teacher/:professorId',
         //gets all the applications for the proposals if we found any
         if(proposals.length>0){
           applications = await Promise.all(
-            proposals.map(p => appDao.getApplicationsByProposal(p))
+            proposals.map(p => appDao.getActiveApplicationsByProposal(p))
           );
         }
         //return json w/o empty results of all the proposals
@@ -79,19 +79,19 @@ app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try {
         // Update the application status
-        //console.log(req.params.proposalsId,req.body);
+        console.log(req.params.proposalsId,req.body);
         const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
         if (!result.success) {
             throw new Error('Application not found');
         }
-
-        // Archive the proposal
-        const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
-        if (!archiveResult.success) {
-          throw new Error('An error occurred while archiving the proposal');
-        }
         
         if(req.body.status === "Accepted"){
+          // Archive the proposal
+          const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+          if (!archiveResult.success) {
+            throw new Error('An error occurred while archiving the proposal');
+          }
+
           const autoReject = await propDao.autoRejectApplication(req.params.proposalsId, req.params.studentId);
           
           if (!autoReject.success) {

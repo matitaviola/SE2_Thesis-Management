@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getApplicationsByProposal, getApplicationsByStudent } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -9,7 +9,7 @@ jest.mock('../DB/db', () => {
   return { db: mockedDB };
 });
 
-describe('getApplicationsByProposal', () => {
+describe('getActiveApplicationsByProposal', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -24,7 +24,7 @@ describe('getApplicationsByProposal', () => {
       callback(null, mockedRows);
     });
 
-    const result = await getApplicationsByProposal(proposal);
+    const result = await getActiveApplicationsByProposal(proposal);
     expect(result).toEqual({});
   });
 
@@ -49,7 +49,7 @@ describe('getApplicationsByProposal', () => {
       callback(null, mockedRows);
     });
 
-    const result = await getApplicationsByProposal(proposal);
+    const result = await getActiveApplicationsByProposal(proposal);
     expect(result).toEqual(expectedApplications);
   });
 
@@ -63,7 +63,7 @@ describe('getApplicationsByProposal', () => {
       callback(expectedError, null);
     });
 
-    await expect(getApplicationsByProposal(proposal)).rejects.toEqual(expectedError);
+    await expect(getActiveApplicationsByProposal(proposal)).rejects.toEqual(expectedError);
   });
 });
 

@@ -1,9 +1,9 @@
 'use strict';
 const { db } = require('./db');
 
-exports.getApplicationsByProposal = (proposal) => {
+exports.getActiveApplicationsByProposal = (proposal) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=?';
+        const sql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status = "Pending"';
         db.all(sql, [proposal.title], (err, rows) => {
             if (err)
                 reject(err);
