@@ -19,11 +19,11 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
 
   it('should resolve with empty object when no proposals found for a professor', async () => {
     const professorId = 1;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const mockedRows = [];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(null, mockedRows);
     });
 
@@ -33,7 +33,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
 
   it('should resolve with an array of proposals when they are found for a professor', async () => {
     const professorId = 2;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const mockedRows = [
       { title: 'Proposal 1' },
       { title: 'Proposal 2' }
@@ -43,7 +43,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
 
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(null, mockedRows);
     });
 
@@ -53,11 +53,11 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
     const professorId = 3;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
     const expectedError = 'Database error occurred';
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId]);
+      expect(params).toEqual([professorId, "Active"]);
       callback(expectedError, null);
     });
 
@@ -92,9 +92,6 @@ describe('archiveProposal', () => {
       callback(null, null); // Simulating that the proposal found
     });
 
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
-
     await expect(archiveProposal("Rubbish", "Rubbish")).rejects.toEqual("Application not found.");
     
   });
@@ -114,15 +111,13 @@ describe('archiveProposal', () => {
       callback(mockedInsertError); // Simulating that the proposal found
     });
 
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
 
     await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).rejects.toEqual(mockedInsertError);
     
   });
 
   it('should reject with an error when the deleting of the old proposal goes bad', async () => {
-    mockedSuccess = {message:"Succesful archiviation"};
+    mockedSuccess = {success:true};
     // Mock the get method to simulate a scenario where the proposal is not found
     db.get.mockImplementationOnce((query, params, callback) => {
         callback(null, mockedProposal); // Simulating that the proposal found
@@ -136,10 +131,7 @@ describe('archiveProposal', () => {
       callback(null); // Simulating that the proposal found
     });
 
-    // Mock the close method
-    db.close.mockImplementationOnce(jest.fn());
-
-    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).resolves.toBe(mockedSuccess.message);
+    await expect(archiveProposal(mockedProposal.Title, mockedApplication.Student_ID)).resolves.toEqual(mockedSuccess);
     
   });
 
