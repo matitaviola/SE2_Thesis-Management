@@ -757,10 +757,10 @@ describe('createProposal API', () => {
   it('should create a proposal successfully', async () => {
     fetch.mockResolvedValueOnce(successResponse);
 
-    const result = await API.createProposal(proposalData);
+    const result = await API.createProposal(proposalData, teacherUser);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-USER-ROLE': 'TEACHER' },
       body: JSON.stringify(proposalData),
     });
     expect(result).toBeNull();
@@ -769,7 +769,7 @@ describe('createProposal API', () => {
   it('should throw an error on failed request', async () => {
     fetch.mockResolvedValueOnce(errorResponse);
 
-    await expect(API.createProposal(proposalData)).rejects.toEqual(
+    await expect(API.createProposal(proposalData, teacherUser)).rejects.toEqual(
       'Error occurred'
     );
   });
