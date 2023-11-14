@@ -1,5 +1,39 @@
 # Manual Tests for the Frontend GUI
 Please note that each of the following test is written to be executed on a fresh DB instance, without the changes done by previous test
+
+## Story #2 - Search Proposals:
+
+- Should see 4 proposals and their data
+```
+- Login as usr:carlos@example.com psw:s200002
+- Click on the "Proposals" tab
+- Should see 5 proposals for this teacher:
+    - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
+    - [Proposal 10 | Michael Johnson | Co-Supervisor E | environment, sustainability, climate | Type F | Group U | Knowledge about environmental research | 2022-07-14 | MSc | Biology ]
+    - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
+    - [Proposal 20 | Emma Smith | Co-Supervisor E | medicine, health, research | Type F | Group U | Knowledge about environmental research | 2024-07-14 | MSc | Biology ]
+
+```
+- Should display the data of a proposal:
+```
+- Login as usr:john@example.com psw:s200000
+- Click on the "Proposals" tab
+- Go to the first row (the one  with "Proposal 3" in the Title column) and click on the last column ("View")
+- Should be visible the Proposal's data:
+    Proposal 3
+    Expiration date: 2022-11-20
+    CdS: CS101
+    Level: MSc
+    Type C
+    Group Z
+    Co-supervisor: Not assigned
+    Description: Description for Proposal 3
+    Requested knowledge: Knowledge about software engineering
+    Notes: Additional info
+    Keywords: design, architecture, development
+```
+
+
 ## Story #4 - Browse Applications
 - Should show 4 applications
 ```
@@ -96,33 +130,3 @@ Please note that each of the following test is written to be executed on a fresh
     Keywords: design, architecture, development
 ```
 
-## Story #2 - Search Proposals:
-- Should see 4 proposals and their data
-```
-- Login as usr:john@example.com psw:s2000000
-- Click on the "Proposals" tab
-- Should see 5 proposals for this teacher:
-    - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
-    - [Proposal 10 | Michael Johnson | Co-Supervisor E | environment, sustainability, climate | Type F | Group U | Knowledge about environmental research | 2022-07-14 | MSc | Biology ]
-    - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
-    - [Proposal 20 | Emma Smith | Co-Supervisor E | medicine, health, research | Type F | Group U | Knowledge about environmental research | 2024-07-14 | MSc | Biology ]
-
-```
-- Should display the data of a proposal:
-```
-- Login as usr:john@example.com psw:s2000000
-- Click on the "Proposals" tab
-- Go to the first row (the one  with "Proposal 3" in the Title column) and click on the last column ("View")
-- Should be visible the Proposal's data:
-    Proposal 3
-    Expiration date: 2022-11-20
-    CdS: CS101
-    Level: MSc
-    Type C
-    Group Z
-    Co-supervisor: Not assigned
-    Description: Description for Proposal 3
-    Requested knowledge: Knowledge about software engineering
-    Notes: Additional info
-    Keywords: design, architecture, development
-```
