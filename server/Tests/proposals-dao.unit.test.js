@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals } = require('../DB/proposals-dao');
+const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 
