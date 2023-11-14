@@ -11,6 +11,12 @@ describe('getProposals API', () => {
     global.fetch.mockRestore(); // Restore fetch after each test
   });
 
+
+  const reqheaderT = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+
   // Mock user data
   const teacherUser = { id: 1, role: 'TEACHER' };
   //const studentUser = { id: 2, role: 'STUDENT' };
@@ -68,13 +74,6 @@ describe('getProposals API', () => {
     json: async () => teacherProposals,
   };
 
-  /* Mock fetch response for student
-  const studentResponse = {
-    ok: true,
-    json: async () => studentProposals,
-  };
-  */
-
   // Mock fetch error response
   const errorResponse = {
     ok: false,
@@ -85,7 +84,7 @@ describe('getProposals API', () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
     const result = await API.getProposals(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, {"headers":reqheaderT});
     expect(result).toEqual(teacherProposals);
   });
 
@@ -93,33 +92,15 @@ describe('getProposals API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getProposals(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, {"headers":reqheaderT});
     expect(result).toEqual([]);
   });
-
-  /*
-  it('should get applications for a student', async () => {
-    fetch.mockResolvedValueOnce(studentResponse);
-
-    const result = await API.getProposals(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/student/2`);
-    expect(result).toEqual(studentProposals);
-  });
-
-  it('should return empty array for student when no applications are found', async () => {
-    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
-
-    const result = await API.getProposals(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/student/2`);
-    expect(result).toEqual([]);
-  })
-  */
 
   it('should throw an error on failed request', async () => {
     fetch.mockResolvedValueOnce(errorResponse);
 
     await expect(API.getProposals(teacherUser)).rejects.toThrow(
-      'Error on getting the applications: Error occurred'
+      'Error on getting the proposals: Error occurred'
     );
   });
 
@@ -127,7 +108,7 @@ describe('getProposals API', () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
     await expect(API.getProposals(otherUser)).rejects.toThrow(
-      'Error on getting the applications: Invalid role'
+      'Error on getting the proposals: Invalid role'
     );
   });
 });
@@ -405,6 +386,141 @@ describe('updateApplicationStatus API', () => {
 
     await expect(API.updateApplicationStatus("proposal123", "student456", true)).rejects.toThrow(
       'HTTP error! status: 400'
+    );
+  });
+});
+
+describe('API Login functions', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const credentials = {
+    username: 'testuser@example.com',
+    password: 'testpassword',
+  };
+
+  // Mock fetch response for successful login
+  const successfulLoginResponse = {
+    ok: true,
+    json: async () => ({ id: 's000001', role: 'STUDENT' }),
+  };
+
+  // Mock fetch response for unsuccessful login
+  const unsuccessfulLoginResponse = {
+    ok: false,
+    status: 401,
+  };
+
+  // Mock fetch response for successful session request
+  const successfulSessionResponse = {
+    ok: true,
+    json: async () => ({ id: 's000001', role: 'STUDENT' }),
+  };
+
+  // Mock fetch to user not yet logged in
+  const emptySessionResponse = {
+    ok: true,
+    json: async () => ({}),
+  };
+
+  // Mock fetch response for unsuccessful session request
+  const unsuccessfulSessionResponse = {
+    ok: false,
+    status: 401,
+  };
+
+  // Mock fetch response for successful logout
+  const successfulLogoutResponse = {
+    ok: true,
+  };
+
+  // Mock fetch response for unsuccessful logout
+  const unsuccessfulLogoutResponse = {
+    ok: false,
+    status: 500,
+  };
+
+  it('should successfully log in', async () => {
+    fetch.mockResolvedValueOnce(successfulLoginResponse);
+
+    const result = await API.login(credentials);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'LOGIN',
+      },
+      body: JSON.stringify({ credentials }),
+    });
+    expect(result).toEqual({ id: 's000001', role: 'STUDENT' });
+  });
+
+  it('should throw an error on unsuccessful login', async () => {
+    fetch.mockResolvedValueOnce(unsuccessfulLoginResponse);
+
+    await expect(API.login(credentials)).rejects.toThrow(
+      'Login error! status: 401'
+    );
+  });
+
+  it('should successfully get user info', async () => {
+    fetch.mockResolvedValueOnce(successfulSessionResponse);
+
+    const result = await API.getUserInfo();
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'SESSION',
+      },
+    });
+    expect(result).toEqual({ id: 's000001', role: 'STUDENT' });
+  });
+
+  it('should return false if teh user has yet to log in', async () => {
+    fetch.mockResolvedValueOnce(emptySessionResponse);
+
+    const result = await API.getUserInfo();
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'SESSION',
+      },
+    });
+    expect(result).toEqual(false);
+  });
+
+  it('should throw an error on unsuccessful session request', async () => {
+    fetch.mockResolvedValueOnce(unsuccessfulSessionResponse);
+
+    await expect(API.getUserInfo()).rejects.toThrow(
+      'Login error! status: 401'
+    );
+  });
+
+  it('should successfully log out', async () => {
+    fetch.mockResolvedValueOnce(successfulLogoutResponse);
+
+    const result = await API.logout();
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'LOGOUT',
+      },
+    });
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should throw an error on unsuccessful logout', async () => {
+    fetch.mockResolvedValueOnce(unsuccessfulLogoutResponse);
+
+    await expect(API.logout()).rejects.toThrow(
+      'Logout error! status: 500'
     );
   });
 });

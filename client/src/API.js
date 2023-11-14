@@ -1,5 +1,54 @@
 const SERVER_URL = 'http://localhost:3001';
 
+//#region Login
+const login = async (credentials) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'LOGIN'
+  };
+  const response = await fetch(SERVER_URL + `/api/login`, {
+    method: 'POST',
+    headers: reqheader,
+    body: JSON.stringify({
+      'credentials': credentials
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`Login error! status: ${response.status}`);
+  }
+  const userData = await response.json();
+  return userData;
+}
+const getUserInfo = async () => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'SESSION'
+  };
+  const response = await fetch(SERVER_URL + `/api/login`, {
+    headers: reqheader,
+  });
+  if (!response.ok) {
+    throw new Error(`Login error! status: ${response.status}`);
+  }
+  const userData = await response.json();
+  return userData.id? userData : false;
+}
+const logout = async () => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'LOGOUT'
+  };
+  const response = await fetch(SERVER_URL + `/api/login`, {
+    method: 'DELETE',
+    headers: reqheader,
+  });
+  if (!response.ok) {
+    throw new Error(`Logout error! status: ${response.status}`);
+  }
+  return {success:true};
+}
+//#endregion
+
 //#region Student
 const getStudentData = async (proposalId, studentId) =>{
   const reqheader = {
@@ -30,14 +79,14 @@ const getProposals = async (user) =>{
     response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`, {headers:reqheader});
     proposalsJson = await response.json();
   } else{
-    throw new Error("Error on getting the applications: Invalid role");
+    throw new Error("Error on getting the proposals: Invalid role");
   }
   if(response.ok) {
     console.log(proposalsJson);
     return(proposalsJson);
   }
   else{
-    throw new Error("Error on getting the applications: "+proposalsJson);
+    throw new Error("Error on getting the proposals: "+proposalsJson);
   }
 }
 //#endregion
@@ -100,6 +149,6 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 
 //#endregion
 
-const API = {getProposals, getApplications, getStudentData, updateApplicationStatus};
+const API = {login, getUserInfo, logout, getProposals, getApplications, getStudentData, updateApplicationStatus};
 export default API;
 

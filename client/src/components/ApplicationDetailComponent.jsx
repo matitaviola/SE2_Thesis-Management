@@ -34,9 +34,6 @@ function ApplicationDetailComponent() {
     if (!studentData) {
         return <div>Loading...</div>;
     }
-    /*else {
-        console.log(studentData);
-    }*/
 
     return (
         <div>

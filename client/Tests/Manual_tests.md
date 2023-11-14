@@ -62,6 +62,7 @@ Please note that each of the following test is written to be executed on a fresh
 - Go to "Applications" tab
 - Should see no applications
 ```
+
 ## Story #7 - Browse Proposals:
 - Should see 5 proposals and their data
 ```

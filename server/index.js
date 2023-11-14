@@ -1,4 +1,5 @@
 // Sever's main file
+const loginDao = require('./DB/login-dao');
 const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
@@ -19,6 +20,45 @@ app.listen(PORT, () => {
 //middleman to every call
 app.use(bodyParser.json()); //to read from req.body
 app.use(authorizationMiddleware.checkUserRole);
+let sessionUser = {};
+
+//GET /api/login
+app.get('/api/login', 
+  async (req, res) => {
+    try {
+        //gets all the professor's active proposals
+        res.json(sessionUser);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
+});
+//POST /api/login
+app.post('/api/login', 
+  async (req, res) => {
+    try {
+        //gets all the professor's active proposals
+        const user = await loginDao.effectLogin(req.body.credentials);
+        sessionUser = user;
+        res.json(user);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
+});
+//DELETE /api/login
+app.delete('/api/login', 
+  async (req, res) => {
+    try {
+        //empties the session user info
+        sessionUser = {};
+        res.json(sessionUser);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
+});
+
 
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId', 
@@ -27,7 +67,6 @@ app.get('/api/proposals/teacher/:professorId',
         //gets all the professor's active proposals
         const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
         res.json(proposals);
-        console.log(proposals);
     } catch (err){
       console.log(err);
       res.status(500).end();
