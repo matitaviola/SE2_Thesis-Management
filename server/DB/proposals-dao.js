@@ -122,7 +122,7 @@ exports.getAvailableProposals = (studentId, filter) => {
                 resolve([]); //if no proposals yet for that 
             }
             else {
-                const proposals = rows.map(r => new Proposal(r.Title, r.ID, r.NAME, r.SURNAME, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
+                const proposals = rows.map(r => new Proposal(r.Title, r.Supervisor, r.NAME, r.SURNAME, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
                 resolve(proposals);
             }
         });

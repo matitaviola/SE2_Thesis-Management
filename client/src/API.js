@@ -45,7 +45,7 @@ const getProposals = async (studentId, filter) =>{
     return responseJson;
   }
   else{
-    throw new Error("Error on getting the proposals: "+applicationsJson);
+    throw new Error("Error on getting the proposals: "+responseJson);
   }
 }
 
