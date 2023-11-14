@@ -69,6 +69,8 @@ useEffect(() => {
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
+              <Route path='proposals/:proposalsId'
+              element={<ProposalComponent/>} />
               <Route path='applications'
               element={<ApplicationsTable/>} />
               </>
