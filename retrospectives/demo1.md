@@ -12,9 +12,9 @@ sections:
 
 ### Macro statistics
 
-- Number of stories committed vs. done: 17 committed vs. 17 done
-- Total points committed vs. done: 11 committed vs. 11 done
-- Nr of hours planned vs. spent (as a team): 37 hours planned vs. 47 hours done
+- Number of stories committed vs. done: 9 committed vs. ??? done
+- Total points committed vs. done: 16 committed vs. ??? done
+- Nr of hours planned vs. spent (as a team): 96 hours planned vs. ??? hours done
 
 **Remember**a story is done ONLY if it fits the Definition of Done:
  
@@ -27,59 +27,89 @@ sections:
 
 ### Detailed statistics
 
-| Story               | # Tasks                   | Points | Hours est. | Hours actual |
-|---------------------|---------------------------|--------|------------|--------------|
-| Get Ticket          | - Customer GUI            |   2    |     3      |      3       |
-|                     | - Customer API            |        |     3      |      3       |
-|                     | - Testing                 |        |     3      |      2       |
-|--------------------------------------------------------------------------------------|  
-| Call next customer  | - Call next customer API  |   3    |     3      |      4       |
-|                     | - Counter officer GUI     |        |     3      |      3       |
-|                     | - Testing                 |        |     1      |      1       |
-|--------------------------------------------------------------------------------------| 
-| Know estimated time | - Calculate and expose    |   1    |     3      |      5       |
-|                     |   estimated time          |        |            |              |
-|                     | - Show estimated time     |        |     1      |      1       |
-|                     | - Testing                 |        |     1      |      1       |
-|--------------------------------------------------------------------------------------|
-| Counters            | - Services Entity and API |   5    |     2      |      2       |
-| configurations      | - Backoffice frontend     |        |     3      |      3       | 
-|                     | - Testing                 |        |     2      |      2       |
-|--------------------------------------------------------------------------------------| 
-| Uncategorized       | - Learning technology     |   -    |     3      |      8       |
-| Cards               | - Frontend setup          |        |     2      |      3       |
-|                     | - Backend setup           |        |     2      |      4       | 
-|                     | - Database schema         |        |     1      |      1       |
-|                     | - Preparing for Demo      |        |     1      |      1       |
-|--------------------------------------------------------------------------------------| 
+| Story                | # Tasks                   | Points | Hours est. | Hours actual |
+|----------------------|---------------------------|--------|------------|--------------|
+|#0 Uncategorized Tasks| - Plan the sprint         |        |     -      |      18      |
+|                      | - BE - Database Setup     |        |     2      |      2       |
+|                      | - FE - Frontend Setup     |        |     2      |      2       |
+|                      | - BE - Implement string   |        |     2      |      30m     |
+|                      |   based authorization     |        |            |              |
+|                      | - FE - Implement string   |        |     2      |      2       |
+|                      |   based authorization     |        |            |              |
+|                      | - (Re)learning            |        |     12     |      9       |
+|                      |   technologies            |        |            |              |
+|                      | - Prepare for the         |        |     12     |      10h     |
+|                      |   presentation            |        |            |              |
+|                      | - Technical meetings      |        |     2      |      1h 15m  |
+|---------------------------------------------------------------------------------------| 
+|#1 Insert Proposal    | - FE - Creatin Form       |   3    |     2      |      2h 30m  |
+|                      | - BE - Form APIs          |        |     2      |      2       |
+|                      | - Testing                 |        |     2      |      1       |
+|---------------------------------------------------------------------------------------|  
+|#2 Search Proposal    | - FE - Graphical Part     |   3    |     2      |      2h 30m  |
+|                      | - APIs                    |        |     1      |      1       |
+|                      | - Testing                 |        |     1      |      1       |
+|---------------------------------------------------------------------------------------| 
+|#3 Apply for proposal | - FE - Show               |   3    |     1      |      ???     |
+|                      | - APIs                    |        |     2      |      ???     |
+|                      | - Testing                 |        |     2      |      ???     |
+|---------------------------------------------------------------------------------------|
+|#4 Browse Applications| - FE -Show List of        |   1    |     1      |      2       |
+|                      |Applications               |        |            |              |
+|                      | - APIs                    |        |     1      |      1h 10m  | 
+|                      | - Testing                 |        |     1      |      50m     |
+|---------------------------------------------------------------------------------------| 
+|#5 Accept Application | - FE - Show Application's |   1    |     1      |      3       |
+|                      |  data and button          |        |            |              |
+|                      | - APIs                    |        |     1      |      2       |
+|                      | - Testing                 |        |     1      |      50m     |
+|---------------------------------------------------------------------------------------| 
+|#6 Browse Applications| - FE - Show student       |   1    |     1      |      30m     |
+| decisions            |  applications             |        |            |              |
+|                      | - APIs                    |        |     1      |      1       |
+|                      | - Testing                 |        |     1      |      50m     |
+|---------------------------------------------------------------------------------------| 
+|#7 Browse Proposals   | - FE - Proposals list     |   1    |     1      |      1h 30m  |
+|                      |  for the professor        |        |            |              |
+|                      | - APIs                    |        |     1      |      1       |
+|                      | - Testing                 |        |     1      |      30m     |
+|---------------------------------------------------------------------------------------| 
+|#8 Update Proposals   | - FE - Create Form        |   2    |     1      |      ???     |
+|                      | - APIs                    |        |     2      |      ???     |
+|                      | - Testing                 |        |     2      |      ???     |
+|---------------------------------------------------------------------------------------|
+|#10 Delete Proposals  | - FE - "Delete" button    |   1    |     1      |      ???     |
+|                      | - APIs                    |        |     1      |      ???     |
+|                      | - Testing                 |        |     1      |      ???     |
+|---------------------------------------------------------------------------------------|
    
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
 - Hours per task average, standard deviation (estimate and actual)
-    - Estimated hours per task avarage: 37 / 18 ≈ 2.06 hours
-    - Actual hours per task avarage: 47 / 18 ≈ 2.61 hours
+    - Estimated hours per task avarage: 96 / 35 ≈ 2.74 hours
+    - Actual hours per task avarage: ??? / 35 ≈ ??? hours
 
-    - Estimated standard deviation: ≈ 0.78 hours
-    - Actual standard deviation: ≈ 1.28 hours
+    - Estimated standard deviation: ≈ ??? hours
+    - Actual standard deviation: ≈ ??? hours
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1
-    - Total Task Estimation Error Ratio = (37 / 47) - 1 ≈ -0.2128
+    - Total Task Estimation Error Ratio = (96 / ???) - 1 ≈ -0.2128
 
   
 ## QUALITY MEASURES 
 
 - Unit Testing:
-  - Total hours estimated: 4
-  - Total hours spent: 4
-  - Nr of automated unit test cases: 24 for frontend API + 22 for backend
-  - Coverage (if available): 91% for frontend (after removing unused User APIs)
+  - Total hours estimated: 10
+  - Total hours spent: ???
+  - Nr of automated unit test cases: ???
+  - Coverage (if available): 100%
 - E2E testing:
   - Total hours estimated: 2
-  - Total hours spent: 1
+  - Total hours spent: ???
 - Code review 
-  - Total hours estimated: 1
-  - Total hours spent: 1
+  - Total hours estimated: 2
+  - Total hours spent: 1h 15m
   
 
 
