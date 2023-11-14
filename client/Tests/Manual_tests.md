@@ -61,10 +61,36 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:maria@example.com psw:s200009
 - Go to "Applications" tab
 - Should see no applications
-```Browse proposals as a teacher:
-Click on Proposal tab -> expects to see 3 proposals and their data for this user, i.e. proposal 3, 6, 9.
-Displayed proposals: 3, 6, 9.
+```
+## Story #7 - Browse Proposals:
+- Should see 5 proposals and their data
+```
+- Login as usr:david@example.com psw:d100003
+- Click on the "Proposals" tab
+- Should see 5 proposals for this teacher:
+    - [Proposal 3 | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101 | Not assigned]
+    - [Proposal 6 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
+    - [Proposal 9 | Not assigned | linguistics, language, communication | Knowledge about linguistic studies | 2024-07-22 | BSc | ENG202 | Not assigned]	
+    - [Proposal 13 | Not assigned | software development, architecture | Knowledge about software engineering | 2022-11-20 | MSc | CS101 | Not assigned]
+    - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
 
-Display the data of a proposal:
-Click on the View button in the relevant row of the Proposal Table -> expects to see the data of that proposal.
-Displayed data: those associat
+```
+- Should display the data of a proposal:
+```
+- Login as usr:david@example.com psw:d100003
+- Click on the "Proposals" tab
+- Go to the first row (the one  with "Proposal 3" in the Title column) and click on the last column ("View")
+- Should be visible the Proposal's data:
+    Proposal 3
+    Expiration date: 2022-11-20
+    CdS: CS101
+    Level: MSc
+    Type C
+    Group Z
+    Thesist: Not assigned
+    Co-supervisor: Not assigned
+    Description: Description for Proposal 3
+    Requested knowledge: Knowledge about software engineering
+    Notes: Additional info
+    Keywords: design, architecture, development
+```

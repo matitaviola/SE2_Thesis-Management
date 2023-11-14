@@ -21,9 +21,13 @@ const getStudentData = async (proposalId, studentId) =>{
 
 //#region Proposal
 const getProposals = async (user) =>{
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
   let response, proposalsJson;
   if(user.role == 'TEACHER'){
-    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`);
+    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`, {headers:reqheader});
     proposalsJson = await response.json();
   } else{
     throw new Error("Error on getting the applications: Invalid role");
