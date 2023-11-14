@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import API from "../API";
-import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Table, Form, Button, Modal } from "react-bootstrap";
 import { useNavigate  } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
@@ -112,6 +112,8 @@ function StudentProposalsTableComponent(props) {
   const [proposals, setProposals] = useState([]);
   const [filter, setFilter] = useState({});
   const [studentId, setStudentId] = useState(props.studentId);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState(null);
 	const navigate = useNavigate();
 
 
@@ -127,6 +129,22 @@ function StudentProposalsTableComponent(props) {
     let proposal = proposals.find(p => p.title == title);
 		navigate(`/proposals/${title}`, { state: { proposal } });
   }
+
+  /*
+  const handleShowUpdateModal = (title) =>{
+    // Mostra modale per conferma
+    let proposal = proposals.find(p => p.title == title);
+		navigate(`/proposals/${title}`, { state: { proposal } });
+  }
+  */
+
+  const handleShowUpdateModal = (title) => {
+    setSelectedTitle(title);
+    setShowUpdateModal(true);
+    // Altre azioni necessarie per mostrare il modal
+  };
+
+  const handleCloseUpdateModal = () => setShowUpdateModal(false);
 
   return (
     <Container>
@@ -170,9 +188,24 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
                   <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
+                  <td><Button onClick={() => handleShowUpdateModal(p.title)}>Apply</Button></td>
                 </tr>
               }
             })}
+            <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>{selectedTitle}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>Are you sure to apply for {selectedTitle}?</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseUpdateModal}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={handleCloseUpdateModal}>
+                  Send Application
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </tbody>
         </Table>
       </Row>
