@@ -20,6 +20,19 @@ app.listen(PORT, () => {
 app.use(bodyParser.json()); //to read from req.body
 app.use(authorizationMiddleware.checkUserRole);
 
+//GET /api/proposals/teacher/:professorId
+app.get('/api/proposals/teacher/:professorId', 
+  async (req, res) => {
+    try {
+        //gets all the professor's active proposals
+        const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
+        res.json(proposals);
+        console.log(proposals);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
+});
 
 
 //GET /api/applications/teacher/:professorId

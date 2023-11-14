@@ -2,7 +2,25 @@
     margin-top: 1rem;
     justify-content: center;
   }
-  
+
+/*Proposals Table and Rows*/
+.proposal-table {
+  margin-top: 20px; /* Adjust as needed */
+  padding: 20px; /* Increase padding */
+}
+
+.proposal-thead {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.proposal-row {
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px; /* Adjust as needed */
+  padding: 10px;
+  background-color: azure;
+}
 
 /*Applications Table and Rows*/
 .application-table {

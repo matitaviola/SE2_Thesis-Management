@@ -13,8 +13,19 @@ exports.getActiveProposalsByProfessor = (professorId) => {
             else {
                 const proposals = rows.map( r => {
                     return { 
-                        title:r.Title
-                    //Insert here the other fields for the application
+                        title:r.Title,
+                        co_supervisor:r.Co_Supervisor,
+                        keywords:r.Keywords,
+                        type:r.Type,
+                        group:r.Groups,
+                        description:r.Description,
+                        knowledge:r.Req_knowledge,
+                        notes:r.Notes,
+                        expiration:r.Expiration,
+                        level:r.Level,
+                        cds:r.CdS,
+                        thesist:r.Thesist
+                    //Inserted all the fields
                     }
                 });
                 resolve(proposals);

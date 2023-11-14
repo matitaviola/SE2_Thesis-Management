@@ -33,7 +33,6 @@ useEffect(() => {
         */
       }
       setLoggedIn(user);
-
     };
     checkAuth();
   }, []);
@@ -42,12 +41,12 @@ useEffect(() => {
     try {
       //let user = await API.login(credentials);
       let user = {
-        /*
         role: 'TEACHER',
         id: 'd100003'
-        */
+        /*
         role: 'STUDENT',
         id: 's200000'
+        */
       }
       setLoggedIn(user)
     } catch (err) {
@@ -113,10 +112,7 @@ useEffect(() => {
     </AuthContext.Provider>
     <ErrorToast errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
     </>
-
-
   );
-
 
 }
 

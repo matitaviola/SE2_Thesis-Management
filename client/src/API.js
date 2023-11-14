@@ -19,6 +19,25 @@ const getStudentData = async (proposalId, studentId) =>{
 }
 //#endregion
 
+//#region Proposal
+const getProposals = async (user) =>{
+  let response, proposalsJson;
+  if(user.role == 'TEACHER'){
+    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`);
+    proposalsJson = await response.json();
+  } else{
+    throw new Error("Error on getting the applications: Invalid role");
+  }
+  if(response.ok) {
+    console.log(proposalsJson);
+    return(proposalsJson);
+  }
+  else{
+    throw new Error("Error on getting the applications: "+proposalsJson);
+  }
+}
+//#endregion
+
 //#region Application
 const getApplications = async (user) =>{
   const reqheader = {
@@ -77,6 +96,6 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 
 //#endregion
 
-const API = {getApplications, getStudentData, updateApplicationStatus};
+const API = {getProposals, getApplications, getStudentData, updateApplicationStatus};
 export default API;
 
