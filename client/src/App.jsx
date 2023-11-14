@@ -10,6 +10,7 @@ import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
+import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -24,12 +25,13 @@ useEffect(() => {
     const checkAuth = async () => {
       //const user = await API.getUserInfo(); // we have the user info here
       let user = {
-        /*
+        
         role: 'TEACHER',
         id: 'd100003'
-        */
+        /*
         role: 'STUDENT',
         id: 's200000'
+        */
       }
       setLoggedIn(user);
 
@@ -97,6 +99,8 @@ useEffect(() => {
               element={<ProposalComponent />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
+          <Route path='application/:proposalId/:studentId'
+              element={<ApplicationDetailComponent/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />
