@@ -1,10 +1,12 @@
 import { Button, Col, Container, Row, Form } from "react-bootstrap";
 import API from "../API";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../App';
 
 export default function ProposalsFormComponent(props) {
   const navigate = useNavigate();
+  const loggedInUser = useContext(AuthContext);
   const [proposal, setProposal] = useState({
     title: "",
     supervisor: "",
@@ -28,7 +30,8 @@ export default function ProposalsFormComponent(props) {
   const handleSubmit = async (event) => {
     try {
       event.preventDefault();
-      await API.createProposal(proposal);
+      proposal.supervisor = loggedInUser.id;
+      await API.createProposal(proposal, loggedInUser);
       navigate("/proposals");
     } catch (error) {
       props.setErrorMessage(true);
@@ -51,18 +54,6 @@ export default function ProposalsFormComponent(props) {
                 value={proposal.title}
                 onChange={handleChange}
                 placeholder="Enter title"
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formSupervisor">
-              <Form.Label>Supervisor</Form.Label>
-              <Form.Control
-                type="text"
-                name="supervisor"
-                value={proposal.supervisor}
-                onChange={handleChange}
-                placeholder="Enter supervisor"
                 required
               />
             </Form.Group>
@@ -154,25 +145,26 @@ export default function ProposalsFormComponent(props) {
             <Form.Group controlId="formExpiration">
               <Form.Label>Expiration</Form.Label>
               <Form.Control
-                type="text"
+                type="date"
                 name="expiration"
                 value={proposal.expiration}
                 onChange={handleChange}
-                placeholder="Enter expiration"
                 required
               />
             </Form.Group>
 
             <Form.Group controlId="formLevel">
               <Form.Label>Level</Form.Label>
-              <Form.Control
-                type="text"
-                name="level"
-                value={proposal.level}
-                onChange={handleChange}
-                placeholder="Enter level"
-                required
-              />
+              <Form.Select
+              name="level"
+              value={proposal.level}
+              onChange={handleChange}
+              required
+              >
+                <option value="">Select Level</option>
+                <option value="BSc">BSc</option>
+                <option value="MSc">MSc</option>
+              </Form.Select>
             </Form.Group>
 
             <Form.Group controlId="formCds">

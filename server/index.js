@@ -23,7 +23,7 @@ app.listen(PORT, () => {
 
 //middleman to every call
 app.use(bodyParser.json()); //to read from req.body
-// app.use(authorizationMiddleware.checkUserRole);
+app.use(authorizationMiddleware.checkUserRole);
 let sessionUser = {};
 
 //GET /api/login

@@ -116,10 +116,14 @@ const getStudentProposals = async (studentId, filter) =>{
   }
 }
 
-const createProposal = async (proposal) => {
+const createProposal = async (proposal, user) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE':user.role
+  };
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: reqheader,
     body: JSON.stringify(proposal)
   });
   if(!response.ok) {
