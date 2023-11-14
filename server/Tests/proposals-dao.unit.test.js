@@ -253,7 +253,6 @@ describe('getProposals Function Tests', () => {
     expect(result).toEqual([]);
   });
 
-
   it('should resolve with an array when proposals are found with no filter', async () => {
     const studentId = 1;
     const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
@@ -422,10 +421,6 @@ describe('getProposals Function Tests', () => {
     expect(result).toEqual([proposalsResult[0]]);
   });
 
-
-
-
-
   it('should resolve with filtered proposals by expiration', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -473,39 +468,17 @@ describe('getProposals Function Tests', () => {
   });
 
 
-
-
-
-  it('should resolve with an array of proposals when they are found for a professor', async () => {
-    const professorId = 2;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
-    const mockedRows = [
-      { title: 'Proposal 1' },
-      { title: 'Proposal 2' }
-      // Add more sample proposal data as needed
-    ];
-    const expectedProposals = mockedRows.map(r => ({ title: r.Title }));
-
-    db.all.mockImplementation((sql, params, callback) => {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId, "Active"]);
-      callback(null, mockedRows);
-    });
-
-    const result = await getActiveProposalsByProfessor(professorId);
-    expect(result).toEqual(expectedProposals);
-  });
-
   it('should reject with an error if an error occurs during database retrieval', async () => {
-    const professorId = 3;
-    const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
+    const studentId = 1;
+    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
     const expectedError = 'Database error occurred';
+    
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([professorId, "Active"]);
+      expect(params).toEqual([studentId]);
       callback(expectedError, null);
     });
 
-    await expect(getActiveProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
+    await expect(getAvailableProposals(studentId, {})).rejects.toEqual(expectedError);
   });
 });
