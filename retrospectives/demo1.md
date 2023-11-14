@@ -116,19 +116,12 @@ sections:
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)?
-  - Inexperience with task estimation:
-    It was the first time we planned and estimated hours for tasks, which made it difficult to accurately predict the time needed for each task.
-
-  - Team members availability:
-    We initially planned the sprint for a team of 6 members, but only 5 team members were available to work on the tasks. We had to redistribute the workload among the available team members, potentially causing delays or impacting work on other tasks.
-
-  - Learning new technologies
-    We had to learn about new technologies, underestimating the time required and the impact on subsequent tasks.
+  - ???
 
 - What lessons did you learn (both positive and negative) in this sprint?
-  - Importance of collaboration within the team.
-  - Ability to adapt to changes, rescheduling work for 5 team members.
-  - Experience with time planning. We understood the difficulty in estimating times and improved our skill in this activity.
+  - Managing git, in particular merging the different branches
+  - It is import to have a design meeting, so that we can all have a clear, shared schema to follow
+ 
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
 - Which ones you were not able to achieve? Why?
@@ -138,8 +131,8 @@ sections:
 
   > Propose one or two
 
-  - Estimating hours more consciously
+  - Estimating hours taking into account design and repository management
   - Do not underestimate the time to be spent and the effort to learn new technologies
 
 - One thing you are proud of as a Team!!
-  We completed all the stories we had planned.
+  We completed all the stories we had planned(???).

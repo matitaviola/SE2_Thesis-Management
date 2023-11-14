@@ -101,7 +101,7 @@ const createTables = () => {
                 Status TEXT NOT NULL,
                 PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(PROPOSAL)
+                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title)
             )`, (err) => {
                 if (err) {
                     reject(err);
