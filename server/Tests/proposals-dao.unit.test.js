@@ -563,4 +563,50 @@ describe('insertProposals Function Tests', () => {
 
     await expect(addProposal(proposal)).rejects.toEqual('Duplicate title');
   });
+
+  it('should handle db error', async () => {
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'ANOTHER_ERROR' }));
+
+    await expect(addProposal(proposal)).rejects.toEqual({ code: 'ANOTHER_ERROR' });
+  });
+
+  it('should reject with an error on db.get failure', async () => {
+    const expectedError = new Error('Simulated db.get error');
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+
+    db.get.mockImplementationOnce((sql, values, callback) => callback(expectedError));
+
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    await expect(addProposal(proposal)).rejects.toEqual(expectedError);
+  });
 });
