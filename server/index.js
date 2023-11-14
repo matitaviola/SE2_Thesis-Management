@@ -5,6 +5,7 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
+const authorizationMiddleware = require('./Middlewares/authorization-middleware');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
@@ -16,7 +17,7 @@ const dayjs = require('dayjs');
 
 
 app.use(cors()); // Enable CORS for all routes
-
+app.use(authorizationMiddleware.checkUserRole);
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -237,6 +238,10 @@ app.get('/api/proposals/students/:studentId',
 app.post('/api/proposals', 
   async (req, res) => {
     try {
+      const userRole = req.role;
+      if (userRole !== 'TEACHER')
+        return res.status(403).json({ error: 'Forbidden' });
+
       const { body } = req;
       if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
             body.keywords && body.type && body.groups && body.description && 
