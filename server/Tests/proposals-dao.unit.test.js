@@ -177,8 +177,8 @@ describe('getProposals Function Tests', () => {
   const proposalsResult = [{
     title: "Proposal 3",
     supervisorId: "d100003",
-    supervisorName: "John",
-    supervisorSurname: "Doe",
+    supervisorName: "Michael",
+    supervisorSurname: "Johnson",
     coSupervisor: "Co-Supervisor B",
     keywords: "design, architecture, development",
     type: "Type C",
@@ -194,8 +194,8 @@ describe('getProposals Function Tests', () => {
   {
     title: "Proposal 4",
     supervisorId: "d100001",
-    supervisorName: "John",
-    supervisorSurname: "Doe",
+    supervisorName: "Michael",
+    supervisorSurname: "Johnson",
     coSupervisor: "Co-Supervisor D",
     keywords: "networks, security, protocols",
     type: "Type D",
@@ -235,7 +235,9 @@ describe('getProposals Function Tests', () => {
     GENDER: 'Male',
     NATIONALITY: 'American',
     CODE_DEGREE: 'CS102',
-    ENROLLMENT_YEAR: 2021
+    ENROLLMENT_YEAR: 2021,
+    tName: 'Michael',
+    tSurname: 'Johnson'
   },
   {
     Title: 'Proposal 4',
@@ -263,12 +265,14 @@ describe('getProposals Function Tests', () => {
     GENDER: 'Male',
     NATIONALITY: 'American',
     CODE_DEGREE: 'CS101',
-    ENROLLMENT_YEAR: 2021
+    ENROLLMENT_YEAR: 2021,
+    tName: 'Michael',
+    tSurname: 'Johnson'
   }];
 
 
   it('should resolve with empty object when no proposals found', async () => {
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const mockedRows = [];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
@@ -282,7 +286,7 @@ describe('getProposals Function Tests', () => {
 
   it('should resolve with an array when proposals are found with no filter', async () => {
     const studentId = 1;
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const mockedRows = [...proposalRaw];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
@@ -298,7 +302,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { title: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.title) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -315,7 +319,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = 'John';
     const filter = { supervisor: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`;
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`;
     const addedFilterSql = ' AND ( (UPPER(T.ID) LIKE UPPER("%" || ? || "%")) OR (UPPER(T.NAME) LIKE UPPER("%" || ? || "%")) OR (UPPER(T.SURNAME) LIKE UPPER("%" || ? || "%")))';
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -332,7 +336,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = 'C';
     const filter = { coSupervisor: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.co_supervisor) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -350,7 +354,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { keywords: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.keywords) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -367,7 +371,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { type: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.type) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -384,7 +388,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { groups: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.groups) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -402,7 +406,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { description: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.description) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -419,7 +423,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { reqKnowledge: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.req_knowledge) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -436,7 +440,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { notes: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.notes) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -452,7 +456,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { expiration: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.expiration) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -467,7 +471,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { level: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND UPPER(P.level) LIKE UPPER("%" || ? || "%")'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -482,7 +486,7 @@ describe('getProposals Function Tests', () => {
     const studentId = 1;
     const filteringString = '3';
     const filter = { degree: filteringString };
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const addedFilterSql = ' AND (UPPER(P.cds) LIKE UPPER("%" || ? || "%") OR UPPER(D.TITLE_DEGREE) LIKE UPPER("%" || ? || "%"))';
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
@@ -497,7 +501,7 @@ describe('getProposals Function Tests', () => {
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
     const studentId = 1;
-    const expectedSql = `SELECT * FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?`
+    const expectedSql = `SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status='Active'`
     const expectedError = 'Database error occurred';
     
     db.all.mockImplementation((sql, params, callback) => {

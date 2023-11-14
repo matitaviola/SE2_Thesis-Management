@@ -4,6 +4,8 @@ import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
 import { useNavigate  } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
+import { useLocation } from 'react-router-dom';
+
 
 
 export default function ProposalsTableComponent() {
@@ -54,6 +56,7 @@ function TeacherProposalsTableComponent() {
 						<th>Level</th>
 						<th>CdS</th>
 						<th>Thesist</th>
+            <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,7 +123,10 @@ function StudentProposalsTableComponent(props) {
     fetchProposals()
   }, [filter, studentId]);
 
-
+  const handleViewClick = (title) =>{
+    let proposal = proposals.find(p => p.title == title);
+		navigate(`/proposals/${title}`, { state: { proposal } });
+  }
 
   return (
     <Container>
@@ -142,12 +148,11 @@ function StudentProposalsTableComponent(props) {
               <th>Keywords <SearchButton filter={filter} setFilter={setFilter} keyword='keywords'/></th>
               <th>Type <SearchButton filter={filter} setFilter={setFilter} keyword='type'/></th>
               <th>Groups <SearchButton filter={filter} setFilter={setFilter} keyword='groups'/></th>
-              <th>Description <SearchButton filter={filter} setFilter={setFilter} keyword='description'/></th>
               <th>Required Knowledge <SearchButton filter={filter} setFilter={setFilter} keyword='reqKnowledge'/></th>
-              <th>Notes <SearchButton filter={filter} setFilter={setFilter} keyword='notes'/></th>
               <th>Expiration Date <SearchButton filter={filter} setFilter={setFilter} keyword='expiration'/></th>
               <th>Level <SearchButton filter={filter} setFilter={setFilter} keyword='level'/></th>
               <th>Degree <SearchButton filter={filter} setFilter={setFilter} keyword='degree'/></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -160,12 +165,11 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.keywords}</td>
                   <td>{p.type}</td>
                   <td>{p.groups}</td>
-                  <td>{p.description}</td>
                   <td>{p.reqKnowledge}</td>
-                  <td>{p.notes}</td>
                   <td>{p.expiration.slice(0,10)}</td>
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
+                  <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
                 </tr>
               }
             })}

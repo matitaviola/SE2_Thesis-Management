@@ -70,7 +70,7 @@ exports.archiveProposal = (proposal, studentId) => {
 }
 exports.getAvailableProposals = (studentId, filter) => {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ?';
+        let sql = 'SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status=\'Active\'';
         const dep = [studentId];
         if(filter.title){
             sql = sql.concat(' AND UPPER(P.title) LIKE UPPER("%" || ? || "%")');
@@ -133,7 +133,6 @@ exports.getAvailableProposals = (studentId, filter) => {
                 resolve([]); //if no proposals yet for that 
             }
             else {
-                console.log(rows)
                 const proposals = rows.map(r => new Proposal(r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
                 resolve(proposals);
             }

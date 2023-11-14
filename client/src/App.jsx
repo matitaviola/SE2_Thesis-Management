@@ -5,7 +5,7 @@ import NavHeader from './components/NavBarComponent.jsx';
 import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
-import ProposalComponent from './components/ProposalComponent.jsx';
+import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
@@ -70,7 +70,7 @@ useEffect(() => {
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
               <Route path='proposals/:proposalsId'
-              element={<ProposalComponent/>} />
+              element={<StudentProposalComponent/>} />
               <Route path='applications'
               element={<ApplicationsTable/>} />
               </>
