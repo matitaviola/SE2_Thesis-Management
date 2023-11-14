@@ -113,6 +113,12 @@ app.patch('/api/application/:proposalsId/:studentId',
             throw new Error('An error occurred while auto rejecting the proposal');
           }
 
+          const autoDelete = await appDao.autoDeleteApplication(req.params.studentId);
+          
+          if (!autoDelete.success) {
+            throw new Error('An error occurred while auto rejecting the proposal');
+          }
+
       }
 
         res.status(200).end();

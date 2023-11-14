@@ -76,3 +76,14 @@ exports.autoRejectApplication = (proposal, studentId) => {
     });
 }
 
+exports.autoDeleteApplication = (studentId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
+        db.run(sql, [studentId], (err) => {
+            if (err)
+                reject(err);
+            else
+                resolve({success:true}); 
+        });
+    });
+}

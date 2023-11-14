@@ -25,11 +25,12 @@ useEffect(() => {
     const checkAuth = async () => {
       //const user = await API.getUserInfo(); // we have the user info here
       let user = {
+        
         role: 'TEACHER',
-        id: 'd100003'
+        id: 'd100011'
         /*
         role: 'STUDENT',
-        id: 's200000'
+        id: 's200004'
         */
       }
       setLoggedIn(user);
@@ -41,12 +42,13 @@ useEffect(() => {
     try {
       //let user = await API.login(credentials);
       let user = {
+        /*
         role: 'TEACHER',
         id: 'd100003'
-        /*
+        */
         role: 'STUDENT',
         id: 's200000'
-        */
+        
       }
       setLoggedIn(user)
     } catch (err) {

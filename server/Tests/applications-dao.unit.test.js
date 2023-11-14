@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, autoRejectApplication } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, autoRejectApplication, autoDeleteApplication } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -236,5 +236,57 @@ describe('autoRejectApplication', () => {
     });
 
     await expect(autoRejectApplication(proposal, studentId)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('autoDeleteApplication', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with success message when auto-deleting application successfully', async () => {
+    const studentId = 's200001';
+    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
+
+    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback.call({ changes: 1 }, null); // Manually set the 'this' context
+    });
+
+    db.run.mockImplementation(mockRun);
+
+    const result = await autoDeleteApplication(studentId);
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should resolve with success message when no application is auto-deleted', async () => {
+    const studentId = 's200002';
+    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
+
+    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback.call({ changes: 0 }, null); // Manually set the 'this' context
+    });
+
+    db.run.mockImplementation(mockRun);
+
+    const result = await autoDeleteApplication(studentId);
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should reject with an error if an error occurs during database delete', async () => {
+    const studentId = 's200003';
+    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
+    const expectedError = 'Database error occurred';
+
+    db.run.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(expectedError, null);
+    });
+
+    await expect(autoDeleteApplication(studentId)).rejects.toEqual(expectedError);
   });
 });

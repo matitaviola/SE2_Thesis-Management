@@ -47,14 +47,14 @@ Please note that each of the following test is written to be executed on a fresh
 - Go to "Applications" tab
 - Should see two applications:
     - ["Proposal 1" Status: Pending], with the status info written in black
-    - ["Proposal 2" Status: Accepted], with the status info written in green
+    - ["Proposal 2" Status: Rejected], with the status info written in red
 ```
 - Should show 1 application with rejected status
 ```
-- Login as usr:minjun@example.com psw:s200006
+- Login as usr:raj@example.com psw:s200004
 - Go to "Applications" tab
 - Should see one application:
-    - ["Proposal 6" Status: Rejected], with the status written in red
+    - ["Proposal 4" Status: Rejected], with the status written in green
 ```
 - Should show 0 applications 
 ```

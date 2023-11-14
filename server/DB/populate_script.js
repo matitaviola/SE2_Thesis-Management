@@ -352,7 +352,7 @@ const insertData = () => {
             const insertApplicationData = () => {
                 const applicationData = [
                     ['s200000', 'Proposal 1', 'Pending'],
-                    ['s200000', 'Proposal 2', 'Accepted'],
+                    ['s200000', 'Proposal 2', 'Rejected'],
                     ['s200001', 'Proposal 3', 'Pending'],
                     ['s200002', 'Proposal 2', 'Rejected'],
                     ['s200003', 'Proposal 3', 'Pending'],
@@ -362,7 +362,7 @@ const insertData = () => {
                     ['s200007', 'Proposal 7', 'Pending'],
                     ['s200008', 'Proposal 8', 'Accepted'],
                     ['s200010', 'Proposal 11', 'Pending'],
-                    ['s200010', 'Proposal 8', 'Accepted'],
+                    ['s200010', 'Proposal 8', 'Pending'],
                     ['s200011', 'Proposal 13', 'Pending'],
                     ['s200012', 'Proposal 12', 'Rejected'],
                     ['s200013', 'Proposal 13', 'Pending'],
