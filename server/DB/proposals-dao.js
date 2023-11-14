@@ -139,3 +139,53 @@ exports.getAvailableProposals = (studentId, filter) => {
         });
     });
 }
+
+exports.addProposal = (body) => {
+  const {
+    title,
+    supervisor,
+    co_supervisor,
+    keywords,
+    type,
+    groups,
+    description,
+    req_knowledge,
+    notes,
+    expiration,
+    level,
+    cds,
+  } = body;
+  return new Promise((resolve, reject) => {
+    const sql =
+      "insert into proposal (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    db.run(
+      sql,
+      [
+        title,
+        supervisor,
+        co_supervisor,
+        keywords,
+        type,
+        groups,
+        description,
+        req_knowledge,
+        notes,
+        expiration,
+        level,
+        cds,
+        "Active"
+      ],
+      (err) => {
+        if (err) {
+            if (err.code === 'SQLITE_CONSTRAINT') reject('Duplicate title');
+            else reject(err);
+        } else {
+            db.get('SELECT * FROM proposal WHERE title = ?', [title], function (err, row) {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        }
+      }
+    );
+  });
+};

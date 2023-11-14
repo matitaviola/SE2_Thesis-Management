@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import API from "../API";
 import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate, Link  } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { useLocation } from 'react-router-dom';
@@ -65,6 +65,9 @@ function TeacherProposalsTableComponent() {
                     ))}
                 </tbody>
             </Table>
+            <Link to="/proposals/new">
+              <button className="btn btn-primary">Add New Proposal</button>
+            </Link>
   		</div>
 	);
 }

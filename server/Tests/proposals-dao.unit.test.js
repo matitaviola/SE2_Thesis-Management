@@ -513,3 +513,54 @@ describe('getProposals Function Tests', () => {
     await expect(getAvailableProposals(studentId, {})).rejects.toEqual(expectedError);
   });
 });
+
+describe('insertProposals Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with proposal object when there is no problem with inputs', async () => {
+    const proposal = {
+      title: 'test prop 1',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, proposal));
+
+    const result = await addProposal(proposal);
+
+    expect(result).toEqual(proposal);
+  });
+
+  it('should handle duplicate title error', async () => {
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'SQLITE_CONSTRAINT' }));
+
+    await expect(addProposal(proposal)).rejects.toEqual('Duplicate title');
+  });
+});

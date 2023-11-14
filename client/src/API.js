@@ -173,9 +173,20 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
   return {ok:true};
 };
 
-
+const createProposal = async (proposal) => {
+  const response = await fetch(`${SERVER_URL}/api/proposals`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(proposal)
+  });
+  if(!response.ok) {
+    const errMessage = await response.json();
+    throw errMessage;
+  }
+  else return null;
+}
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, getApplications, getStudentData, updateApplicationStatus, getStudentProposals};
+const API = {login, getUserInfo, logout, getProposals, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, createProposal};
 export default API;
 

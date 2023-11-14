@@ -730,3 +730,47 @@ describe('searchProposal API', () => {
     );
   });
 });
+
+describe('createProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore();
+  });
+
+  const teacherUser = { id: 1, role: 'TEACHER' };
+
+  const proposalData = { studentId: 1, proposal: 'Test Proposal', status: 'Pending' };
+
+  const successResponse = {
+    ok: true,
+    json: async () => null,
+  };
+
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should create a proposal successfully', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.createProposal(proposalData);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proposalData),
+    });
+    expect(result).toBeNull();
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.createProposal(proposalData)).rejects.toEqual(
+      'Error occurred'
+    );
+  });
+});

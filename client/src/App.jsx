@@ -6,6 +6,7 @@ import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
 import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
+import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
@@ -81,7 +82,7 @@ useEffect(() => {
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent/>} />
           <Route path='proposals/new'
-              element={<ProposalComponent />} />
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage} />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
           <Route path='application/:proposalId/:studentId'
