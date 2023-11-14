@@ -12,12 +12,10 @@ const cors = require('cors');
 const app = express();
 const moment = require('moment');
 const PORT = 3001;
-const authorizationMiddleware = require('./Middlewares/authorization-middleware');
 const dayjs = require('dayjs');
 
 
 app.use(cors()); // Enable CORS for all routes
-app.use(authorizationMiddleware.checkUserRole);
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -25,7 +23,7 @@ app.listen(PORT, () => {
 
 //middleman to every call
 app.use(bodyParser.json()); //to read from req.body
-app.use(authorizationMiddleware.checkUserRole);
+// app.use(authorizationMiddleware.checkUserRole);
 let sessionUser = {};
 
 //GET /api/login
@@ -238,9 +236,9 @@ app.get('/api/proposals/students/:studentId',
 app.post('/api/proposals', 
   async (req, res) => {
     try {
-      const userRole = req.role;
-      if (userRole !== 'TEACHER')
-        return res.status(403).json({ error: 'Forbidden' });
+      // const userRole = req.role;
+      // if (userRole !== 'TEACHER')
+      //   return res.status(403).json({ error: 'Forbidden' });
 
       const { body } = req;
       if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
