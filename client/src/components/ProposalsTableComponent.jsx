@@ -1,10 +1,30 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import React, { useContext, useState, useEffect } from "react";
+import API from "../API";
+import { Container, Row, Col, Table, Form, Button } from "react-bootstrap";
 import { useNavigate  } from 'react-router-dom';
-import { AuthContext } from '../App';
-import API from '../API';
+import { AuthContext } from "../App.jsx";
+import NotFound from "./NotFoundComponent.jsx";
+
 
 export default function ProposalsTableComponent() {
+
+
+
+  const loggedInUser = useContext(AuthContext);
+
+  if (loggedInUser && loggedInUser.role == 'STUDENT') {
+    return (<StudentProposalsTableComponent studentId={loggedInUser.id}/>);
+  }
+  if (loggedInUser && loggedInUser.role == 'TEACHER') {
+    return (<TeacherProposalsTableComponent/>);
+  }
+  return (
+    <NotFound></NotFound>
+  )
+
+}
+
+function TeacherProposalsTableComponent() {
 	const [proposals, setProposals] = useState([]);
 	const loggedInUser = useContext(AuthContext);
 
@@ -55,7 +75,6 @@ function ProposalRow(props) {
 		const proposal = props.proposal;
 		navigate(`/proposals/${props.proposal.title}`, { state: { proposal } });
     };
-
     return (
         <tr>
             <td>{props.proposal.title}</td>
@@ -81,4 +100,123 @@ function ProposalRow(props) {
             </td>
         </tr>
     );
+}
+
+
+
+function StudentProposalsTableComponent(props) {
+
+  const [proposals, setProposals] = useState([]);
+  const [filter, setFilter] = useState({});
+  const [studentId, setStudentId] = useState(props.studentId);
+	const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const fetchProposals = async () => {
+      let proposalsResponse = await API.getStudentProposals(studentId, filter);
+      setProposals(proposalsResponse);
+    }
+    fetchProposals()
+  }, [filter, studentId]);
+
+
+
+  return (
+    <Container>
+      <Row className="mb-5 mt-2"><h1>Thesis Proposal</h1></Row>
+
+      <Row className="mb-2">
+        <Col></Col>
+        <Col></Col>
+        <Col><SearchBarComponent filter={filter} setFilter={setFilter}></SearchBarComponent></Col>
+      </Row>
+
+      <Row>
+        <Table bordered hover >
+          <thead>
+            <tr>
+              <th>Title <SearchButton filter={filter} setFilter={setFilter} keyword='title'/></th>
+              <th>Supervisor <SearchButton filter={filter} setFilter={setFilter} keyword='supervisor'/></th>
+              <th>Co-Supervisor <SearchButton filter={filter} setFilter={setFilter} keyword='coSupervisor'/></th>
+              <th>Keywords <SearchButton filter={filter} setFilter={setFilter} keyword='keywords'/></th>
+              <th>Type <SearchButton filter={filter} setFilter={setFilter} keyword='type'/></th>
+              <th>Groups <SearchButton filter={filter} setFilter={setFilter} keyword='groups'/></th>
+              <th>Description <SearchButton filter={filter} setFilter={setFilter} keyword='description'/></th>
+              <th>Required Knowledge <SearchButton filter={filter} setFilter={setFilter} keyword='reqKnowledge'/></th>
+              <th>Notes <SearchButton filter={filter} setFilter={setFilter} keyword='notes'/></th>
+              <th>Expiration Date <SearchButton filter={filter} setFilter={setFilter} keyword='expiration'/></th>
+              <th>Level <SearchButton filter={filter} setFilter={setFilter} keyword='level'/></th>
+              <th>Degree <SearchButton filter={filter} setFilter={setFilter} keyword='degree'/></th>
+            </tr>
+          </thead>
+          <tbody>
+            {proposals.map(p => {
+              {
+                return <tr key={p.title}>
+                  <td>{p.title} </td>
+                  <td>{p.supervisorName} {p.supervisorSurname}</td>
+                  <td>{p.coSupervisor}</td>
+                  <td>{p.keywords}</td>
+                  <td>{p.type}</td>
+                  <td>{p.groups}</td>
+                  <td>{p.description}</td>
+                  <td>{p.reqKnowledge}</td>
+                  <td>{p.notes}</td>
+                  <td>{p.expiration.slice(0,10)}</td>
+                  <td>{p.level}</td>
+                  <td>{p.cdsName}</td>
+                </tr>
+              }
+            })}
+          </tbody>
+        </Table>
+      </Row>
+
+    </Container>
+  )
+}
+
+function SearchBarComponent(props) {
+  return (
+    Object.keys(props.filter).filter(k => props.filter[k]!=undefined).map(k => {
+      {
+        return <Container>
+          <Row className="mt-1">
+            <Col><Button type="button" class="btn btn-danger" onClick={()=>{
+              let filter = {...props.filter};
+              filter[k]=undefined;
+              props.setFilter(filter)
+            }}>Clear</Button></Col>
+            <Col>{k}</Col>
+            <Col>
+              <Form.Control type="text" placeholder="Insert search term" value={props.filter[k]} onChange={(event) => {
+                let filter = {...props.filter};
+                filter[k]=event.target.value;
+                props.setFilter(filter)}
+                } />
+            </Col>
+          </Row>
+        </Container>
+      }
+    })
+
+  );
+}
+
+function SearchButton(props){
+
+  const onClick = () =>{
+    let filter = {...props.filter};
+    if(filter[props.keyword]!==undefined){
+      return;
+    }
+    console.log(props)
+    filter[props.keyword]='';
+    props.setFilter(filter);
+  }
+
+  return(
+    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" onClick={onClick}><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+  )
 }

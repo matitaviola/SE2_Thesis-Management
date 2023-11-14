@@ -408,3 +408,202 @@ describe('updateApplicationStatus API', () => {
     );
   });
 });
+
+
+describe('searchProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const studentId = 's200000';
+  const proposals = [{
+    title: "Proposal 3",
+    supervisorId: "d100003",
+    supervisorName: "John",
+    supervisorSurname: "Doe",
+    coSupervisor: "Co-Supervisor B",
+    keywords: "design, architecture, development",
+    type: "Type C",
+    groups: "Group Z",
+    description: "Description for Proposal 3",
+    reqKnowledge: "Knowledge about software engineering",
+    notes: "Additional info",
+    expiration: "2022-11-19T23:00:00.000Z",
+    level: "BSc",
+    cdsId: "CS102",
+    cdsName: "Computer Science"
+  },
+  {
+    title: "Proposal 4",
+    supervisorId: "d100001",
+    supervisorName: "John",
+    supervisorSurname: "Doe",
+    coSupervisor: "Co-Supervisor D",
+    keywords: "networks, security, protocols",
+    type: "Type D",
+    groups: "Group W",
+    description: "Description for Proposal 4",
+    reqKnowledge: "Knowledge about cybersecurity",
+    notes: "Important notes",
+    expiration: "2023-06-29T22:00:00.000Z",
+    level: "MSc",
+    cdsId: "CS101",
+    cdsName: "Computer Science"
+    }];
+  
+
+
+  // Mock fetch response for teacher
+  const proposalResponse = {
+    ok: true,
+    json: async () => proposals,
+  };
+  const proposalResponseFiltered = {
+    ok: true,
+    json: async () => [proposals[0]],
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should get proposals with no filters', async () => {
+    fetch.mockResolvedValueOnce(proposalResponse);
+    const noFilter = {};
+
+    const result = await API.getStudentProposals(studentId, noFilter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}`);
+    expect(result).toEqual(proposals);
+  });
+
+  it('should get proposals filtered by title', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {title: "3"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?title=3`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by supervisor', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {supervisor: "John"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?supervisor=John`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by co-supervisor', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {coSupervisor: "B"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?coSupervisor=B`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by keywords', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {keywords: "design"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?keywords=design`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by type', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {type: "C"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?type=C`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by groups', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {groups: "Z"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?groups=Z`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by description', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {description: "3"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?description=3`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by reqKnowledge', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {reqKnowledge: "engineering"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?reqKnowledge=engineering`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by notes', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {notes: "info"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?notes=info`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by expiration', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {expiration: "2022"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?expiration=2022`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by level', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {level: "BSc"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?level=BSc`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals filtered by degree', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseFiltered);
+    const filter = {degree: "CS102"};
+
+    const result = await API.getStudentProposals(studentId, filter);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?degree=CS102`);
+    expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should return empty array when no proposal are found', async () => {
+    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
+    const fakeId = 1;
+
+    const result = await API.getStudentProposals(fakeId, {});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${fakeId}`);
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getStudentProposals(1, {})).rejects.toThrow(
+      'Error on getting the proposals: Error occurred'
+    );
+  });
+});

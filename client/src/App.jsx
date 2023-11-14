@@ -28,10 +28,10 @@ useEffect(() => {
         
         role: 'TEACHER',
         id: 'd100011'
-        /*
-        role: 'STUDENT',
-        id: 's200004'
-        */
+        
+        /*role: 'STUDENT',
+        id: 's200000'*/
+        
       }
       setLoggedIn(user);
     };
@@ -86,6 +86,8 @@ useEffect(() => {
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
+              <Route path='proposals/:proposalsId'
+              element={<ProposalComponent/>} />
               <Route path='applications'
               element={<ApplicationsTable/>} />
               </>

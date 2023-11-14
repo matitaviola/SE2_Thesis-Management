@@ -40,6 +40,33 @@ const getProposals = async (user) =>{
     throw new Error("Error on getting the applications: "+proposalsJson);
   }
 }
+
+const getStudentProposals = async (studentId, filter) =>{
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+
+  let path = '?';
+  Object.keys(filter).filter(k => filter[k]).forEach(k =>{
+    path = path.concat(`${k}=${filter[k]}&`);
+  })
+  path = path.slice(0, -1);
+  console.log(path);
+
+  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, {headers:reqheader});
+  let responseJson = await response.json();
+
+
+  if(response.ok) {
+    console.log(responseJson);
+    return responseJson;
+  }
+  else{
+    throw new Error("Error on getting the proposals: "+responseJson);
+  }
+}
+
 //#endregion
 
 //#region Application
@@ -100,6 +127,6 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 
 //#endregion
 
-const API = {getProposals, getApplications, getStudentData, updateApplicationStatus};
+const API = {getProposals, getApplications, getStudentData, updateApplicationStatus, getStudentProposals};
 export default API;
 
