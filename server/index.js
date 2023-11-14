@@ -7,6 +7,7 @@ const bodyParser = require ('body-parser')
 const cors = require('cors');
 const app = express();
 const PORT = 3001;
+const authorizationMiddleware = require('./Middlewares/authorization-middleware');
 
 app.use(cors()); // Enable CORS for all routes
 
@@ -17,6 +18,7 @@ app.listen(PORT, () => {
 
 //middleman to every call
 app.use(bodyParser.json()); //to read from req.body
+app.use(authorizationMiddleware.checkUserRole);
 
 
 
