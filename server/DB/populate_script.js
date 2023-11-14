@@ -175,6 +175,16 @@ const insertData = () => {
                     ['s200007', 'Silva', 'Luiz', 'Male', 'Brazilian', 'luiz@example.com', 'DEGREE606', 2021],
                     ['s200008', 'Andersson', 'Elsa', 'Female', 'Swedish', 'elsa@example.com', 'BIO303', 2023],
                     ['s200009', 'Lopez', 'Maria', 'Female', 'Mexican', 'maria@example.com', 'CS101', 2020],
+                    ['s200010', 'Johnson', 'Sam', 'Male', 'American', 'sam@example.com', 'CS101', 2022],
+                    ['s200011', 'Miller', 'Sophie', 'Female', 'Canadian', 'sophie@example.com', 'ENG202', 2021],
+                    ['s200012', 'Li', 'Chen', 'Male', 'Chinese', 'chen@example.com', 'BIO303', 2023],
+                    ['s200013', 'Gonzalez', 'Isabella', 'Female', 'Spanish', 'isabella@example.com', 'CS101', 2020],
+                    ['s200014', 'Patel', 'Amit', 'Male', 'Indian', 'amit@example.com', 'DEGREE505', 2021],
+                    ['s200015', 'Nowak', 'Marta', 'Female', 'Polish', 'marta@example.com', 'DEGREE404', 2022],
+                    ['s200016', 'Kang', 'Ji-Hoon', 'Male', 'Korean', 'jihoon@example.com', 'CS101', 2023],
+                    ['s200017', 'Santos', 'Ana', 'Female', 'Brazilian', 'ana@example.com', 'DEGREE606', 2020],
+                    ['s200018', 'Olsson', 'Gustav', 'Male', 'Swedish', 'gustav@example.com', 'BIO303', 2022],
+                    ['s200019', 'Chavez', 'Diego', 'Male', 'Mexican', 'diego@example.com', 'CS101', 2021]
                     // Add more data as needed
                 ];
 
@@ -203,6 +213,16 @@ const insertData = () => {
                     ['d200008', 'Park', 'Ji-Hoon', 'jihoon@example.com', 'GroupH', 'DEP202'],
                     ['d100009', 'Gomes', 'Ana', 'ana@example.com', 'GroupI', 'DEP303'],
                     ['d200010', 'Abe', 'Kenji', 'kenji@example.com', 'GroupJ', 'DEP101'],
+                    ['d100011', 'Smith', 'Emma', 'emma@example.com', 'GroupA', 'DEP101'],
+                    ['d200012', 'Jones', 'Daniel', 'daniel@example.com', 'GroupB', 'DEP202'],
+                    ['d100013', 'Wang', 'Sophia', 'sophia@example.com', 'GroupC', 'DEP303'],
+                    ['d200014', 'Gomez', 'Carlos', 'carlos@example.com', 'GroupD', 'DEP101'],
+                    ['d100015', 'Kim', 'Hye-Jin', 'hyejin@example.com', 'GroupE', 'DEP202'],
+                    ['d200016', 'Mikhail', 'Yusuf', 'yusuf@example.com', 'GroupF', 'DEP303'],
+                    ['d100017', 'Brown', 'Olivia', 'olivia@example.com', 'GroupG', 'DEP101'],
+                    ['d200018', 'Choi', 'Min-Jae', 'minjae@example.com', 'GroupH', 'DEP202'],
+                    ['d100019', 'Fernandez', 'Isabel', 'isabel@example.com', 'GroupI', 'DEP303'],
+                    ['d200020', 'Yamamoto', 'Haruto', 'haruto@example.com', 'GroupJ', 'DEP101'],
                     // Add more data as needed
                 ];
 
@@ -240,6 +260,16 @@ const insertData = () => {
                     ["s200009", 'COURSE808', 'Genetics', 7, '23', '2022-04-17'],
                     ["s200008", 'COURSE909', 'Database Management', 6, '24', '2021-10-22'],
                     ["s200009", 'COURSE1010', 'Electrical Engineering', 7, '30L', '2023-02-14'],
+                    ['s200010', 'COURSE111', 'Web Development', 5, '28', '2022-06-10'],
+                    ['s200012', 'COURSE222', 'Bioinformatics', 6, '25', '2023-02-18'],
+                    ['s200019', 'COURSE333', 'Ecology', 7, '29', '2021-12-01'],
+                    ['s200013', 'COURSE444', 'Machine Learning', 6, '30L', '2022-09-15'],
+                    ['s200017', 'COURSE555', 'Organic Chemistry II', 7, '19', '2023-11-25'],
+                    ['s200010', 'COURSE666', 'Natural Language Processing', 6, '26', '2021-07-15'],
+                    ['s200012', 'COURSE777', 'Literary Analysis', 5, '30', '2023-10-05'],
+                    ['s200018', 'COURSE888', 'Genomic Medicine', 7, '24', '2022-05-20'],
+                    ['s200010', 'COURSE999', 'Database Systems', 6, '28', '2021-11-02'],
+                    ['s200014', 'COURSE1010', 'Electronic Circuits', 7, '30L', '2023-03-20'],
                     // Add more data as needed
                 ];
 
@@ -294,6 +324,16 @@ const insertData = () => {
                     ['Proposal 8', 'd200002', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 8', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909', "Active", null],
                     ['Proposal 9', 'd100003', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 9', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202', "Active", null],
                     ['Proposal 10', 'd100001', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 10', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived", null],
+                    ['Proposal 11', 'd100011', 'Co-Supervisor A', 'web development, programming, design', 'Type A', 'Group X', 'Description for Proposal 11', 'Knowledge about web technologies', 'Important notes', '2023-12-31', 'BSc', 'CS101', "Active", null],
+                    ['Proposal 12', 'd200012', 'Co-Supervisor C', 'bioinformatics, data analysis', 'Type B', 'Group Y', 'Description for Proposal 12', 'Knowledge about genomic data', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404', "Active", null],
+                    ['Proposal 13', 'd100003', 'Co-Supervisor B', 'software development, architecture', 'Type C', 'Group Z', 'Description for Proposal 13', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101', "Active", null],
+                    ['Proposal 14', 'd100011', 'Co-Supervisor D', 'networks, cybersecurity, protocols', 'Type D', 'Group W', 'Description for Proposal 14', 'Knowledge about network security', 'Important notes', '2023-06-30', 'MSc', 'CS101', "Active", null],
+                    ['Proposal 15', 'd200012', 'Co-Supervisor A', 'statistics, machine learning, modeling', 'Type E', 'Group V', 'Description for Proposal 15', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Archived", null],
+                    ['Proposal 16', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 16', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303', "Active", null],
+                    ['Proposal 17', 'd100011', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 17', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", null],
+                    ['Proposal 18', 'd200012', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 18', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909', "Active", null],
+                    ['Proposal 19', 'd100016', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 19', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202', "Active", null],
+                    ['Proposal 20', 'd100011', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 20', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived", null],
                     // Add more data as needed
                 ];
 
@@ -321,6 +361,16 @@ const insertData = () => {
                     ['s200006', 'Proposal 6', 'Rejected'],
                     ['s200007', 'Proposal 7', 'Pending'],
                     ['s200008', 'Proposal 8', 'Accepted'],
+                    ['s200010', 'Proposal 11', 'Pending'],
+                    ['s200010', 'Proposal 8', 'Accepted'],
+                    ['s200011', 'Proposal 13', 'Pending'],
+                    ['s200012', 'Proposal 12', 'Rejected'],
+                    ['s200013', 'Proposal 13', 'Pending'],
+                    ['s200014', 'Proposal 14', 'Accepted'],
+                    ['s200015', 'Proposal 15', 'Pending'],
+                    ['s200016', 'Proposal 4', 'Rejected'],
+                    ['s200017', 'Proposal 17', 'Pending'],
+                    ['s200018', 'Proposal 18', 'Accepted'],
                     // Add more data as needed
                 ];
 

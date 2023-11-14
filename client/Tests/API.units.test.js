@@ -1,74 +1,6 @@
 // Assume getApplications is defined in a file named 'api.js'
 import API from '../src/API';
 const SERVER_URL = 'http://localhost:3001';
-/*
-//#region Applications
-const professor = {role:'TEACHER', st}
-describe('getApplications function', () => {
-  beforeEach(() => {
-    global.fetch = jest.fn(); // Mocking fetch globally
-  });
-
-  afterEach(() => {
-    global.fetch.mockRestore(); // Restore fetch after each test
-  });
-
-  it('fetches applications successfully and returns the mapped data - found somenthing', async () => {
-    const professorId = 123;
-    const applicationsData = [
-      { studentId: 's200000', proposal: 'Proposal 1', status: 'Pending' },
-      { studentId: 's300000', proposal: 'Proposal 2', status: 'Approved' },
-    ];
-
-    // Mocking a successful response from fetch
-    global.fetch.mockResolvedValue({
-      ok: true,
-      json: async () => applicationsData,
-    });
-
-    const result = await API.getApplications(professorId);
-
-    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/teacher/123');
-    expect(result).toEqual([
-      { studentId: 's200000', proposal: 'Proposal 1', status: 'Pending' },
-      { studentId: 's300000', proposal: 'Proposal 2', status: 'Approved' },
-    ]);
-  });
-
-  it('fetches applications successfully and returns the mapped data - found nothing', async () => {
-    const professorId = 123;
-    const applicationsData = [];
-
-    // Mocking a successful response from fetch
-    global.fetch.mockResolvedValue({
-      ok: true,
-      json: async () => applicationsData,
-    });
-
-    const result = await API.getApplications(professorId);
-
-    expect(global.fetch).toHaveBeenCalledWith(SERVER_URL+'/api/applications/teacher/123');
-    expect(result).toEqual([
-    ]);
-  });
-
-  it('handles errors from fetch', async () => {
-    const professorId = 123;
-
-    // Mocking an error response from fetch
-    global.fetch.mockResolvedValue({
-      ok: false,
-      json: async () => 'Some error message',
-    });
-
-    await expect(API.getApplications(professorId)).rejects.toThrow(
-      'Error on getting the applications: Some error message'
-    );
-  });
-});
-
-//#endregion
-*/
 
 describe('getApplications API', () => {
   beforeEach(() => {
@@ -80,13 +12,22 @@ describe('getApplications API', () => {
   });
 
   // Mock user data
-  const teacherUser = { id: 1, role: 'TEACHER' };
-  const studentUser = { id: 2, role: 'STUDENT' };
+  const teacherUser = { id: "d000001", role: 'TEACHER' };
+  const studentUser = { id: "s200002", role: 'STUDENT' };
   const otherUser = { id: 3, role: 'SOMETHING_ELSE' };
+  const reqheaderT = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const reqheaderS = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'STUDENT'
+  };
+
 
   // Mock response data
-  const teacherApplications = [{ studentId: 1, proposal: 'Test Proposal', status: 'Pending' }];
-  const studentApplications = [{ studentId: 2, proposal: 'Another Proposal', status: 'Approved' }];
+  const teacherApplications = [{ studentId: "s200001", proposal: 'Test Proposal', status: 'Pending' }];
+  const studentApplications = [{ studentId: "s200002", proposal: 'Another Proposal', status: 'Approved' }];
 
   // Mock fetch response for teacher
   const teacherResponse = {
@@ -110,7 +51,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
     const result = await API.getApplications(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/1`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, {"headers":reqheaderT});
     expect(result).toEqual(teacherApplications);
   });
 
@@ -118,7 +59,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getApplications(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/1`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, {"headers":reqheaderT});
     expect(result).toEqual([]);
   });
 
@@ -126,7 +67,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce(studentResponse);
 
     const result = await API.getApplications(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/2`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, {"headers":reqheaderS});
     expect(result).toEqual(studentApplications);
   });
 
@@ -134,7 +75,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getApplications(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/2`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, {"headers":reqheaderS});
     expect(result).toEqual([]);
   })
 
@@ -212,6 +153,14 @@ describe('getStudentData API', () => {
       return sdNE;
     }
   };
+  const reqheaderT = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const reqheaderS = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'STUDENT'
+  };
 
   // Mock fetch error response
   const errorResponse = {
@@ -224,7 +173,7 @@ describe('getStudentData API', () => {
     fetch.mockResolvedValueOnce(successResponseE);
 
     const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, {"headers":reqheaderT});
     expect(result).toEqual(studentData);
   });
 
@@ -253,7 +202,7 @@ describe('getStudentData API', () => {
     fetch.mockResolvedValueOnce(successResponse);
 
     const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, {"headers":reqheaderT});
     expect(result.career).toEqual(mockCareer);
   });
 
@@ -267,3 +216,65 @@ describe('getStudentData API', () => {
   });
 });
 
+describe('updateApplicationStatus API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+  
+  // Mock response data
+  const successResponse = {
+    ok: true,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 400,
+  };
+
+  it('should update application status to Accepted for a teacher', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.updateApplicationStatus("proposal123", "student456", true);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/proposal123/student456`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'TEACHER',
+      },
+      body: JSON.stringify({
+        'status': 'Accepted',
+      }),
+    });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should update application status to Rejected for a teacher', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.updateApplicationStatus("proposal789", "student101", false);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/proposal789/student101`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'TEACHER',
+      },
+      body: JSON.stringify({
+        'status': 'Rejected',
+      }),
+    });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.updateApplicationStatus("proposal123", "student456", true)).rejects.toThrow(
+      'HTTP error! status: 400'
+    );
+  });
+});

@@ -1,17 +1,44 @@
 const SERVER_URL = 'http://localhost:3001';
 
+//#region Student
+const getStudentData = async (proposalId, studentId) =>{
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
+    headers: reqheader
+  });
+  const studentDataJson = await response.json();
+  if(response.ok) {
+    return studentDataJson;
+  }
+  else{
+    throw new Error("Error on getting the studentsData: "+studentDataJson);
+  }
+}
+//#endregion
+
 //#region Application
 const getApplications = async (user) =>{
-  let response, applicationsJson;
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE':user.role
+  };
+  let apiURL = SERVER_URL +"/api/applications/";
+
   if(user.role == 'TEACHER'){
-    response = await fetch(SERVER_URL + `/api/applications/teacher/${user.id}`);
-    applicationsJson = await response.json();
+    apiURL += `teacher/${user.id}`;
   }else if(user.role == 'STUDENT'){
-    response = await fetch(SERVER_URL + `/api/applications/student/${user.id}`);
-    applicationsJson = await response.json();
+    apiURL += `student/${user.id}`;
   }else{
     throw new Error("Error on getting the applications: Invalid role");
   }
+  const response = await fetch(apiURL, {
+    headers: reqheader
+  });
+  const applicationsJson = await response.json();
+
   if(response.ok) {
     return applicationsJson.map(app => {
       return {"studentId": app.studentId, "proposal": app.proposal, "status":app.status
@@ -24,27 +51,17 @@ const getApplications = async (user) =>{
   }
 }
 
-const getStudentData = async (proposalId, studentId) =>{
-  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`);
-  const studentDataJson = await response.json();
-  if(response.ok) {
-    //console.log("nelle API"+JSON.stringify(studentDataJson)); //stringify needed, otherwise we'd have an [object Object]
-    return studentDataJson;
-  }
-  else{
-    throw new Error("Error on getting the studentsData: "+studentDataJson);
-  }
-}
-
 const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
   //Choose if accept or reject based on the status passed
   const status = statusSet? "Accepted" : "Rejected";
   console.log(status);
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
-      headers: {
-          'Content-Type': 'application/json',
-      },
+      headers: reqheader,
       body: JSON.stringify({
         'status': status
       }),
