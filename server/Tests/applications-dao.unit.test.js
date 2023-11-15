@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, autoRejectApplication, autoDeleteApplication } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, autoRejectApplication, autoDeleteApplication, createApplication } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -290,3 +290,42 @@ describe('autoDeleteApplication', () => {
     await expect(autoDeleteApplication(studentId)).rejects.toEqual(expectedError);
   });
 });
+
+describe('createApplication', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with success message when creating an application successfully', async () => {
+    const proposalId = 'Proposal 1';
+    const studentId = 's200001';
+    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+
+    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId, proposalId]);
+      callback.call({ changes: 1 }, null);
+    });
+
+    db.run.mockImplementation(mockRun);
+
+    const result = await createApplication(proposalId, studentId);
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should reject with an error if an error occurs during database insertion', async () => {
+    const proposalId = 'Proposal 2';
+    const studentId = 's200002';
+    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+    const expectedError = 'Database error occurred';
+
+    db.run.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId, proposalId]);
+      callback(expectedError, null);
+    });
+
+    await expect(createApplication(proposalId, studentId)).rejects.toEqual(expectedError);
+  });
+});
+

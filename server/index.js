@@ -231,3 +231,16 @@ app.get('/api/proposals/students/:studentId',
       res.status(500).end();
   }
 });
+
+//POST /api/proposals/:proposalId/:studentId
+app.post('/api/proposals/:proposalId/:studentId',
+  async (req, res) => {
+    try {
+      const application = await appDao.createApplication(req.params.proposalId, req.params.studentId);
+      res.json(application);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+    }
+});
+
