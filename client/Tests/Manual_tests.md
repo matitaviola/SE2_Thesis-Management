@@ -160,6 +160,30 @@ Please note that each of the following test is written to be executed on a fresh
     - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
 
 ```
+## Story #7 - Update Proposals:
+- should see proposals and edit their datas
+```
+- Login as usr:david@example.com psw:d100003
+- Click on the "Proposals" tab
+- Go to first row and click edit on [proposal 3]
+- should be seen proposal details as below:
+Title
+Supervisor
+Co_supervisor
+Keywords
+Type
+Groups
+Description
+Required Knowledge
+Notes
+Expiration
+Level
+CdS/Programmes
+- change the title of the proposal to [x]
+- go to the bottom and click submit botton
+- [proposal 3] title should change to [x] after submitting
+```
+
 - Should display the data of a proposal:
 ```
 - Login as usr:david@example.com psw:d100003
