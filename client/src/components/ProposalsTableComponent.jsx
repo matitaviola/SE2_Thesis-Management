@@ -110,11 +110,13 @@ function ProposalRow(props) {
 function StudentProposalsTableComponent(props) {
 
   const [proposals, setProposals] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState({});
   const [studentId, setStudentId] = useState(props.studentId);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState(null);
 	const navigate = useNavigate();
+  const loggedInUser = useContext(AuthContext);
 
 
   useEffect(() => {
@@ -125,26 +127,34 @@ function StudentProposalsTableComponent(props) {
     fetchProposals()
   }, [filter, studentId]);
 
+  useEffect(() => {
+    const getApplications = async () => {
+        try {
+            let retrievedApplications = await API.getApplications(loggedInUser);
+            setApplications(retrievedApplications);
+        } catch (err) {
+            console.log("Applications getting an error: " + err);
+        }
+    };
+    getApplications();
+  }, [applications]);
+
   const handleViewClick = (title) =>{
     let proposal = proposals.find(p => p.title == title);
 		navigate(`/proposals/${title}`, { state: { proposal } });
-  }
-
-  /*
-  const handleShowUpdateModal = (title) =>{
-    // Mostra modale per conferma
-    let proposal = proposals.find(p => p.title == title);
-		navigate(`/proposals/${title}`, { state: { proposal } });
-  }
-  */
+  };
 
   const handleShowUpdateModal = (title) => {
     setSelectedTitle(title);
     setShowUpdateModal(true);
-    // Altre azioni necessarie per mostrare il modal
   };
 
   const handleCloseUpdateModal = () => setShowUpdateModal(false);
+
+  const handleSendApplication = (title) => {
+    API.addApplication(title, studentId);
+    setShowUpdateModal(false);
+  };
 
   return (
     <Container>
@@ -175,6 +185,7 @@ function StudentProposalsTableComponent(props) {
           </thead>
           <tbody>
             {proposals.map(p => {
+              const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
               {
                 return <tr key={p.title}>
                   <td>{p.title} </td>
@@ -188,7 +199,13 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
                   <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
-                  <td><Button onClick={() => handleShowUpdateModal(p.title)}>Apply</Button></td>
+                  <td>
+                    {applicationExists ? (
+                      <span>Application sent</span>
+                    ) : (
+                      <Button onClick={() => handleShowUpdateModal(p.title)}>Apply</Button>
+                    )}
+                  </td>
                 </tr>
               }
             })}
@@ -201,7 +218,7 @@ function StudentProposalsTableComponent(props) {
                 <Button variant="secondary" onClick={handleCloseUpdateModal}>
                   Close
                 </Button>
-                <Button variant="primary" onClick={handleCloseUpdateModal}>
+                <Button variant="primary" onClick={() => handleSendApplication(selectedTitle)}>
                   Send Application
                 </Button>
               </Modal.Footer>
