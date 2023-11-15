@@ -116,31 +116,6 @@ const getStudentProposals = async (studentId, filter) =>{
   }
 }
 
-  // RIMUOVERE -------------
-/*
-const applyForProposal = async (proposalId, studentId) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
-  const status = "Pending";
-  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
-    method: 'PATCH',
-    headers: reqheader,
-    body: JSON.stringify({
-      'status': status
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-    
-  return {ok:true};
-  
-} 
-*/
-
 //#endregion
 
 //#region Application

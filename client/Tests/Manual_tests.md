@@ -33,6 +33,28 @@ Please note that each of the following test is written to be executed on a fresh
     Keywords: design, architecture, development
 ```
 
+## Story #3 - Apply for Proposal
+- Should create 1 application
+```
+- Login as usr:carlos@example.com psw:s200002
+- Go to "Proposals" tab
+- Click on the "Apply" button referring to [Proposal 6], a.k.a. the first row
+- Should be visible a modal to confirm or cancel the submission of the application for [Proposal 6]
+- Click on the "Send Application" button
+- The modal should be closed
+- Should see the proposals table with "Application sent" written instead of the "Apply" button on the row of [Proposal 6]
+```
+- Should not create 1 application
+```
+- Login as usr:carlos@example.com psw:s200002
+- Go to "Proposals" tab
+- Click on the "Apply" button referring to [Proposal 16], a.k.a. the second row
+- Should be visible a modal to confirm or cancel the submission of the application for [Proposal 16]
+- Click on the "Close" button/on the X at top right of the modal/outside the modal
+- The modal should be closed
+- Should see the proposals table without any changes
+```
+
 
 ## Story #4 - Browse Applications
 - Should show 4 applications

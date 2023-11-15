@@ -730,3 +730,55 @@ describe('searchProposal API', () => {
     );
   });
 });
+
+describe('addApplication API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock response data
+  const successResponse = {
+    ok: true,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 400,
+  };
+
+  it('should add an application successfully', async () => {
+    const proposalId = 'proposal123';
+    const studentId = 'student456';
+
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.addApplication(proposalId, studentId);
+
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalId}/${studentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'STUDENT',
+      },
+      body: JSON.stringify({ proposalId, studentId }),
+    });
+
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should throw an error on failed request', async () => {
+    const proposalId = 'proposal789';
+    const studentId = 'student101';
+
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.addApplication(proposalId, studentId)).rejects.toThrow(
+      'HTTP error! status: 400'
+    );
+  });
+});
