@@ -160,7 +160,7 @@ Please note that each of the following test is written to be executed on a fresh
     - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
 
 ```
-## Story #7 - Update Proposals:
+## Story #8 - Update Proposals:
 - should see proposals and edit their datas
 ```
 - Login as usr:david@example.com psw:d100003
