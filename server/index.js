@@ -119,6 +119,7 @@ app.get('/api/application/:proposalsId/:studentId',
   }
 });
 
+
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId', 
   async (req, res) => {
@@ -270,14 +271,13 @@ app.post('/api/proposals',
   }
 });
 
-
 // DELETE /api/proposals/:proposalId
 app.delete('/api/proposals/:proposalId', 
   async (req, res) => {
     try {
         const result = await propDao.deleteProposal(req.params.proposalId);
 
-        if (result.affectedRows === 0) {
+        if (!result.success) {
             res.status(404).json({ error: 'Proposal not found' });
         } else {
             res.status(200).end();

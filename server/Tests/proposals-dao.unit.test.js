@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal } = require('../DB/proposals-dao');
+const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal, deleteProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 
@@ -164,9 +164,6 @@ describe('archiveProposal', () => {
   });
 
 });
-
-
-
 
 describe('getProposals Function Tests', () => {
   afterEach(() => {
@@ -608,5 +605,52 @@ describe('insertProposals Function Tests', () => {
     };
 
     await expect(addProposal(proposal)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('deleteProposal Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with success message when deleting a proposal', async () => {
+    const mockedProposal = 'ProposalToDelete';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback.call({ changes: 1 }); // Manually set the 'this' context
+    });
+
+    const result = await deleteProposal(mockedProposal);
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should resolve with error message when proposal not found', async () => {
+    const mockedProposal = 'NonexistentProposal';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback.call({ changes: 0 }, null); // Simulate a successful query without changes
+    });
+
+    await expect(deleteProposal(mockedProposal)).rejects.toEqual({ error: 'Proposal not found' });
+  });
+
+  it('should reject with an error message when there is a database error', async () => {
+    const mockedProposal = 'ProposalToDelete';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+    const expectedError = new Error('Database error occurred');
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback(expectedError);
+    });
+
+    await expect(deleteProposal(mockedProposal)).rejects.toEqual(expectedError);
   });
 });
