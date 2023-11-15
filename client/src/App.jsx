@@ -5,59 +5,45 @@ import NavHeader from './components/NavBarComponent.jsx';
 import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
-import ProposalComponent from './components/ProposalComponent.jsx';
+import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
+import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
+import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
+import API from './API.js';
+import HomeComponent from './components/HomeComponent.jsx';
 
 export const AuthContext = createContext(null);
 
 function App() {
 
-  const [appName, setAppName] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  //const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
 
 
 useEffect(() => {
     const checkAuth = async () => {
-      //const user = await API.getUserInfo(); // we have the user info here
-      let user = {
-        /*
-        role: 'TEACHER',
-        id: 'd100003'
-        */
-        role: 'STUDENT',
-        id: 's200000'
-      }
+      const user = await API.getUserInfo(); // we have the user info here
       setLoggedIn(user);
-
     };
     checkAuth();
   }, []);
 
   const handleLogin = async (credentials) => {
     try {
-      //let user = await API.login(credentials);
-      let user = {
-        /*
-        role: 'TEACHER',
-        id: 'd100003'
-        */
-        role: 'STUDENT',
-        id: 's200000'
-      }
-      setLoggedIn(user)
+      let user = await API.login(credentials);
+      setLoggedIn(user);
     } catch (err) {
       setErrorMessage(`Error during log in : ${err}`);
     }
-
   };
 
   const handleLogout = async () => {
     try {
-      //await API.logout();
+      await API.logout();
       setLoggedIn(false)
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);
@@ -79,11 +65,13 @@ useEffect(() => {
             </Container>
           </>} >
           <Route index
-            element={<Navigate replace to='/login' />} />
+            element={loggedIn? <HomeComponent/> : <LoginForm login={handleLogin} />} />
 
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent/>} />
+              <Route path='proposals/:proposalsId'
+              element={<StudentProposalComponent/>} />
               <Route path='applications'
               element={<ApplicationsTable/>} />
               </>
@@ -94,9 +82,11 @@ useEffect(() => {
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent/>} />
           <Route path='proposals/new'
-              element={<ProposalComponent />} />
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage} />} />
           <Route path='applications'
               element={<ApplicationsTable/>}/>
+          <Route path='application/:proposalId/:studentId'
+              element={<ApplicationDetailComponent/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />
@@ -110,10 +100,7 @@ useEffect(() => {
     </AuthContext.Provider>
     <ErrorToast errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
     </>
-
-
   );
-
 
 }
 

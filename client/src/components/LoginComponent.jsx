@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {Form, Button, Container, Row, Col } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../App';
 
 function LoginForm(props) {
   const [username, setUsername] = useState('');
@@ -40,11 +41,12 @@ function LoginForm(props) {
 
 function LogoutButton(props) {
   const navigate= useNavigate();
+  const loggedInUser = useContext(AuthContext);
 
   return(
     <Dropdown >
     <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-      Logged in as Mario Rossi
+      Logged in as {loggedInUser.id}
     </Dropdown.Toggle>
 
     <Dropdown.Menu align="end">
