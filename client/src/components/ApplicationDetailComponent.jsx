@@ -39,7 +39,7 @@ function ApplicationDetailComponent() {
         <div>
         <p className="lead" style={{ fontSize: '30px' }}>{studentData.name + " " + studentData.surname + " " + studentId}</p>
         <p className="lead" style={{ fontSize: '30px' }}>Career:</p>
-            {studentData.career.map((careerItem, index) => (
+            {studentData.career.length>0? studentData.career.map((careerItem, index) => (
                 <table key={index} style={{ marginBottom: '30px', fontSize: '20px', width: '25%' }}>
                     <tbody style={{ backgroundColor: '#f0f0f0', borderRadius: '5px', padding: '20px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)' }}>
                         <tr>
@@ -53,7 +53,7 @@ function ApplicationDetailComponent() {
                         </tr>
                     </tbody>
                 </table>
-            ))}
+            )) : <></>}
             <button onClick={() => acceptRejectApplication(true)} style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer', transition: 'transform 0.1s' }}>Accept</button>
             <button onClick={() => acceptRejectApplication(false)} style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
         </div>

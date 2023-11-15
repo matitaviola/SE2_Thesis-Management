@@ -26,7 +26,7 @@ npm run dev
 ```
 ### Populate the db (inside of 'server' folder)
 Note: it can be used to return the DB at the original state in case you mess it up while testing.
-Note: Please remove the old file before riunning, since proposals are auto-incrementing
+Note: Please remove the old file before running to avoid issues with the foreign keys
 ```bash
 npm run populate
 ```

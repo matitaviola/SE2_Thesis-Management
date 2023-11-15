@@ -116,6 +116,39 @@ const getStudentProposals = async (studentId, filter) =>{
   }
 }
 
+const createProposal = async (proposal, user) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE':user.role
+  };
+  const response = await fetch(`${SERVER_URL}/api/proposals`, {
+    method: 'POST',
+    headers: reqheader,
+    body: JSON.stringify(proposal)
+  });
+  if(!response.ok) {
+    const errMessage = await response.json();
+    throw errMessage;
+  }
+  else return null;
+}
+
+const deleteProposal = async (proposal) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposal}`, {
+      method: 'DELETE',
+      headers: reqheader
+  });
+
+  if (!response.ok) {
+      const errorJson = await response.json();
+      throw new Error("Error on deleting the proposal: " + errorJson);
+  }
+}
+
 //#endregion
 
 //#region Application

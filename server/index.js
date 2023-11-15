@@ -3,17 +3,19 @@ const loginDao = require('./DB/login-dao');
 const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
+const supervisorDao = require('./DB/supervisors-dao');
+const degreeDao = require('./DB/degrees-dao');
+const authorizationMiddleware = require('./Middlewares/authorization-middleware');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
 const app = express();
+const moment = require('moment');
 const PORT = 3001;
-const authorizationMiddleware = require('./Middlewares/authorization-middleware');
 const dayjs = require('dayjs');
 
 
 app.use(cors()); // Enable CORS for all routes
-
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -116,6 +118,7 @@ app.get('/api/application/:proposalsId/:studentId',
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
   }
 });
+
 
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId', 
@@ -231,7 +234,59 @@ app.get('/api/proposals/students/:studentId',
       res.status(500).end();
   }
 });
+app.post('/api/proposals', 
+  async (req, res) => {
+    try {
+      // const userRole = req.role;
+      // if (userRole !== 'TEACHER')
+      //   return res.status(403).json({ error: 'Forbidden' });
 
+      const { body } = req;
+      if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
+            body.keywords && body.type && body.groups && body.description && 
+            body.req_knowledge && body.notes && body.expiration && body.level))
+          throw new Error('Missing parameters');
+
+      if (moment(body.expiration).isBefore(moment()))
+        throw new Error('Invalid expiration date');
+      if (body.level !== 'BSc' && body.level !== 'MSc')
+        throw new Error('Invalid level');
+
+      const supervisor = await supervisorDao.getSupervisorById(body.supervisor);
+      if (!supervisor)
+        throw new Error('Invalid supervisor');
+
+      const degree = await degreeDao.getDegreeByCode(body.cds);
+      if (!degree)
+        throw new Error('Invalid degree');
+
+      const proposal = await propDao.addProposal(req.body);
+      res.json(proposal);
+  } catch (error) {
+      if (error === 'Duplicate title')
+        return res.status(400).json({ error: 'Duplicate title'});
+      if (error instanceof Error || error.code === 'SQLITE_ERROR')
+          return res.status(400).json({ error: error.message });
+      return res.status(500).json({ error: error.message || error })
+  }
+});
+
+// DELETE /api/proposals/:proposalId
+app.delete('/api/proposals/:proposalId', 
+  async (req, res) => {
+    try {
+        const result = await propDao.deleteProposal(req.params.proposalId);
+
+        if (!result.success) {
+            res.status(404).json({ error: 'Proposal not found' });
+        } else {
+            res.status(200).end();
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while deleting the proposal' });
+    }
+});
 //POST /api/proposals/:proposalId/:studentId
 app.post('/api/proposals/:proposalId/:studentId',
   async (req, res) => {

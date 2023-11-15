@@ -152,3 +152,29 @@ Please note that each of the following test is written to be executed on a fresh
     Keywords: design, architecture, development
 ```
 
+## Story #8 - Delete Proposals:
+- Should delete a proposal and its data:
+```
+- Login as usr:michael@example.com psw:d100001
+- Click on the "Proposals" tab
+- Should see 2 proposals for this teacher:
+    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101 | Not assigned]
+    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101 | Not assigned]
+- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+- Should be visible the Proposal's data:
+    Proposal 1
+    Expiration date: 2023-12-31
+    CdS: CS101
+    Level: BSc
+    Type A
+    Group X
+    Thesist: Not assigned
+    Co-supervisor: Not assigned
+    Description: Description for Proposal 1
+    Requested knowledge: Knowledge about programming
+    Notes: Some notes
+    Keywords: programming, algorithms, null
+- Should be visible an orange button called "Delete Proposal"
+- Click on "Delete Proposal" button
+- The application should return to the proposals list and show the previous list without Proposal 1
+```

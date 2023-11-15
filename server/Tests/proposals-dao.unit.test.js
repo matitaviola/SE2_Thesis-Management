@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals } = require('../DB/proposals-dao');
+const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal, deleteProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 
@@ -164,9 +164,6 @@ describe('archiveProposal', () => {
   });
 
 });
-
-
-
 
 describe('getProposals Function Tests', () => {
   afterEach(() => {
@@ -511,5 +508,149 @@ describe('getProposals Function Tests', () => {
     });
 
     await expect(getAvailableProposals(studentId, {})).rejects.toEqual(expectedError);
+  });
+});
+
+describe('insertProposals Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with proposal object when there is no problem with inputs', async () => {
+    const proposal = {
+      title: 'test prop 1',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, proposal));
+
+    const result = await addProposal(proposal);
+
+    expect(result).toEqual(proposal);
+  });
+
+  it('should handle duplicate title error', async () => {
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'SQLITE_CONSTRAINT' }));
+
+    await expect(addProposal(proposal)).rejects.toEqual('Duplicate title');
+  });
+
+  it('should handle db error', async () => {
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'ANOTHER_ERROR' }));
+
+    await expect(addProposal(proposal)).rejects.toEqual({ code: 'ANOTHER_ERROR' });
+  });
+
+  it('should reject with an error on db.get failure', async () => {
+    const expectedError = new Error('Simulated db.get error');
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+
+    db.get.mockImplementationOnce((sql, values, callback) => callback(expectedError));
+
+    const proposal = {
+      title: 'test prop 2',
+      notes: 'test',
+      groups: 'test',
+      supervisor: 'test',
+      co_supervisor: 'test',
+      keywords: 'test',
+      type: 'test',
+      description: 'test',
+      req_knowledge: 'test',
+      expiration: 'test',
+      level: 'test',
+      cds: 'test'
+    };
+
+    await expect(addProposal(proposal)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('deleteProposal Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with success message when deleting a proposal', async () => {
+    const mockedProposal = 'ProposalToDelete';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback.call({ changes: 1 }); // Manually set the 'this' context
+    });
+
+    const result = await deleteProposal(mockedProposal);
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should resolve with error message when proposal not found', async () => {
+    const mockedProposal = 'NonexistentProposal';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback.call({ changes: 0 }, null); // Simulate a successful query without changes
+    });
+
+    await expect(deleteProposal(mockedProposal)).rejects.toEqual({ error: 'Proposal not found' });
+  });
+
+  it('should reject with an error message when there is a database error', async () => {
+    const mockedProposal = 'ProposalToDelete';
+    const expectedSql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+    const expectedError = new Error('Database error occurred');
+
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(values).toEqual([mockedProposal]);
+      callback(expectedError);
+    });
+
+    await expect(deleteProposal(mockedProposal)).rejects.toEqual(expectedError);
   });
 });

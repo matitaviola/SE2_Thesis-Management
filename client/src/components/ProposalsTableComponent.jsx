@@ -65,6 +65,9 @@ function TeacherProposalsTableComponent() {
                     ))}
                 </tbody>
             </Table>
+            <Link to="/proposals/new">
+              <button className="btn btn-primary">Add New Proposal</button>
+            </Link>
   		</div>
 	);
 }
@@ -77,7 +80,8 @@ function ProposalRow(props) {
 	const handleViewClick = () => {
 		const proposal = props.proposal;
 		navigate(`/proposals/${props.proposal.title}`, { state: { proposal } });
-    };
+  };
+
     return (
         <tr>
             <td>{props.proposal.title}</td>

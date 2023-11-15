@@ -525,9 +525,6 @@ describe('API Login functions', () => {
   });
 });
 
-
-
-
 describe('searchProposal API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally
@@ -728,6 +725,116 @@ describe('searchProposal API', () => {
     await expect(API.getStudentProposals(1, {})).rejects.toThrow(
       'Error on getting the proposals: Error occurred'
     );
+  });
+});
+
+describe('createProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore();
+  });
+
+  const teacherUser = { id: 1, role: 'TEACHER' };
+
+  const proposalData = { studentId: 1, proposal: 'Test Proposal', status: 'Pending' };
+
+  const successResponse = {
+    ok: true,
+    json: async () => null,
+  };
+
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should create a proposal successfully', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.createProposal(proposalData, teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-USER-ROLE': 'TEACHER' },
+      body: JSON.stringify(proposalData),
+    });
+    expect(result).toBeNull();
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.createProposal(proposalData, teacherUser)).rejects.toEqual(
+      'Error occurred'
+    );
+  });
+});
+
+describe('deleteProposal function', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore();
+  });
+
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error deleting the proposal',
+  };
+  const successResponse = {
+    ok: true,
+    json: async () => null,
+  };
+
+  it('should delete a proposal and return successfully', async () => {
+    // Arrange
+    const proposalId = '123';
+    const expectedUrl = SERVER_URL+`/api/proposals/${proposalId}`;
+    const expectedHeaders = {
+      'Content-Type': 'application/json',
+      'X-USER-ROLE': 'TEACHER',
+    };
+
+    // Mock the fetch function
+    fetch.mockResolvedValueOnce(successResponse);
+
+    // Act
+    await API.deleteProposal(proposalId);
+
+    // Assert
+    expect(fetch).toHaveBeenCalledWith(expectedUrl, {
+      method: 'DELETE',
+      headers: expectedHeaders,
+    });
+  });
+
+  it('should throw an error when the delete request fails', async () => {
+    // Arrange
+    const proposalId = '123';
+    const expectedUrl = SERVER_URL+`/api/proposals/${proposalId}`;
+    const expectedHeaders = {
+      'Content-Type': 'application/json',
+      'X-USER-ROLE': 'TEACHER',
+    };
+    const errorMessage = 'Error deleting the proposal';
+
+    // Mock the fetch function to simulate a failure
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    // Act & Assert
+    await expect(API.deleteProposal(proposalId)).rejects.toThrowError(
+      `Error on deleting the proposal: ${errorMessage}`
+    );
+
+    // Assert
+    expect(fetch).toHaveBeenCalledWith(expectedUrl, {
+      method: 'DELETE',
+      headers: expectedHeaders,
+    });
   });
 });
 

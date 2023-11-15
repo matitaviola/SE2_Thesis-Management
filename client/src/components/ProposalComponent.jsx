@@ -1,7 +1,13 @@
-import { useLocation } from 'react-router-dom';
-import { Container, Row, Col } from 'react-bootstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import API from '../API';
 
 export function ProposalComponent() {
+	let navigate = useNavigate();
+	const routeChange = () =>{ 
+		let path = `/proposals`; 
+		navigate(path);
+	  }
 
 	const location = useLocation();
 	const { proposal } = location.state;
@@ -31,6 +37,14 @@ export function ProposalComponent() {
 			</Row>
 			<Row style={{ marginTop: '20px' }}>
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
+			</Row>
+			<Row className='text-center mt-4'>
+				<Button  className="btn btn-danger" onClick={() => {
+					API.deleteProposal(proposal.title);
+					routeChange();
+				}}>
+				DELETE PROPOSAL
+				</Button>
 			</Row>
 	  </Container>
 	);
