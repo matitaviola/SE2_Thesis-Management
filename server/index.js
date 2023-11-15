@@ -3,6 +3,7 @@ const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser') ;
 const app = express();
 const PORT = 3001;
 
@@ -13,15 +14,18 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+//middleman to every call
+app.use(bodyParser.json()); //to read from req.body
 
 
-//GET /api/applications/:professorId
+
+//GET /api/applications/teacher/:professorId
 app.get('/api/applications/teacher/:professorId', 
   async (req, res) => {
     try {
         //gets all the professor's proposals
         let applications = [{}];
-        const proposals = await propDao.getProposalsByProfessor(req.params.professorId);
+        const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
         //gets all the applications for the proposals if we found any
         if(proposals.length>0){
           applications = await Promise.all(
@@ -51,4 +55,18 @@ app.delete('/api/proposals/:proposalId',
         console.error(err);
         res.status(500).json({ error: 'An error occurred while deleting the proposal' });
     }
+});
+
+
+//GET /api/applications/student/:studentId
+app.get('/api/applications/student/:studentId', 
+  async (req, res) => {
+    try {
+        //gets all the student's proposals
+        const applications = await appDao.getApplicationsByStudent(req.params.studentId);
+        res.json(applications);
+    } catch (err){
+      console.log(err);
+      res.status(500).end();
+  }
 });
