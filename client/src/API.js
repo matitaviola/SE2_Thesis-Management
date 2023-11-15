@@ -26,6 +26,17 @@ const getApplications = async (user) =>{
 }
 //#endregion
 
-const API = {getApplications};
+//#region Proposal
+const deleteProposal = async (proposal) => {
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposal}`, {
+      method: 'DELETE',
+  });
+
+  if (!response.ok) {
+      const errorJson = await response.json();
+      throw new Error("Error on deleting the proposal: " + errorJson);
+  }
+}
+const API = {getApplications, deleteProposal};
 export default API;
 
