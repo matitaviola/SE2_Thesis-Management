@@ -41,13 +41,13 @@ app.get('/api/login',
 app.post('/api/login', 
   async (req, res) => {
     try {
-        //gets all the professor's active proposals
+        //gets user with that credentials
         const user = await loginDao.effectLogin(req.body.credentials);
         sessionUser = user;
         res.json(user);
     } catch (err){
       console.log(err);
-      res.status(500).end();
+      res.status(500).json({error:err});
   }
 });
 //DELETE /api/login
@@ -59,7 +59,7 @@ app.delete('/api/login',
         res.json(sessionUser);
     } catch (err){
       console.log(err);
-      res.status(500).end();
+      res.status(500).json({error:err});
   }
 });
 
@@ -73,7 +73,7 @@ app.get('/api/proposals/teacher/:professorId',
         res.json(proposals);
     } catch (err){
       console.log(err);
-      res.status(500).end();
+      res.status(500).json({error:err});
   }
 });
 

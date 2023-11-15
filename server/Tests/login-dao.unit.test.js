@@ -49,7 +49,7 @@ describe('effectLogin', () => {
     it('should reject with an error when student is not found', async () => {
       // Set up mock database response for student not found
       db.get.mockImplementationOnce((query, params, callback) => {
-        callback(null, null); // Simulate student not found
+        callback(null); // Simulate student not found
       });
   
       const credentials = { username: 'nonexistent@student.com', password: 's000001' };
@@ -70,7 +70,7 @@ describe('effectLogin', () => {
     it('should reject with an error when professor is not found', async () => {
         // Set up mock database response for student not found
         db.get.mockImplementationOnce((query, params, callback) => {
-          callback(null, null); // Simulate student not found
+          callback(null); // Simulate student not found
         });
     
         const credentials = { username: 'nonexistent@teacher.com', password: 'd000001' };

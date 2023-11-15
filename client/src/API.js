@@ -228,6 +228,6 @@ const addApplication = async (proposalId, studentId) => {
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication};
+const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication};
 export default API;
 

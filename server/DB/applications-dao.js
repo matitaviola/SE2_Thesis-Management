@@ -93,8 +93,7 @@ exports.createApplication = (proposalId, studentId) => {
         const sql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
         db.run(sql, [studentId, proposalId], function (err) {
             if (err) {
-                //if (err.code === 'SQLITE_CONSTRAINT') reject('Duplicate title');
-                //else reject(err);
+                if (err.code === 'SQLITE_CONSTRAINT') reject('Duplicate title');
                 reject(err);
             } else {
                 resolve({success:true}); 

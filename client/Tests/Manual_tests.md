@@ -152,7 +152,7 @@ Please note that each of the following test is written to be executed on a fresh
     Keywords: design, architecture, development
 ```
 
-## Story #8 - Delete Proposals:
+## Story #10 - Delete Proposals:
 - Should delete a proposal and its data:
 ```
 - Login as usr:michael@example.com psw:d100001
