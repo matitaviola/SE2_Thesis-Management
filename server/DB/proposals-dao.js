@@ -189,3 +189,18 @@ exports.addProposal = (body) => {
     );
   });
 };
+
+exports.deleteProposal = (proposal) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM PROPOSAL WHERE Title = ?';
+        db.run(sql, [proposal], function (err) {
+            if (err) {
+                reject(err);
+            } else if (this.changes === 0) {
+                reject({ error: 'Proposal not found' });
+            } else {
+                resolve({ success: true });
+            }
+        });
+    });
+}

@@ -133,6 +133,22 @@ const createProposal = async (proposal, user) => {
   else return null;
 }
 
+const deleteProposal = async (proposal) => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposal}`, {
+      method: 'DELETE',
+      headers: reqheader
+  });
+
+  if (!response.ok) {
+      const errorJson = await response.json();
+      throw new Error("Error on deleting the proposal: " + errorJson);
+  }
+}
+
 //#endregion
 
 //#region Application
@@ -192,6 +208,9 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, createProposal};
+const API = {login, getUserInfo, logout,
+  getApplications, updateApplicationStatus,
+  getStudentData,
+  getProposals, getStudentProposals, createProposal, deleteProposal};
 export default API;
 

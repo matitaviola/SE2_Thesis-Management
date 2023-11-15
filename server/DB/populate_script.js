@@ -15,7 +15,7 @@ const createTables = () => {
                 EMAIL TEXT UNIQUE NOT NULL,
                 CODE_DEGREE TEXT NOT NULL,
                 ENROLLMENT_YEAR INTEGER NOT NULL,
-                FOREIGN KEY(CODE_DEGREE) REFERENCES DEGREE(COD_DEGREE)
+                FOREIGN KEY(CODE_DEGREE) REFERENCES DEGREE(COD_DEGREE) 
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -31,8 +31,7 @@ const createTables = () => {
                 EMAIL TEXT UNIQUE NOT NULL,
                 COD_GROUP TEXT NOT NULL,
                 COD_DEPARTMENT TEXT NOT NULL,
-                FOREIGN KEY(COD_DEPARTMENT) REFERENCES DEPARTMENT(COD_DEPARTMENT),
-                FOREIGN KEY(COD_GROUP) REFERENCES DEPARTMENT(COD_GROUP)
+                FOREIGN KEY(COD_DEPARTMENT, COD_GROUP) REFERENCES DEPARTMENT(COD_DEPARTMENT, COD_GROUP)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -86,7 +85,7 @@ const createTables = () => {
                 Thesist TEXT,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
                 FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
-                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID)
+                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID) ON DELETE SET NULL
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -101,7 +100,7 @@ const createTables = () => {
                 Status TEXT NOT NULL,
                 PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
-                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title)
+                FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title) ON DELETE CASCADE
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -414,15 +413,13 @@ const insertData = () => {
             };
 
             // Call the function for each table
-            insertStudentData();
-            
-            insertTeacherData();
-
-            insertCareerData();
             insertDegreeData();
+            insertDepartmentData();
+            insertTeacherData();
+            insertStudentData();
+            insertCareerData();
             insertProposalData();
             insertApplicationData();
-            insertDepartmentData();
             
             resolve();
         });
