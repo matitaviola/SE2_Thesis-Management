@@ -80,7 +80,8 @@ function ProposalRow(props) {
 	const handleViewClick = () => {
 		const proposal = props.proposal;
 		navigate(`/proposals/${props.proposal.title}`, { state: { proposal } });
-    };
+  };
+
     return (
         <tr>
             <td>{props.proposal.title}</td>
