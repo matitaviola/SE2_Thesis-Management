@@ -295,7 +295,10 @@ app.post('/api/proposals/:proposalId/:studentId',
       res.json(application);
     } catch (err){
       console.log(err);
-      res.status(500).end();
+      if (err === 'Duplicate title') {
+        return res.status(400).json({ error: 'Duplicate title'});
+      }
+      return res.status(500).json({ error: 'An error occurred while creating the application' });
     }
 });
 

@@ -313,6 +313,16 @@ describe('createApplication', () => {
     expect(result).toEqual({ success: true });
   });
 
+  it('should handle duplicate title error', async () => {
+    const proposalId = 'Proposal 1';
+    const studentId = 's200001';
+    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'SQLITE_CONSTRAINT' }));
+
+    await expect(createApplication(proposalId, studentId)).rejects.toEqual('Duplicate title');
+  });
+
   it('should reject with an error if an error occurs during database insertion', async () => {
     const proposalId = 'Proposal 2';
     const studentId = 's200002';
