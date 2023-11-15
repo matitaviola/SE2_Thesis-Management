@@ -34,7 +34,7 @@ export default function ProposalsFormComponent(props) {
       await API.createProposal(proposal, loggedInUser);
       navigate("/proposals");
     } catch (error) {
-      props.setErrorMessage(true);
+      console.log("Error in inserting proposal: ", error);
     }
   };
 

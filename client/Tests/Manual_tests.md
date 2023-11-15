@@ -1,6 +1,34 @@
 # Manual Tests for the Frontend GUI
 Please note that each of the following test is written to be executed on a fresh DB instance, without the changes done by previous test
 
+## Story #1 - Insert Proposals:
+
+- Should create proposal successfully
+```
+- Login as usr:david@example.com psw:d100003
+- Click on the "Proposals" tab
+- Should see 5 proposals for this teacher (proposals 3, 6, 9, 13, 16)
+- Click on "Add New Proposal" button
+- Enter all the fields as specified in the form:
+    - Title must not be duplicate
+    - Expiration date must be after today
+    - CdS must be a valid degree
+- Click on submit
+- After clicking on submit you will be redirected to proposals table and now you must see the new proposal added to the previous ones so 6 proposals in general
+```
+- Should not create proposal
+```
+- Login as usr:david@example.com psw:d100003
+- Click on the "Proposals" tab
+- Should see 5 proposals for this teacher
+- Click on "Add New Proposal" button
+- Enter all the fields:
+    - Select the expiration date as a day in last month
+- Click on submit
+- After clicking on submit nothing should happen
+- Click on the proposals you still see 5 proposals for this teacher and nothing is added
+```
+
 ## Story #2 - Search Proposals:
 
 - Should see 4 proposals and their data
