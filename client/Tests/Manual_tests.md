@@ -160,6 +160,7 @@ Please note that each of the following test is written to be executed on a fresh
     - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
 
 ```
+
 ## Story #8 - Update Proposals:
 - should see proposals and edit their datas
 ```
@@ -179,9 +180,9 @@ Notes
 Expiration
 Level
 CdS/Programmes
-- change the title of the proposal to [x]
+- change the title of the proposal to ["Renamed Proposal"]
 - go to the bottom and click submit botton
-- [proposal 3] title should change to [x] after submitting
+- [proposal 3] title should change to ["Renamed Proposal"] after submitting
 ```
 
 - Should display the data of a proposal:

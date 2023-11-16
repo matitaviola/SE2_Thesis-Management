@@ -74,9 +74,9 @@ sections:
 |                      | - APIs                    |        |     1      |      1       |
 |                      | - Testing                 |        |     1      |      30m     |
 |---------------------------------------------------------------------------------------| 
-|#8 Update Proposals   | - FE - Create Form        |   2    |     1      |      ???     |
-|                      | - APIs                    |        |     2      |      ???     |
-|                      | - Testing                 |        |     2      |      ???     |
+|#8 Update Proposals   | - FE - Create Form        |   2    |     1      |      1(NF)   |
+|                      | - APIs                    |        |     2      |      2(NF)   |
+|                      | - Testing                 |        |     2      |      2(NF)   |
 |---------------------------------------------------------------------------------------|
 |#10 Delete Proposals  | - FE - "Delete" button    |   1    |     1      |      45m     |
 |                      | - APIs                    |        |     1      |      45m     |
@@ -102,14 +102,14 @@ sections:
 - Unit Testing:
   - Total hours estimated: 10
   - Total hours spent: ???
-  - Nr of automated unit test cases: ???
+  - Nr of automated unit test cases: 106
   - Coverage (if available): 100%
 - E2E testing:
   - Total hours estimated: 2
-  - Total hours spent: ???
+  - Total hours spent: 2h 30m
 - Code review 
   - Total hours estimated: 2
-  - Total hours spent: 1h 15m
+  - Total hours spent: 1h 30m
   
 
 
