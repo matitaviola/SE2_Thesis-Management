@@ -139,4 +139,4 @@ sections:
   - Commit far less stories
 
 - One thing you are proud of as a Team!!
-  We completed a lot of fully functional stories.
+  We defined correctly the order of dependece of the various tasks
