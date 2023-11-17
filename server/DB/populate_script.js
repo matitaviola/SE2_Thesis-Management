@@ -81,11 +81,8 @@ const createTables = () => {
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
                 CdS TEXT,
-                Status TEXT NOT NULL,
-                Thesist TEXT,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
-                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
-                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID) ON DELETE SET NULL
+                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -101,6 +98,32 @@ const createTables = () => {
                 PRIMARY KEY (Student_ID, Proposal),
                 FOREIGN KEY(Student_ID) REFERENCES STUDENT(ID),
                 FOREIGN KEY(Proposal) REFERENCES PROPOSAL(Title) ON DELETE CASCADE
+            )`, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+
+            //ArchivedProposal
+            db.run(`CREATE TABLE IF NOT EXISTS ARCHIVED_PROPOSAL (
+                Title TEXT PRIMARY KEY UNIQUE NOT NULL,
+                Supervisor TEXT NOT NULL,
+                Co_supervisor TEXT,
+                Keywords TEXT,
+                Type TEXT NOT NULL,
+                Groups TEXT NOT NULL,
+                Description TEXT NOT NULL,
+                Req_knowledge TEXT,
+                Notes TEXT,
+                Expiration TEXT NOT NULL,
+                Level TEXT NOT NULL,
+                CdS TEXT,
+                Status TEXT,
+                Thesist TEXT,
+                FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
+                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
+                FOREIGN KEY(Thesist) REFERENCES STUDENT(ID) ON DELETE SET NULL
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -144,6 +167,9 @@ const emptyTables = () => {
 
             // Empty the APPLICATION table
             db.run('DELETE FROM APPLICATION');
+
+            // Empty the ARCHIVED_PROPOSAL table
+            db.run('DELETE FROM ARCHIVED_PROPOSAL');
 
             // Empty the DEPARTMENT table
             db.run('DELETE FROM DEPARTMENT');
@@ -313,30 +339,24 @@ const insertData = () => {
 
             const insertProposalData = () => {
                 const proposalData = [
-                    ['Proposal 1', 'd100001', 'Co-Supervisor A', 'programming, algorithms, null', 'Type A', 'Group X', 'Description for Proposal 1', 'Knowledge about programming', 'Some notes', '2023-12-31', 'BSc', 'CS101', "Active", null],
-                    ['Proposal 2', 'd200002', 'Co-Supervisor C', null, 'Type B', 'Group Y', 'Description for Proposal 2', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404', "Active", null],
-                    ['Proposal 3', 'd100003', 'Co-Supervisor B', 'design, architecture, development', 'Type C', 'Group Z', 'Description for Proposal 3', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101', "Active", null],
-                    ['Proposal 4', 'd100001', 'Co-Supervisor D', 'networks, security, protocols', 'Type D', 'Group W', 'Description for Proposal 4', 'Knowledge about cybersecurity', 'Important notes', '2023-06-30', 'MSc', 'CS101', "Active", null],
-                    ['Proposal 5', 'd200002', 'Co-Supervisor A', 'statistics, analysis, modeling', 'Type E', 'Group V', 'Description for Proposal 5', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Archived", null],
-                    ['Proposal 6', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 6', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303', "Active", null],
-                    ['Proposal 7', 'd100001', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 7', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", null],
-                    ['Proposal 8', 'd200002', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 8', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909', "Active", null],
-                    ['Proposal 9', 'd100003', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 9', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202', "Active", null],
-                    ['Proposal 10', 'd100001', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 10', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived", null],
-                    ['Proposal 11', 'd100011', 'Co-Supervisor A', 'web development, programming, design', 'Type A', 'Group X', 'Description for Proposal 11', 'Knowledge about web technologies', 'Important notes', '2023-12-31', 'BSc', 'CS101', "Active", null],
-                    ['Proposal 12', 'd200012', 'Co-Supervisor C', 'bioinformatics, data analysis', 'Type B', 'Group Y', 'Description for Proposal 12', 'Knowledge about genomic data', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404', "Active", null],
-                    ['Proposal 13', 'd100003', 'Co-Supervisor B', 'software development, architecture', 'Type C', 'Group Z', 'Description for Proposal 13', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101', "Active", null],
-                    ['Proposal 14', 'd100011', 'Co-Supervisor D', 'networks, cybersecurity, protocols', 'Type D', 'Group W', 'Description for Proposal 14', 'Knowledge about network security', 'Important notes', '2023-06-30', 'MSc', 'CS101', "Active", null],
-                    ['Proposal 15', 'd200012', 'Co-Supervisor A', 'statistics, machine learning, modeling', 'Type E', 'Group V', 'Description for Proposal 15', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Archived", null],
-                    ['Proposal 16', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 16', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303', "Active", null],
-                    ['Proposal 17', 'd100011', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 17', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", null],
-                    ['Proposal 18', 'd200012', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 18', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909', "Active", null],
-                    ['Proposal 19', 'd100016', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 19', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202', "Active", null],
-                    ['Proposal 20', 'd100011', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 20', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived", null],
+                    ['Proposal 1', 'd100001', 'Co-Supervisor A', 'programming, algorithms, null', 'Type A', 'Group X', 'Description for Proposal 1', 'Knowledge about programming', 'Some notes', '2023-12-31', 'BSc', 'CS101'],
+                    ['Proposal 2', 'd200002', 'Co-Supervisor C', null, 'Type B', 'Group Y', 'Description for Proposal 2', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
+                    ['Proposal 3', 'd100003', 'Co-Supervisor B', 'design, architecture, development', 'Type C', 'Group Z', 'Description for Proposal 3', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101'],
+                    ['Proposal 4', 'd100001', 'Co-Supervisor D', 'networks, security, protocols', 'Type D', 'Group W', 'Description for Proposal 4', 'Knowledge about cybersecurity', 'Important notes', '2023-06-30', 'MSc', 'CS101'],
+                    ['Proposal 6', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 6', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
+                    ['Proposal 8', 'd200002', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 8', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909'],
+                    ['Proposal 9', 'd100003', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 9', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202'],
+                    ['Proposal 11', 'd100011', 'Co-Supervisor A', 'web development, programming, design', 'Type A', 'Group X', 'Description for Proposal 11', 'Knowledge about web technologies', 'Important notes', '2023-12-31', 'BSc', 'CS101'],
+                    ['Proposal 12', 'd200012', 'Co-Supervisor C', 'bioinformatics, data analysis', 'Type B', 'Group Y', 'Description for Proposal 12', 'Knowledge about genomic data', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
+                    ['Proposal 13', 'd100003', 'Co-Supervisor B', 'software development, architecture', 'Type C', 'Group Z', 'Description for Proposal 13', 'Knowledge about software engineering', 'Additional info', '2022-11-20', 'MSc', 'CS101'],
+                    ['Proposal 14', 'd100011', 'Co-Supervisor D', 'networks, cybersecurity, protocols', 'Type D', 'Group W', 'Description for Proposal 14', 'Knowledge about network security', 'Important notes', '2023-06-30', 'MSc', 'CS101'],
+                    ['Proposal 16', 'd100003', 'Co-Supervisor F', 'medicine, health, research', 'Type F', 'Group U', 'Description for Proposal 16', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
+                    ['Proposal 18', 'd200012', 'Co-Supervisor D', 'economics, finance, markets', 'Type H', 'Group S', 'Description for Proposal 18', 'Knowledge about financial economics', 'Important data', '2023-04-18', 'MSc', 'DEGREE909'],
+                    ['Proposal 19', 'd100016', 'Co-Supervisor A', 'linguistics, language, communication', 'Type I', 'Group R', 'Description for Proposal 19', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202']
                     // Add more data as needed
                 ];
 
-                const stmt = db.prepare('INSERT INTO PROPOSAL (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                const stmt = db.prepare('INSERT INTO PROPOSAL (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 proposalData.forEach(proposal => {
                     stmt.run(proposal, (err) => {
                         if (err) {
@@ -355,27 +375,49 @@ const insertData = () => {
                     ['s200001', 'Proposal 3', 'Pending'],
                     ['s200002', 'Proposal 2', 'Rejected'],
                     ['s200003', 'Proposal 3', 'Pending'],
-                    ['s200004', 'Proposal 4', 'Accepted'],
+                    ['s200004', 'Proposal 4', 'Pending'],
                     ['s200005', 'Proposal 5', 'Pending'],
                     ['s200006', 'Proposal 6', 'Rejected'],
                     ['s200007', 'Proposal 7', 'Pending'],
-                    ['s200008', 'Proposal 8', 'Accepted'],
                     ['s200010', 'Proposal 11', 'Pending'],
                     ['s200010', 'Proposal 8', 'Pending'],
                     ['s200011', 'Proposal 13', 'Pending'],
                     ['s200012', 'Proposal 12', 'Rejected'],
                     ['s200013', 'Proposal 13', 'Pending'],
-                    ['s200014', 'Proposal 14', 'Accepted'],
+                    ['s200014', 'Proposal 14', 'Pending'],
                     ['s200015', 'Proposal 15', 'Pending'],
                     ['s200016', 'Proposal 4', 'Rejected'],
                     ['s200017', 'Proposal 17', 'Pending'],
-                    ['s200018', 'Proposal 18', 'Accepted'],
+                    ['s200018', 'Proposal 18', 'Pending'],
                     // Add more data as needed
                 ];
 
                 const stmt = db.prepare('INSERT INTO APPLICATION (Student_ID, Proposal, Status) VALUES (?, ?, ?)');
                 applicationData.forEach(application => {
                     stmt.run(application, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                });
+                stmt.finalize();
+                
+            };
+
+            const insertArchivedProposalData = () => {
+                const archProposalData = [
+                    ['Proposal 5', 'd200002', 'Co-Supervisor A', 'statistics, analysis, modeling', 'Type E', 'Group V', 'Description for Proposal 5', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Expired", null],
+                    ['Proposal 7', 'd100001', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 7', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", "s200009"],
+                    ['Proposal 10', 'd100001', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 10', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived","s200008"],
+                    ['Proposal 15', 'd200012', 'Co-Supervisor A', 'statistics, machine learning, modeling', 'Type E', 'Group V', 'Description for Proposal 15', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Expired", null],
+                    ['Proposal 17', 'd100011', 'Co-Supervisor C', 'AI, machine learning, robotics', 'Type G', 'Group T', 'Description for Proposal 17', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Expired", null],
+                    ['Proposal 20', 'd100011', 'Co-Supervisor E', 'environment, sustainability, climate', 'Type J', 'Group Q', 'Description for Proposal 20', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Expired", null],
+                    // Add more data as needed
+                ];
+
+                const stmt = db.prepare('INSERT INTO ARCHIVED_PROPOSAL (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                archProposalData.forEach(proposal => {
+                    stmt.run(proposal, (err) => {
                         if (err) {
                             reject(err);
                         }
@@ -420,6 +462,7 @@ const insertData = () => {
             insertCareerData();
             insertProposalData();
             insertApplicationData();
+            insertArchivedProposalData();
             
             resolve();
         });

@@ -136,21 +136,23 @@ app.get('/api/applications/student/:studentId',
 //PATCH /api/application/:proposalsId/:studentId
 app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
-    try {
-        // Update the application status
-        const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
-        if (!result.success) {
-            throw new Error('Application not found');
-        }
-        
+    try { 
         if(req.body.status === "Accepted"){
-          // Archive the proposal
+          // Archives the proposal
+          console.log("Trying to accept");
           const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
 
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
           }
 
+          const autoDelete = await appDao.autoDeleteApplication(req.params.studentId);
+          
+          if (!autoDelete.success) {
+            throw new Error('An error occurred while auto rejecting the proposal');
+          }
+
+          /*
           const autoReject = await appDao.autoRejectApplication(req.params.proposalsId, req.params.studentId);
           
           if (!autoReject.success) {
@@ -162,7 +164,14 @@ app.patch('/api/application/:proposalsId/:studentId',
           if (!autoDelete.success) {
             throw new Error('An error occurred while auto rejecting the proposal');
           }
+          */
 
+      }else{
+        // Update the application status, will probably be a "rejected"
+        const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
+        if (!result.success) {
+            throw new Error('Application not found');
+        }
       }
 
         res.status(200).end();
@@ -234,6 +243,7 @@ app.get('/api/proposals/students/:studentId',
       res.status(500).end();
   }
 });
+//POST /api/proposals
 app.post('/api/proposals', 
   async (req, res) => {
     try {

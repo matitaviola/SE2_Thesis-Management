@@ -4,8 +4,8 @@ const { db } = require('./db');
 
 exports.getActiveProposalsByProfessor = (professorId) => {
     return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status=?';
-        db.all(sql, [professorId, "Active"], (err, rows) => {
+        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+        db.all(sql, [professorId], (err, rows) => {
             if (err)
                 reject(err);
             else if (rows === undefined || rows.length === 0) {
@@ -24,8 +24,7 @@ exports.getActiveProposalsByProfessor = (professorId) => {
                         notes:r.Notes,
                         expiration:r.Expiration,
                         level:r.Level,
-                        cds:r.CdS,
-                        thesist:r.Thesist
+                        cds:r.CdS
                     //Inserted all the fields
                     }
                 });
@@ -42,27 +41,42 @@ exports.archiveProposal = (proposal, studentId) => {
             if (err || !row) {
                 reject(err? err : 'Proposal not found.');
             }
-
+            const originalProposal = row;
             // Step 2: Check if student has an application for that proposal
             db.get('SELECT * FROM APPLICATION WHERE Proposal = ? AND Student_ID = ?', [proposal, studentId], (err, row) => {
                 if (err || !row) {
                     reject(err? err : 'Application not found.')
                 }
-        
                 // Step 3: Update Proposal table
-                db.run(
-                    'UPDATE PROPOSAL SET Status = "Archived", Thesist = ? WHERE Title = ? ',
-                    [
-                        studentId, // Set Thesist with the provided studentId
-                        proposal
-                    ],
-                    (err) => {
+                db.run('DELETE FROM PROPOSAL WHERE Title = ? ', [proposal],(err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    console.log("Trying to insert archived proposal: ", originalProposal, " with student: ", studentId);
+                    // Step 4: Add the Proposal to the archived ones
+                    const sql ="INSERT INTO ARCHIVED_PROPOSAL (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    db.run(sql, [
+                        originalProposal.Title,
+                        originalProposal.Supervisor,
+                        originalProposal.Co_supervisor,
+                        originalProposal.Keywords,
+                        originalProposal.Type,
+                        originalProposal.Groups,
+                        originalProposal.Description,
+                        originalProposal.Req_knowledge,
+                        originalProposal.Notes,
+                        originalProposal.Expiration,
+                        originalProposal.Level,
+                        originalProposal.CdS,
+                        "Archived", 
+                        studentId
+                    ], (err) => {
                         if (err) {
                             reject(err);
                         }
-
-                        // Step 4: Close the database connection
+                        console.log("almost solved");
                         resolve({success:true});
+                    });
                 });
             });
         });
@@ -70,7 +84,7 @@ exports.archiveProposal = (proposal, studentId) => {
 }
 exports.getAvailableProposals = (studentId, filter) => {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.id=P.supervisor AND D.COD_DEGREE=P.cds AND S.CODE_DEGREE=D.COD_DEGREE AND S.id= ? AND Status=\'Active\'';
+        let sql = 'SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
         if(filter.title){
             sql = sql.concat(' AND UPPER(P.title) LIKE UPPER("%" || ? || "%")');
@@ -157,7 +171,7 @@ exports.addProposal = (body) => {
   } = body;
   return new Promise((resolve, reject) => {
     const sql =
-      "insert into proposal (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      "insert into proposal (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS ) values (?,?,?,?,?,?,?,?,?,?,?,?)";
     db.run(
       sql,
       [
@@ -172,8 +186,7 @@ exports.addProposal = (body) => {
         notes,
         expiration,
         level,
-        cds,
-        "Active"
+        cds
       ],
       (err) => {
         if (err) {

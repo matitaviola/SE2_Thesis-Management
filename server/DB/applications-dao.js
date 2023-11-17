@@ -32,7 +32,22 @@ exports.getApplicationsByStudent = (studentId) => {
             if (err)
                 reject(err);
             else if (rows === undefined || rows.length === 0) {
-                resolve({}); //if no applications yet for that 
+                //If he has no pending applications maybe he has an assigned one
+                db.get("SELECT * FROM ARCHIVED_PROPOSAL WHERE Thesist=?",[studentId], (err, row) => {
+                    if (err)
+                        reject(err);
+                    else if (row === undefined || row.length === 0) {
+                        //if no applications yet for that 
+                        resolve([]);
+                    } else {
+                        resolve([{ 
+                            studentId:row.Thesist,
+                            proposal: row.Title,
+                            status:"Accepted"
+                            //Insert here the other fields for the application
+                        }])
+                    }
+                });
             }
             else {
                 const applications = rows.map( r => {
@@ -63,7 +78,7 @@ exports.setApplicationStatus = (proposal, studentId, status) => {
         });
     });
 }
-
+/*
 exports.autoRejectApplication = (proposal, studentId) => {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
@@ -75,7 +90,7 @@ exports.autoRejectApplication = (proposal, studentId) => {
         });
     });
 }
-
+*/
 exports.autoDeleteApplication = (studentId) => {
     return new Promise((resolve, reject) => {
         const sql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
