@@ -88,25 +88,25 @@ sections:
 
 - Hours per task average, standard deviation (estimate and actual)
     - Estimated hours per task avarage: 96 / 35 ≈ 2.74 hours
-    - Actual hours per task avarage: ??? / 35 ≈ ??? hours
+    - Actual hours per task avarage:  92 / 35 ≈ 2.63 hours
 
-    - Estimated standard deviation: ≈ ??? hours
-    - Actual standard deviation: ≈ ??? hours
+    - Estimated standard deviation: ≈ 1.40 hours
+    - Actual standard deviation: ≈ 1.34 hours
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1
-    - Total Task Estimation Error Ratio = (96 / ???) - 1 ≈ -0.2128
+    - Total Task Estimation Error Ratio = (96 / 92) - 1 ≈ 1.04
 
   
 ## QUALITY MEASURES 
 
 - Unit Testing:
   - Total hours estimated: 10
-  - Total hours spent: ???
+  - Total hours spent: 8.6
   - Nr of automated unit test cases: 106
   - Coverage (if available): 100%
 - E2E testing:
   - Total hours estimated: 2
-  - Total hours spent: 2h 30m
+  - Total hours spent: 1
 - Code review 
   - Total hours estimated: 2
   - Total hours spent: 1h 30m
