@@ -99,6 +99,7 @@ exports.archiveProposal = (proposalId, studentId) => {
 
                                             db.run(deleteSQL, [proposalId], (err) => {
                                                 if(err){
+                                                    db.run("ROLLBACK");
                                                     reject(err);
                                                 }
 
