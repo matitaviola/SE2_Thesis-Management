@@ -39,12 +39,12 @@ function ApplicationRow(props) {
         {
             loggedInUser.role == 'TEACHER'?
 
-            <Link to={`/application/${props.application.proposal}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/application/${props.application.proposal_id}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
                         <span className="title">
-                            "{props.application.proposal}" 
+                            "{props.application.proposal}"  
                         </span>
                         application by student 
                         <span className="student"> {props.application.studentId}</span>
@@ -53,7 +53,7 @@ function ApplicationRow(props) {
             </Row>
             </Link>
             :
-            <Link to={`proposals/${props.application.proposal}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/applications/${props.application.proposal_id}`} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
@@ -66,7 +66,7 @@ function ApplicationRow(props) {
                 <span className="student" style={{ color: 
                     props.application.status === 'Rejected' ? 'red' :
                     props.application.status === 'Accepted' ? 'green' :
-                    'black'
+                    props.application.status === 'Cancelled'? 'black' : 'orange'
                 }}>
                         Status: {props.application.status}
                 </span>
