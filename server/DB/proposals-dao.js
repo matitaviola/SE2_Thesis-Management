@@ -75,7 +75,7 @@ exports.archiveProposal = (proposalId, studentId) => {
                                 originalProposal.CdS,
                                 "Archived",
                                 studentId
-                            ], function (err) {
+                            ], (err) => {
                                 if (err) {
                                     // Roll back the transaction if an error occurs
                                     db.run("ROLLBACK");
@@ -83,21 +83,21 @@ exports.archiveProposal = (proposalId, studentId) => {
                                 }
 
                                 // Execute the second SQL statement
-                                db.run(updateSQL, [proposalId, proposalId, studentId], function (err) {
+                                db.run(updateSQL, [proposalId, proposalId, studentId], (err) => {
                                     if (err) {
                                         // Roll back the transaction if an error occurs
                                         db.run("ROLLBACK");
                                         reject(err);
                                     }
                                         // Execute the third SQL statement
-                                        db.run(updateCancelledSQL, [proposalId, proposalId], function (err) {
+                                        db.run(updateCancelledSQL, [proposalId, proposalId], (err) => {
                                             if (err) {
                                                 // Roll back the transaction if an error occurs
                                                 db.run("ROLLBACK");
                                                 reject(err);
                                             }
 
-                                            db.run(deleteSQL, [proposalId], function(err){
+                                            db.run(deleteSQL, [proposalId], (err) => {
                                                 if(err){
                                                     reject(err);
                                                 }
@@ -123,7 +123,7 @@ exports.archiveProposal = (proposalId, studentId) => {
 
 exports.getAvailableProposals = (studentId, filter) => {
     return new Promise((resolve, reject) => {
-        let sql = 'SELECT *, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
+        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
         if(filter.title){
             sql = sql.concat(' AND UPPER(P.title) LIKE UPPER("%" || ? || "%")');
@@ -186,7 +186,7 @@ exports.getAvailableProposals = (studentId, filter) => {
                 resolve([]); //if no proposals yet for that 
             }
             else {
-                const proposals = rows.map(r => new Proposal(r.Id, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
+                const proposals = rows.map(r => new Proposal(r.pId, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
                 resolve(proposals);
             }
         });
@@ -233,7 +233,7 @@ exports.addProposal = (body) => {
         } else {
             db.get('SELECT * FROM proposal WHERE Id = ?', [this.lastID], function (err, row) {
                 if (err) reject(err);
-                else resolve({success:true, inserted:row});
+                else resolve({success:true});
             });
         }
       }
