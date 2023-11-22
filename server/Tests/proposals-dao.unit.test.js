@@ -446,7 +446,7 @@ describe('getProposals Function Tests', () => {
   }];
 
   const proposalRaw = [{
-    pId: 3,
+    pID: 3,
     Title: 'Proposal 3',
     Supervisor: 'd100003',
     Co_supervisor: 'Co-Supervisor B',
@@ -477,7 +477,7 @@ describe('getProposals Function Tests', () => {
     tSurname: 'Johnson'
   },
   {
-    pId:4,
+    pID:4,
     Title: 'Proposal 4',
     Supervisor: 'd100001',
     Co_supervisor: 'Co-Supervisor D',

@@ -187,7 +187,9 @@ exports.getAvailableProposals = (studentId, filter) => {
                 resolve([]); //if no proposals yet for that 
             }
             else {
-                const proposals = rows.map(r => new Proposal(r.pId, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE));
+                const proposals = rows.map(r => {
+                    return new Proposal(r.pID, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE)
+                });
                 resolve(proposals);
             }
         });
