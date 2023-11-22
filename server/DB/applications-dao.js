@@ -41,7 +41,7 @@ exports.getApplicationsByStudent = (studentId) => {
             else {
                 const applications = rows.map( r => {
                     return { 
-                        id: r.id,
+                        id: r.Id,
                         studentId:r.Student_ID,
                         proposal: (r.Status === 'Accepted' || r.Status === 'Cancelled')? r.Archived_Proposal_ID : r.Proposal_ID,
                         title: r.Proposal,

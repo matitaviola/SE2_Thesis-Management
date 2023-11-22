@@ -760,13 +760,13 @@ describe('createProposal API', () => {
       headers: { 'Content-Type': 'application/json', 'X-USER-ROLE': 'TEACHER' },
       body: JSON.stringify(proposalData),
     });
-    expect(result).toBeNull();
+    expect(result.ok).toBe(true);
   });
 
   it('should throw an error on failed request', async () => {
     fetch.mockResolvedValueOnce(errorResponse);
-
-    await expect(API.createProposal(proposalData, teacherUser)).rejects.toEqual(
+  
+    await expect(API.createProposal(proposalData, teacherUser)).rejects.toThrow(
       'Error occurred'
     );
   });

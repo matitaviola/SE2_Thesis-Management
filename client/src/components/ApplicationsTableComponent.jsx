@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../App';
 import API from '../API';
 
-export default function ApplicationTable() {
+export default function ApplicationTable(props) {
     const [applications, setApplications] = useState([]);
     const loggedInUser = useContext(AuthContext);
 
@@ -14,7 +14,8 @@ export default function ApplicationTable() {
                 const retrievedApplications = await API.getApplications(loggedInUser);
                 setApplications(retrievedApplications);
             } catch (err) {
-                console.log("Applications getting an error: " + err);
+                //should use toast instead
+                console.error(err);
             }
         };
         getApplications();

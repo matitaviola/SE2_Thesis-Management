@@ -53,7 +53,7 @@ exports.archiveProposal = (proposalId, studentId) => {
                         const insertSQL = "INSERT INTO ARCHIVED_PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                         const deleteSQL = "DELETE FROM PROPOSAL WHERE Id=?";
                         const updateSQL = "UPDATE APPLICATION SET Archived_Proposal_ID=?, Status='Accepted' WHERE Proposal_ID=? AND Student_ID=?";
-                        const updateCancelledSQL = "UPDATE APPLICATION SET Archived_Proposal_ID=?, Status='Cancelled' WHERE Proposal_ID=? AND Status='Pending'"
+                        const updateCancelledSQL = "UPDATE APPLICATION SET Archived_Proposal_ID=?, Status='Cancelled' WHERE Proposal_ID=? AND Status!='Accepted'"
                         // Begin a transaction
                         db.serialize(() => {
                             db.run("BEGIN TRANSACTION");

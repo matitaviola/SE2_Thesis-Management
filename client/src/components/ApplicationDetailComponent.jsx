@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import API from '../API';
 
-function ApplicationDetailComponent() {
+function ApplicationDetailComponent(props) {
     const [studentData, setStudentData] = useState(null);
     const { proposalId, studentId } = useParams();
     const navigate = useNavigate();
@@ -13,20 +13,26 @@ function ApplicationDetailComponent() {
                 const retrievedStudentData = await API.getStudentData(proposalId,studentId);
                 setStudentData(retrievedStudentData);
             } catch (err) {
-                console.log("Applications getting an error: " + err);
+                //should use toast instead
+                console.error(err);
             }
         };
         getStudentData();
     }, []);
 
     const acceptRejectApplication = async (status) => {
-        const response = await API.updateApplicationStatus(proposalId, studentId, status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        else{
-            // Navigate to the previous page
-            navigate('/applications');
+        try{
+            response = await API.updateApplicationStatus(proposalId, studentId, status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            else{
+                // Navigate to the previous page
+                navigate('/applications');
+            }
+        } catch (err) {
+            //should use toast instead
+            console.error(err);
         }
     };
 

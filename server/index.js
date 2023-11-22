@@ -176,7 +176,6 @@ async (req, res) => {
     // const userRole = req.role;
     // if (userRole !== 'TEACHER')
     //   return res.status(403).json({ error: 'Forbidden' });
-
     const { body } = req;
     if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
           body.keywords && body.type && body.groups && body.description && 
@@ -185,6 +184,7 @@ async (req, res) => {
 
     if (moment(body.expiration).isBefore(moment()))
       throw new Error('Invalid expiration date');
+
     if (body.level !== 'BSc' && body.level !== 'MSc')
       throw new Error('Invalid level');
 
@@ -199,9 +199,7 @@ async (req, res) => {
     const proposal = await propDao.addProposal(req.body);
     res.json(proposal);
 } catch (error) {
-    if (error instanceof Error || error.code === 'SQLITE_ERROR')
-        return res.status(400).json({ error: error.message });
-    return res.status(500).json({ error: error.message || error })
+    return res.status(500).json({ error: (error.message? error.message: error) })
 }
 });
 
@@ -266,7 +264,15 @@ app.get('/api/applications/student/:studentId',
 app.post('/api/applications',
 async (req, res) => {
   try {
+    const pendingApps = await appDao.getApplicationsByStudent(req.body.studentId).then((rows) => rows.filter(r => r.status=="Pending"||r.status=="Accepted").length);
+
+    if(pendingApps>0){
+      console.log("Error length")
+      return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
+    }
+
     const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
+
     res.json(application);
   } catch (err){
     console.log(err);

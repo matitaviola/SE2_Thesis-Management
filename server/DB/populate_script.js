@@ -409,7 +409,7 @@ const insertData = () => {
                     ['s200006', 6, null, 'Proposal 6', 'Rejected'],
                     ['s200007', 7, null, 'Proposal 7', 'Pending'],
                     ['s200010', 11, null, 'Proposal 11', 'Pending'],
-                    ['s200010', 8, null, 'Proposal 8', 'Pending'],
+                    ['s200010', 8, null, 'Proposal 8', 'Rejected'],
                     ['s200011', 13, null, 'Proposal 13', 'Pending'],
                     ['s200012', 12, null, 'Proposal 12', 'Rejected'],
                     ['s200013', 13, null, 'Proposal 13', 'Pending'],

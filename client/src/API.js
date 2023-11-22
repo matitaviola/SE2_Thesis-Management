@@ -82,7 +82,6 @@ const getProposals = async (user) =>{
     throw new Error("Error on getting the proposals: Invalid role");
   }
   if(response.ok) {
-    console.log(proposalsJson);
     return(proposalsJson);
   }
   else{
@@ -101,14 +100,12 @@ const getStudentProposals = async (studentId, filter) =>{
     path = path.concat(`${k}=${filter[k]}&`);
   })
   path = path.slice(0, -1);
-  console.log(path);
 
   let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, {headers:reqheader});
   let responseJson = await response.json();
 
 
   if(response.ok) {
-    console.log(responseJson);
     return responseJson;
   }
   else{
@@ -128,9 +125,9 @@ const createProposal = async (proposal, user) => {
   });
   if(!response.ok) {
     const errMessage = await response.json();
-    throw errMessage;
+    throw new Error(errMessage.error);
   }
-  else return null;
+  return {ok:true};
 }
 
 const deleteProposal = async (proposal) => {
@@ -190,7 +187,7 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
   };
   //Choose if accept or reject based on the status passed
   const status = statusSet? "Accepted" : "Rejected";
-  console.log(status);
+
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
       headers: reqheader,
