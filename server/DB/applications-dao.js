@@ -1,6 +1,7 @@
 'use strict';
 const { db } = require('./db');
 
+//return applications that have yet to be avaluated (accepted/rejected)
 exports.getActiveApplicationsByProposal = (proposal) => {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM APPLICATION WHERE Proposal_ID=? AND Status="Pending"';
@@ -27,6 +28,7 @@ exports.getActiveApplicationsByProposal = (proposal) => {
     });
 }
 
+//return alll the applications of a given student, with any status
 exports.getApplicationsByStudent = (studentId) => {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM APPLICATION WHERE STUDENT_ID=?';
@@ -39,6 +41,7 @@ exports.getApplicationsByStudent = (studentId) => {
             else {
                 const applications = rows.map( r => {
                     return { 
+                        id: r.id,
                         studentId:r.Student_ID,
                         proposal: (r.Status === 'Accepted' || r.Status === 'Cancelled')? r.Archived_Proposal_ID : r.Proposal_ID,
                         title: r.Proposal,
@@ -52,9 +55,10 @@ exports.getApplicationsByStudent = (studentId) => {
     });
 }
 
+//changes an application status 
 exports.setApplicationStatus = (proposal, studentId, status) => {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal_Id = ? AND Student_Id = ?';
+        const sql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal_ID = ? AND Student_ID = ?';
         db.run(sql, [String(status), proposal, studentId], function (err) {
             if (err) {
                 reject(err);
@@ -67,6 +71,7 @@ exports.setApplicationStatus = (proposal, studentId, status) => {
     });
 }
 
+//creates a new application for a proposal for the given student
 exports.createApplication = (proposalId, studentId) => {
     return new Promise((resolve, reject) => {
         const sql = "SELECT * FROM PROPOSAL WHERE Id=?";
