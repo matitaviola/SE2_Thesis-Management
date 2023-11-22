@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "coverage": "jest --coverage",
     "populate": "node ./DB/populate_script.js"
   },
   "keywords": [],

@@ -2,9 +2,10 @@
 
 const dayjs = require('dayjs');
 
-function Proposal(title, supervisorId, supervisorName, supervisorSurname, coSupervisor, keywords, type, groups, description, reqKnowledge, notes, expiration, level, cdsId, cdsName) {
+function Proposal(id, title, supervisorId, supervisorName, supervisorSurname, coSupervisor, keywords, type, groups, description, reqKnowledge, notes, expiration, level, cdsId, cdsName) {
     //Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS
     // this.id = id;
+    this.id = id;
     this.title = title;
     this.supervisorId = supervisorId;
     this.supervisorName = supervisorName;

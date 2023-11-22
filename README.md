@@ -36,5 +36,5 @@ npm test
 ```
 To also get the tests coverage run
 ```bash
-npx jest --coverage
+npm run coverage
 ```

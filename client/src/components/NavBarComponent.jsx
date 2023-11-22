@@ -11,12 +11,15 @@ function NavHeader(props) {
   <Navbar bg="primary" variant="dark">
     <Container fluid>
       <Link to='/' className='navbar-brand'>POLITO Thesis</Link>
-      <Nav className="me-auto">
-      <Nav.Link href="/proposals">Proposals</Nav.Link>
+      {loggedInUser ? 
+        <>
+        <Nav className="me-auto">
+        <Nav.Link href="/proposals">Proposals</Nav.Link>
         <Nav.Link href="/applications">Applications</Nav.Link>
         </Nav>
-      {loggedInUser ? 
-        <LogoutButton logout={props.handleLogout} user={loggedInUser} /> :
+        <LogoutButton logout={props.handleLogout} user={loggedInUser} />
+        </>
+         :
         <Link to='/login'className='btn btn-outline-light'>Login</Link>
          }
     </Container>
