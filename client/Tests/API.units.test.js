@@ -748,7 +748,7 @@ describe('createProposal API', () => {
 
   const errorResponse = {
     ok: false,
-    json: async () => 'Error occurred',
+    json: async () => {return {error:'Error occurred'}},
   };
 
   it('should create a proposal successfully', async () => {
