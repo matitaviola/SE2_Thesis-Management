@@ -406,44 +406,43 @@ describe('getProposals Function Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
   const studentId = 's200000';
-  const proposalsResult = [{ 
-    id: 3,
-    title: "Proposal 3",
-    supervisorId: "d100003",
-    supervisorName: "Michael",
-    supervisorSurname: "Johnson",
-    coSupervisor: "Co-Supervisor B",
-    keywords: "design, architecture, development",
-    type: "Type C",
-    groups: "Group Z",
-    description: "Description for Proposal 3",
-    reqKnowledge: "Knowledge about software engineering",
-    notes: "Additional info",
-    expiration: dayjs("2022-11-19T23:00:00.000Z"),
-    level: "BSc",
-    cdsId: "CS102",
-    cdsName: "Computer Science"
-  },
-  {
-    id:4,
-    title: "Proposal 4",
-    supervisorId: "d100001",
-    supervisorName: "Michael",
-    supervisorSurname: "Johnson",
-    coSupervisor: "Co-Supervisor D",
-    keywords: "networks, security, protocols",
-    type: "Type D",
-    groups: "Group W",
-    description: "Description for Proposal 4",
-    reqKnowledge: "Knowledge about cybersecurity",
-    notes: "Important notes",
-    expiration: dayjs("2023-06-29T22:00:00.000Z"),
-    level: "MSc",
-    cdsId: "CS101",
-    cdsName: "Computer Science"
-  }];
+  const proposalsResult = [Proposal( 
+    3,
+    "Proposal 3",
+    "d100003",
+    "Michael",
+    "Johnson",
+    "Co-Supervisor B",
+    "design, architecture, development",
+    "Type C",
+    "Group Z",
+    "Description for Proposal 3",
+    "Knowledge about software engineering",
+    "Additional info",
+    '2022-11-19',
+    "BSc",
+    "CS102",
+    "Computer Science"
+  ),
+  Proposal(
+    4,
+    "Proposal 4",
+    "d100001",
+    "Michael",
+    "Johnson",
+    "Co-Supervisor D",
+    "networks, security, protocols",
+    "Type D",
+    "Group W",
+    "Description for Proposal 4",
+    "Knowledge about cybersecurity",
+    "Important notes",
+    '2023-06-29',
+    "MSc",
+    "CS101",
+    "Computer Science"
+  )];
 
   const proposalRaw = [{
     pID: 3,
@@ -456,7 +455,7 @@ describe('getProposals Function Tests', () => {
     Description: 'Description for Proposal 3',
     Req_knowledge: 'Knowledge about software engineering',
     Notes: 'Additional info',
-    Expiration: '2022-11-20',
+    Expiration: '2022-11-19',
     Level: 'BSc',
     CdS: 'CS102',
     Status: 'Active',
@@ -487,7 +486,7 @@ describe('getProposals Function Tests', () => {
     Description: 'Description for Proposal 4',
     Req_knowledge: 'Knowledge about cybersecurity',
     Notes: 'Important notes',
-    Expiration: '2023-06-30',
+    Expiration: '2023-06-29',
     Level: 'MSc',
     CdS: 'CS101',
     Status: 'Active',
