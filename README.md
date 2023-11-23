@@ -15,7 +15,7 @@ docker-compose up
 ```
 ### Go to the webapp page
 Either open your browser and go to "127.0.0.1:5173" or clicke this link:
-[Thesis Management](127.0.0.1:5173)
+[Thesis Management](http://127.0.0.1:5173)
 
 ## Run locally without docker
 ### Cloning the Repository
