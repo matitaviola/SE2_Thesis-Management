@@ -222,9 +222,23 @@ const addApplication = async (proposalId, studentId) => {
   
 } 
 
+const uploadResumee = async (file) => {
+  try {
+    await axios.post('http://localhost:3001/upload', file, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log('File uploaded succesfully!');
+  } catch (error) {
+    console.error('Error during file upload:', error);
+  }
+}
+
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication};
+const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, uploadResumee};
 export default API;
 
