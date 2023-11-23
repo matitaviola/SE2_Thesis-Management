@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npm run coverage && npm run populate && node index.js",
     "test": "jest",
     "coverage": "jest --coverage",
     "populate": "node ./DB/populate_script.js"
