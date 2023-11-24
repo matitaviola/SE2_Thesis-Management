@@ -6,6 +6,7 @@ const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
 const authorizationMiddleware = require('./Middlewares/authorization-middleware');
+const mailServer = require('./utils/mail-server');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
@@ -284,23 +285,29 @@ async (req, res) => {
 app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try { 
-        if(req.body.status === "Accepted"){
-          // Archives the proposal
-          const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
-
-          if (!archiveResult.success) {
-            throw new Error('An error occurred while archiving the proposal');
+        const proposal = await propDao.getProposalById(req.params.proposalsId);
+        if (proposal) {
+          if (req.body.status === "Accepted"){
+            // Archives the proposal
+            const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+  
+            if (!archiveResult.success) {
+              throw new Error('An error occurred while archiving the proposal');
+            }
+            mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.Title });
+          } else {
+            // Update the application status, will probably be a "rejected"
+            const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
+            if (!result.success) {
+              throw new Error('Application not found');
+            }
+            mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'rejected', proposal: proposal.Title });
           }
-
-      }else{
-        // Update the application status, will probably be a "rejected"
-        const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
-        if (!result.success) {
-            throw new Error('Application not found');
+  
+          res.status(200).end();
+        } else {
+          res.status(400).json({ error: 'Proposal not found' });
         }
-      }
-
-        res.status(200).end();
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred while updating application status' });
