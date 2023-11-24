@@ -139,4 +139,4 @@ sections:
   - Commit far less stories
 
 - One thing you are proud of as a Team!!
-  We defined correctly the order of dependece of the various tasks
+  We correctly defined the dependency order of the tasks.
