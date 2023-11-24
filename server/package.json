@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run coverage && node index.js",
     "test": "jest",
-    "coverage": "jest --coverage --coverageDirectory=./coverage/lcov-report/server --colors",
+    "coverage": "jest --coverage --coverageDirectory=./coverage/server/lcov-report --colors",
     "populate": "node ./DB/populate_script.js"
   },
   "keywords": [],

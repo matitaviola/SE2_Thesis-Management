@@ -19,10 +19,6 @@ jobs:
               npm i
               cd ../server
               npm i
-      - name: Create coverage directories
-        run: |
-          mkdir -p ./client/coverage
-          mkdir -p ./server/coverage
       - name: Test and coverage
         run: |
               cd ./client
