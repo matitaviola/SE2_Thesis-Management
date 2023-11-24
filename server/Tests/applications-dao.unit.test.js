@@ -5,7 +5,8 @@ const { db } = require('../DB/db');
 jest.mock('../DB/db', () => {
   const mockedDB = {
     all: jest.fn(),
-    run: jest.fn()
+    run: jest.fn(),
+    get: jest.fn()
   };
   return { db: mockedDB };
 });
@@ -16,37 +17,39 @@ describe('getActiveApplicationsByProposal', () => {
   });
 
   it('should resolve with an empty object when no applications are found for a proposal', async () => {
-    const proposal = { title: 'Proposal 1' };
-    const expectedSql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status=?';
+    const proposal = { id:1, title: 'Proposal 1' };
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID=? AND Status="Pending"';
     const mockedRows = [];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal.title, "Pending"]);
+      expect(params).toEqual([proposal.id]);
       callback(null, mockedRows);
     });
 
     const result = await getActiveApplicationsByProposal(proposal);
-    expect(result).toEqual({});
+    expect(result).toEqual(mockedRows);
   });
 
   it('should resolve with an array of applications when they are found for a proposal', async () => {
-    const proposal = { title: 'Proposal 2' };
-    const expectedSql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status=?';
+    const proposal = { id:2, title: 'Proposal 2' };
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID=? AND Status="Pending"';
     const mockedRows = [
-      { Student_ID: 1, Status: 'Pending' },
-      { Student_ID: 2, Status: 'Accepted' }
+      { id:1, Student_ID: 1, Proposal_ID:2, Status: 'Pending' },
+      { id:2, Student_ID: 2, Proposal_ID:2, Status: 'Pending' }
       // Add more sample application data as needed
     ];
     const expectedApplications = mockedRows.map(r => ({
+      id: r.id,
       studentId: r.Student_ID,
-      proposal: proposal.title,
+      proposal: r.Proposal_ID,
+      title: proposal.title,
       status: r.Status
       // Add other fields for the application
     }));
 
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal.title, "Pending"]);
+      expect(params).toEqual([proposal.id]);
       callback(null, mockedRows);
     });
 
@@ -55,12 +58,12 @@ describe('getActiveApplicationsByProposal', () => {
   });
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
-    const proposal = { title: 'Proposal 3' };
-    const expectedSql = 'SELECT * FROM APPLICATION WHERE PROPOSAL=? AND Status=?';
+    const proposal = { id:3, title: 'Proposal 3' };
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID=? AND Status="Pending"';
     const expectedError = 'Database error occurred';
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal.title, "Pending"]);
+      expect(params).toEqual([proposal.id]);
       callback(expectedError, null);
     });
 
@@ -84,20 +87,22 @@ describe('getApplicationsByStudent', () => {
     });
 
     const result = await getApplicationsByStudent(studentId);
-    expect(result).toEqual({});
+    expect(result).toEqual(mockedRows);
   });
 
   it('should resolve with an array of applications when they are found for a student', async () => {
     const studentId = 2; 
     const expectedSql = 'SELECT * FROM APPLICATION WHERE STUDENT_ID=?';
     const mockedRows = [
-      { Student_ID: studentId, Proposal: 'Proposal 1', Status: 'Pending' },
-      { Student_ID: studentId, Proposal: 'Proposal 2', Status: 'Accepted' }
+      { id:1, Student_ID: studentId, Proposal_ID:1, Archived_Proposal_ID:null, Proposal: 'Proposal 1', Status: 'Pending' },
+      { id:2, Student_ID: studentId, Proposal_ID:null, Archived_Proposal_ID:2, Proposal: 'Proposal 2', Status: 'Accepted' }
       // Add more sample application data as needed
     ];
     const expectedApplications = mockedRows.map(r => ({
+      id: r.id,
       studentId: r.Student_ID,
-      proposal: r.Proposal,
+      proposal: r.Proposal_ID? r.Proposal_ID : r.Archived_Proposal_ID,
+      title: r.Proposal,
       status: r.Status
       // Add other fields for the application
     }));
@@ -135,7 +140,7 @@ describe('setApplicationStatus', () => {
     const proposal = 'Proposal 1';
     const studentId = 's200001'; 
     const status = 'Accepted';
-    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal = ? AND Student_Id = ? AND Status = "Pending"';
+    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal_ID = ? AND Student_ID = ?';
     
     const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
       expect(sql).toBe(expectedSql);
@@ -153,7 +158,7 @@ describe('setApplicationStatus', () => {
     const proposal = 'Proposal 2';
     const studentId = 's200002'; 
     const status = 'Accepted';
-    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal = ? AND Student_Id = ? AND Status = "Pending"';
+    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal_ID = ? AND Student_ID = ?';
     
     const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
       expect(sql).toBe(expectedSql);
@@ -164,14 +169,14 @@ describe('setApplicationStatus', () => {
     db.run.mockImplementation(mockRun);
   
     const result = await setApplicationStatus(proposal, studentId, status);
-    expect(result).toEqual({ error: 'The application is not in Pending status or does not exist' });
+    expect(result).toEqual({ error: 'The application does not exist' });
   });
 
   it('should reject with an error if an error occurs during database update', async () => {
     const proposal = 'Proposal 3';
     const studentId = "s200003"; 
     const status = 'Accepted';
-    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal = ? AND Student_Id = ? AND Status = "Pending"';
+    const expectedSql = 'UPDATE APPLICATION SET Status = ? WHERE Proposal_ID = ? AND Student_ID = ?';
     const expectedError = 'Database error occurred';
 
     db.run.mockImplementation((sql, params, callback) => {
@@ -184,154 +189,79 @@ describe('setApplicationStatus', () => {
   });
 });
 
-describe('autoRejectApplication', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should resolve with success message when auto-rejecting application successfully', async () => {
-    const proposal = 'Proposal 1';
-    const studentId = 's200001'; 
-    const expectedSql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
-    
-    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal, studentId]);
-      callback.call({ changes: 1 }, null); // Manually set the 'this' context
-    });
-
-    db.run.mockImplementation(mockRun);
-
-    const result = await autoRejectApplication(proposal, studentId);
-    expect(result).toEqual({ success: true });
-  });
-
-  it('should resolve with success message when no application is auto-rejected', async () => {
-    const proposal = 'Proposal 2';
-    const studentId = 's200002'; 
-    const expectedSql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
-    
-    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal, studentId]);
-      callback.call({ changes: 0 }, null); // Manually set the 'this' context
-    });
-
-    db.run.mockImplementation(mockRun);
-
-    const result = await autoRejectApplication(proposal, studentId);
-    expect(result).toEqual({ success: true });
-  });
-
-  it('should reject with an error if an error occurs during database update', async () => {
-    const proposal = 'Proposal 3';
-    const studentId = 's200003'; 
-    const expectedSql = 'UPDATE APPLICATION SET STATUS = "Rejected" WHERE PROPOSAL = ? AND STATUS = "Pending" AND STUDENT_ID != ?';
-    const expectedError = 'Database error occurred';
-
-    db.run.mockImplementation((sql, params, callback) => {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([proposal, studentId]);
-      callback(expectedError, null);
-    });
-
-    await expect(autoRejectApplication(proposal, studentId)).rejects.toEqual(expectedError);
-  });
-});
-
-describe('autoDeleteApplication', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should resolve with success message when auto-deleting application successfully', async () => {
-    const studentId = 's200001';
-    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
-
-    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([studentId]);
-      callback.call({ changes: 1 }, null); // Manually set the 'this' context
-    });
-
-    db.run.mockImplementation(mockRun);
-
-    const result = await autoDeleteApplication(studentId);
-    expect(result).toEqual({ success: true });
-  });
-
-  it('should resolve with success message when no application is auto-deleted', async () => {
-    const studentId = 's200002';
-    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
-
-    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([studentId]);
-      callback.call({ changes: 0 }, null); // Manually set the 'this' context
-    });
-
-    db.run.mockImplementation(mockRun);
-
-    const result = await autoDeleteApplication(studentId);
-    expect(result).toEqual({ success: true });
-  });
-
-  it('should reject with an error if an error occurs during database delete', async () => {
-    const studentId = 's200003';
-    const expectedSql = 'DELETE FROM APPLICATION WHERE STUDENT_ID = ? AND STATUS = "Pending"';
-    const expectedError = 'Database error occurred';
-
-    db.run.mockImplementation((sql, params, callback) => {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([studentId]);
-      callback(expectedError, null);
-    });
-
-    await expect(autoDeleteApplication(studentId)).rejects.toEqual(expectedError);
-  });
-});
-
 describe('createApplication', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should resolve with success message when creating an application successfully', async () => {
-    const proposalId = 'Proposal 1';
+    const proposalId = 1;
     const studentId = 's200001';
-    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+    const expectedGetSql = "SELECT * FROM PROPOSAL WHERE Id=?";
+    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL_ID, PROPOSAL, ARCHIVED_PROPOSAL_ID, STATUS) VALUES (?, ?, ?, ?, "Pending")';
 
-    const mockRun = jest.fn().mockImplementation(function (sql, params, callback) {
-      expect(sql).toBe(expectedSql);
-      expect(params).toEqual([studentId, proposalId]);
-      callback.call({ changes: 1 }, null);
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedGetSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, {Title:"Proposal 1"});
     });
 
-    db.run.mockImplementation(mockRun);
+    db.run.mockImplementation(function (sql, params, callback) {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId, proposalId, "Proposal 1", null]);
+      callback.call(null);
+    });
 
     const result = await createApplication(proposalId, studentId);
     expect(result).toEqual({ success: true });
   });
 
-  it('should handle duplicate title error', async () => {
-    const proposalId = 'Proposal 1';
+  it('should reject with an error when the proposal is not found', async () => {
+    const proposalId = 1;
     const studentId = 's200001';
-    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+    const expectedGetSql = "SELECT * FROM PROPOSAL WHERE Id=?";
+    const expectedError = `Error in creating an application: no such proposal ${proposalId}`;
 
-    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'SQLITE_CONSTRAINT' }));
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedGetSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, null);
+    });
 
-    await expect(createApplication(proposalId, studentId)).rejects.toEqual('Duplicate title');
+    await expect(createApplication(proposalId, studentId)).rejects.toEqual(expectedError);
+  });
+
+  it('should reject with an error if something went wrong looking for the proposal', async () => {
+    const proposalId = 1;
+    const studentId = 's200001';
+    const expectedGetSql = "SELECT * FROM PROPOSAL WHERE Id=?";
+    const expectedError = 'Database error occurred';
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedGetSql);
+      expect(params).toEqual([proposalId]);
+      callback(expectedError, null);
+    });
+
+    await expect(createApplication(proposalId, studentId)).rejects.toEqual(expectedError);
   });
 
   it('should reject with an error if an error occurs during database insertion', async () => {
     const proposalId = 'Proposal 2';
     const studentId = 's200002';
-    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL, STATUS) VALUES (?, ?, "Pending")';
+    const expectedGetSql = "SELECT * FROM PROPOSAL WHERE Id=?";
+    const expectedSql = 'INSERT INTO APPLICATION (STUDENT_ID, PROPOSAL_ID, PROPOSAL, ARCHIVED_PROPOSAL_ID, STATUS) VALUES (?, ?, ?, ?, "Pending")';
     const expectedError = 'Database error occurred';
-
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedGetSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, {Title:"Proposal 1"});
+    });
+    
     db.run.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
-      expect(params).toEqual([studentId, proposalId]);
+      expect(params).toEqual([studentId, proposalId, "Proposal 1", null]);
       callback(expectedError, null);
     });
 

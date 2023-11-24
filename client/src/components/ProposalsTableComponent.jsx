@@ -61,7 +61,7 @@ function TeacherProposalsTableComponent() {
                 </thead>
                 <tbody>
                     {proposals.map((p) => (
-                        <ProposalRow key={p.title} proposal={p} />
+                        <ProposalRow key={p.id} proposal={p} />
                     ))}
                 </tbody>
             </Table>
@@ -79,7 +79,7 @@ function ProposalRow(props) {
 
 	const handleViewClick = () => {
 		const proposal = props.proposal;
-		navigate(`/proposals/${props.proposal.title}`, { state: { proposal } });
+		navigate(`/proposals/${props.proposal.id}`, { state: { proposal } });
   };
 
     return (
@@ -118,7 +118,7 @@ function StudentProposalsTableComponent(props) {
   const [filter, setFilter] = useState({});
   const [studentId, setStudentId] = useState(props.studentId);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedTitle, setSelectedTitle] = useState(null);
+  const [selectedProposal, setSelectedProposal] = useState({title:"", id:-1});
 	const navigate = useNavigate();
   const loggedInUser = useContext(AuthContext);
 
@@ -148,15 +148,17 @@ function StudentProposalsTableComponent(props) {
 		navigate(`/proposals/${title}`, { state: { proposal } });
   };
 
-  const handleShowUpdateModal = (title) => {
-    setSelectedTitle(title);
+  const handleShowUpdateModal = (proposal) => {
+    console.log(proposal);
+    setSelectedProposal(proposal);
     setShowUpdateModal(true);
   };
 
   const handleCloseUpdateModal = () => setShowUpdateModal(false);
 
-  const handleSendApplication = (title) => {
-    API.addApplication(title, studentId);
+  const handleSendApplication = (proposal) => {
+    console.log(proposal);
+    API.addApplication(proposal.id, studentId);
     setShowUpdateModal(false);
   };
 
@@ -207,7 +209,7 @@ function StudentProposalsTableComponent(props) {
                     {applicationExists ? (
                       <span>Application sent</span>
                     ) : (
-                      <Button onClick={() => handleShowUpdateModal(p.title)}>Apply</Button>
+                      <Button onClick={() => handleShowUpdateModal(p)}>Apply</Button>
                     )}
                   </td>
                 </tr>
@@ -215,14 +217,14 @@ function StudentProposalsTableComponent(props) {
             })}
             <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>
-                <Modal.Title>{selectedTitle}</Modal.Title>
+                <Modal.Title>{selectedProposal.title}</Modal.Title>
               </Modal.Header>
-              <Modal.Body>Are you sure to apply for {selectedTitle}?</Modal.Body>
+              <Modal.Body>Are you sure to apply for {selectedProposal.title}?</Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseUpdateModal}>
                   Close
                 </Button>
-                <Button variant="primary" onClick={() => handleSendApplication(selectedTitle)}>
+                <Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
                   Send Application
                 </Button>
               </Modal.Footer>

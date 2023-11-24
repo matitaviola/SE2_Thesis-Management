@@ -1,7 +1,23 @@
 # SE2_Thesis-Management
 
 ## Project Setup Guide
+## Run with docker
+### Install the Docker app
+Go to [docker's official site](www.docker.com), download and install the docker application following the installation wizard's instructions
+### Cloning the repository
+```bash
+git clone https://github.com/matitaviola/SE2_Thesis-Management.git
+cd SE2_Thesis-Management
+```
+### Run docker build
+```
+docker-compose up
+```
+### Go to the webapp page
+Either open your browser and go to "127.0.0.1:5173" or clicke this link:
+[Thesis Management](http://127.0.0.1:5173)
 
+## Run locally without docker
 ### Cloning the Repository
 
 Be sure to have Node.js installed on your machine!
@@ -36,5 +52,5 @@ npm test
 ```
 To also get the tests coverage run
 ```bash
-npx jest --coverage
+npm run coverage
 ```

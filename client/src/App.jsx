@@ -69,22 +69,22 @@ useEffect(() => {
 
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent/>} />
+              element={<ProposalsTableComponent />} />
               <Route path='proposals/:proposalsId'
-              element={<StudentProposalComponent/>} />
+              element={<StudentProposalComponent />} />
               <Route path='applications'
-              element={<ApplicationsTable/>} />
+              element={<ApplicationsTable />} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent/>} />
+              element={<ProposalsTableComponent />} />
           <Route path='proposals/:proposalsId'
-              element={<ProposalComponent/>} />
+              element={<ProposalComponent />} />
           <Route path='proposals/new'
-              element={<ProposalsFormComponent setErrorMessage={setErrorMessage} />} />
+              element={<ProposalsFormComponent s/>} />
           <Route path='applications'
-              element={<ApplicationsTable/>}/>
+              element={<ApplicationsTable />}/>
           <Route path='application/:proposalId/:studentId'
               element={<ApplicationDetailComponent/>} />
               </>

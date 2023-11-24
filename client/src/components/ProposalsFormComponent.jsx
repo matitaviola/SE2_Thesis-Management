@@ -28,14 +28,15 @@ export default function ProposalsFormComponent(props) {
   };
 
   const handleSubmit = async (event) => {
-    try {
       event.preventDefault();
       proposal.supervisor = loggedInUser.id;
-      await API.createProposal(proposal, loggedInUser);
-      navigate("/proposals");
-    } catch (error) {
-      console.log("Error in inserting proposal: ", error);
-    }
+      try{
+        await API.createProposal(proposal, loggedInUser);
+        navigate("/proposals");
+      }catch(err){
+        //should use toast instead
+        console.error(err);
+      }
   };
 
   return (

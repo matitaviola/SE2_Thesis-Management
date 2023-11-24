@@ -82,7 +82,6 @@ const getProposals = async (user) =>{
     throw new Error("Error on getting the proposals: Invalid role");
   }
   if(response.ok) {
-    console.log(proposalsJson);
     return(proposalsJson);
   }
   else{
@@ -101,14 +100,12 @@ const getStudentProposals = async (studentId, filter) =>{
     path = path.concat(`${k}=${filter[k]}&`);
   })
   path = path.slice(0, -1);
-  console.log(path);
 
   let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, {headers:reqheader});
   let responseJson = await response.json();
 
 
   if(response.ok) {
-    console.log(responseJson);
     return responseJson;
   }
   else{
@@ -128,9 +125,9 @@ const createProposal = async (proposal, user) => {
   });
   if(!response.ok) {
     const errMessage = await response.json();
-    throw errMessage;
+    throw new Error(errMessage.error);
   }
-  else return null;
+  return {ok:true};
 }
 
 const deleteProposal = async (proposal) => {
@@ -173,7 +170,7 @@ const getApplications = async (user) =>{
 
   if(response.ok) {
     return applicationsJson.map(app => {
-      return {"studentId": app.studentId, "proposal": app.proposal, "status":app.status
+      return {"id":app.id, "studentId": app.studentId, "proposal_id":app.proposal, "proposal": app.title, "status":app.status
       //we'll need to add here the other fields of the application, when we'll know them
       };
     });
@@ -190,7 +187,7 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
   };
   //Choose if accept or reject based on the status passed
   const status = statusSet? "Accepted" : "Rejected";
-  console.log(status);
+
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
       headers: reqheader,
@@ -211,7 +208,7 @@ const addApplication = async (proposalId, studentId) => {
     'Content-Type':'application/json',
     'X-USER-ROLE': 'STUDENT'
   };
-  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}/${studentId}`, {
+  const response = await fetch(SERVER_URL + `/api/applications`, {
     method: 'POST',
     headers: reqheader,
     body: JSON.stringify({ proposalId, studentId }),

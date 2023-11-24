@@ -137,8 +137,8 @@ describe('getApplications API', () => {
 
 
   // Mock response data
-  const teacherApplications = [{ studentId: "s200001", proposal: 'Test Proposal', status: 'Pending' }];
-  const studentApplications = [{ studentId: "s200002", proposal: 'Another Proposal', status: 'Approved' }];
+  const teacherApplications = [{ id:1, studentId: "s200001", proposal:1, title: 'Test Proposal', status: 'Pending' }];
+  const studentApplications = [{ id:1, studentId: "s200002", proposal:2, title: 'Another Proposal', status: 'Approved' }];
 
   // Mock fetch response for teacher
   const teacherResponse = {
@@ -163,7 +163,7 @@ describe('getApplications API', () => {
 
     const result = await API.getApplications(teacherUser);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, {"headers":reqheaderT});
-    expect(result).toEqual(teacherApplications);
+    expect(result).toEqual([{ id:1, studentId: "s200001", proposal_id:1, proposal: 'Test Proposal', status: 'Pending' }]);
   });
 
   it('should return empty array for teacher when no applications are found', async () => {
@@ -179,7 +179,7 @@ describe('getApplications API', () => {
 
     const result = await API.getApplications(studentUser);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, {"headers":reqheaderS});
-    expect(result).toEqual(studentApplications);
+    expect(result).toEqual([{ id:1, studentId: "s200002", proposal_id:2, proposal: 'Another Proposal', status: 'Approved' }]);
   });
 
   it('should return empty array for student when no applications are found', async () => {
@@ -748,7 +748,7 @@ describe('createProposal API', () => {
 
   const errorResponse = {
     ok: false,
-    json: async () => 'Error occurred',
+    json: async () => {return {error:'Error occurred'}},
   };
 
   it('should create a proposal successfully', async () => {
@@ -760,13 +760,13 @@ describe('createProposal API', () => {
       headers: { 'Content-Type': 'application/json', 'X-USER-ROLE': 'TEACHER' },
       body: JSON.stringify(proposalData),
     });
-    expect(result).toBeNull();
+    expect(result.ok).toBe(true);
   });
 
   it('should throw an error on failed request', async () => {
     fetch.mockResolvedValueOnce(errorResponse);
-
-    await expect(API.createProposal(proposalData, teacherUser)).rejects.toEqual(
+  
+    await expect(API.createProposal(proposalData, teacherUser)).rejects.toThrow(
       'Error occurred'
     );
   });
@@ -866,7 +866,7 @@ describe('addApplication API', () => {
 
     const result = await API.addApplication(proposalId, studentId);
 
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalId}/${studentId}`, {
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
