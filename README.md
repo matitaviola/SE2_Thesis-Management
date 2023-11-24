@@ -47,7 +47,7 @@ node index.js
 ```bash
 npm run dev
 ```
-### Run tests (either inside the 'server' or 'client' folder)
+### 4 - Run tests (either inside the 'server' or 'client' folder)
 ```bash
 npm test
 ```
