@@ -40,7 +40,7 @@ function ApplicationRow(props) {
         {
             loggedInUser.role == 'TEACHER'?
 
-            <Link to={`/application/${props.application.proposal_id}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/application/${props.application.proposal_id}/${props.application.studentId}`} state={{application: props.application}} style={{ textDecoration: 'none' }}>
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
@@ -54,7 +54,7 @@ function ApplicationRow(props) {
             </Row>
             </Link>
             :
-            <Link to={`/applications/${props.application.proposal_id}`} style={{ textDecoration: 'none' }}>
+            <Link to={`/applications/${props.application.proposal_id}`} state={{application:props.application}} style={{ textDecoration: 'none' }} >
             <Row className="d-flex align-items-center">
                 <Col className="pt-2 application-info">
                     <p>
