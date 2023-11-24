@@ -10,7 +10,7 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage --coverageDirectory=./coverage/lcov-report --colors"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
@@ -34,8 +34,5 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "supertest": "^6.3.3",
     "vite": "^4.4.5"
-  },
-  "jest": {
-    "coverageDirectory": "../coverage"
- }
+  }
 }
