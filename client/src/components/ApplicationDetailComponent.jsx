@@ -95,17 +95,18 @@ function ApplicationDetailComponent(props) {
                     Swal.fire({
                         title: 'Are you sure?',
                         text: 'Once declined, you will not be able to recover this application!',
-                        //icon: 'warning',
+                        icon: 'warning',
                         showCancelButton: true,
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, decline it!',
                         cancelButtonColor: "red",
                         confirmButtonColor: "#007BFF",
                         reverseButtons: false,
-                        imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
+                        background: "#fff url(/assets/logo.jpg)"
+                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
                         imageHeight: 300,
-                        imageAlt: "Custom image"
+                        imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
                             declineApplication();
@@ -122,17 +123,17 @@ function ApplicationDetailComponent(props) {
                     Swal.fire({
                         title: 'Are you sure?',
                         text: 'Once accepted, you will not be able to decline this application!',
-                        //icon: 'warning',
+                        icon: 'warning',
                         showCancelButton: true,
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, accept it!',
                         cancelButtonColor: "red",
                         confirmButtonColor: "#007BFF",
                         reverseButtons: false,
-                        imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
+                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
                         imageHeight: 300,
-                        imageAlt: "Custom image"
+                        imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
                             acceptApplication();
