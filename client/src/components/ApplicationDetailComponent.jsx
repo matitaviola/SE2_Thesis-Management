@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import API from '../API';
+import '../App.css';
 import { Container, Row, Col, Table, Card } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 function ApplicationDetailComponent(props) {
     const [studentData, setStudentData] = useState(null);
@@ -9,7 +12,7 @@ function ApplicationDetailComponent(props) {
     const navigate = useNavigate();
 
     const location = useLocation();
-	const { application } = location.state;
+    const { application } = location.state;
 
     useEffect(() => {
         const getStudentData = async () => {
@@ -46,9 +49,9 @@ function ApplicationDetailComponent(props) {
 
     return (
         <Container>
-        <h2 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>{application.proposal}</i></h2>
-        <Card className='grades-table-card my-4'>
-                <Table className='grades-table'striped responsive>
+            <h2 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>{application.proposal}</i></h2>
+            <Card className='grades-table-card my-4'>
+                <Table className='grades-table' striped responsive>
                     <thead>
                         <tr>
                             <th>Course</th>
@@ -73,7 +76,49 @@ function ApplicationDetailComponent(props) {
                         }
                     </tbody>
                 </Table>
-        </Card>
+            </Card>
+            <button
+                onClick={() => {
+                    confirmAlert({
+                        title: 'Confirm to submit',
+                        message: 'Are you sure?',
+                        buttons: [
+                            {
+                                label: 'Yes',
+                                onClick: () => acceptRejectApplication(false)
+                            },
+                            {
+                                label: 'No',
+                                onClick: () => { }
+                            }
+                        ]
+                    });
+                }}
+                className="accept-decline-buttons"
+            >
+                Decline
+            </button>
+            <button
+                onClick={() => {
+                    confirmAlert({
+                        title: 'Confirm to submit',
+                        message: 'Are you sure?',
+                        buttons: [
+                            {
+                                label: 'Yes',
+                                onClick: () => acceptRejectApplication(true)
+                            },
+                            {
+                                label: 'No',
+                                onClick: () => { }
+                            }
+                        ]
+                    });
+                }}
+                className="accept-decline-buttons"
+            >
+                Accept
+            </button>
         </Container>
 
     )
