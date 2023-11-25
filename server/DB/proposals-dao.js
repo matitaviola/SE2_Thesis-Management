@@ -283,4 +283,4 @@ exports.getProposalById = (proposalId) => {
         }
       });
     });
-  };
+};
