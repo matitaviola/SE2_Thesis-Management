@@ -22,7 +22,8 @@ function ApplicationDetailComponent(props) {
 
     const acceptRejectApplication = async (status) => {
         try{
-            response = await API.updateApplicationStatus(proposalId, studentId, status);
+            let response = await API.updateApplicationStatus(proposalId, studentId, status);
+            //console.log(response);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
