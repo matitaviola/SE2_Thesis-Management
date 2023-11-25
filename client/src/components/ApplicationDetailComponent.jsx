@@ -5,6 +5,8 @@ import '../App.css';
 import { Container, Row, Col, Table, Card } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ApplicationDetailComponent(props) {
     const [studentData, setStudentData] = useState(null);
@@ -27,9 +29,19 @@ function ApplicationDetailComponent(props) {
         getStudentData();
     }, []);
 
+    const acceptApplication = () => {
+        acceptRejectApplication(true);
+        toast.success('Application accepted');
+    };
+
+    const declineApplication = () => {
+        acceptRejectApplication(false);
+        toast.error('Application declined');
+    };
+
     const acceptRejectApplication = async (status) => {
         try {
-            response = await API.updateApplicationStatus(proposalId, studentId, status);
+            let response = await API.updateApplicationStatus(proposalId, studentId, status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -85,7 +97,7 @@ function ApplicationDetailComponent(props) {
                         buttons: [
                             {
                                 label: 'Yes',
-                                onClick: () => acceptRejectApplication(false)
+                                onClick: declineApplication
                             },
                             {
                                 label: 'No',
@@ -94,7 +106,7 @@ function ApplicationDetailComponent(props) {
                         ]
                     });
                 }}
-                className="accept-decline-buttons"
+                className="decline-button"
             >
                 Decline
             </button>
@@ -106,7 +118,7 @@ function ApplicationDetailComponent(props) {
                         buttons: [
                             {
                                 label: 'Yes',
-                                onClick: () => acceptRejectApplication(true)
+                                onClick: acceptApplication
                             },
                             {
                                 label: 'No',
@@ -115,7 +127,7 @@ function ApplicationDetailComponent(props) {
                         ]
                     });
                 }}
-                className="accept-decline-buttons"
+                className="accept-button"
             >
                 Accept
             </button>
@@ -123,7 +135,7 @@ function ApplicationDetailComponent(props) {
 
     )
 
-    return (
+    /*return (
         <div>
             <p className="lead" style={{ fontSize: '30px' }}>{studentData.name + " " + studentData.surname + " " + studentId}</p>
             <p className="lead" style={{ fontSize: '30px' }}>Career:</p>
@@ -145,7 +157,7 @@ function ApplicationDetailComponent(props) {
             <button onClick={() => acceptRejectApplication(true)} style={{ marginRight: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer', transition: 'transform 0.1s' }}>Accept</button>
             <button onClick={() => acceptRejectApplication(false)} style={{ backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', fontSize: '15px', cursor: 'pointer' }}>Decline</button>
         </div>
-    );
+    );*/
 }
 
 export default ApplicationDetailComponent;
