@@ -43,7 +43,7 @@ describe('Mail Server', () => {
       service: 'gmail',
       auth: {
         user: 'groupsofteng6@gmail.com',
-        pass: 'kedgiyhpeeafxswc',
+        pass: 'afdmaktmymfaupmr',
       },
     });
 
@@ -83,7 +83,7 @@ describe('Mail Server', () => {
       service: 'gmail',
       auth: {
         user: 'groupsofteng6@gmail.com',
-        pass: 'kedgiyhpeeafxswc',
+        pass: 'afdmaktmymfaupmr',
       },
     });
 
