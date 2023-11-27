@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal, deleteProposal } = require('../DB/proposals-dao');
+const { getActiveProposalsByProfessor, archiveProposal, getAvailableProposals, addProposal, deleteProposal, getProposalById } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 const { Proposal } = require('../models/proposal');
@@ -929,5 +929,70 @@ describe('deleteProposal Function Tests', () => {
     });
 
     await expect(deleteProposal(proposalId)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('getOneProposal', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const proposalResult = Proposal( 
+    8,
+    "Proposal 8",
+    "d100008",
+    "Michael",
+    "Johnson",
+    "Co-Supervisor B",
+    "design, architecture, development",
+    "Type C",
+    "Group Z",
+    "Description for Proposal 8",
+    "Knowledge about software engineering",
+    "Additional info",
+    '2022-11-19',
+    "BSc",
+    "CS102",
+    "Computer Science"
+  );
+
+  it('should resolve with a proposal when the proposal is found', async () => {
+    const proposalId = 8;
+    const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, [proposalResult]);
+    });
+
+    const result = await getProposalById(proposalId);
+    expect(result).toEqual(proposalResult);
+  });
+
+  it('should resolve with no proposal when no proposal is found', async () => {
+    const proposalId = 8;
+    const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`;
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, []);
+    });
+
+    const result = await getProposalById(proposalId);
+    expect(result).toEqual(undefined);
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const proposalId = 8;
+    const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`;
+    const expectedError = 'Database error occurred';
+    
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([proposalId]);
+      callback(expectedError, null);
+    });
+
+    await expect(getProposalById(proposalId)).rejects.toEqual(expectedError);
   });
 });
