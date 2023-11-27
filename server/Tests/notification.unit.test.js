@@ -41,6 +41,8 @@ describe('Mail Server', () => {
 
     expect(nodemailer.createTransport).toHaveBeenCalledWith({
       service: 'gmail',
+      requireTLS: false,
+      secure: false,
       auth: {
         user: 'groupsofteng6@gmail.com',
         pass: 'afdmaktmymfaupmr',
@@ -81,6 +83,8 @@ describe('Mail Server', () => {
 
     expect(nodemailer.createTransport).toHaveBeenCalledWith({
       service: 'gmail',
+      requireTLS: false,
+      secure: false,
       auth: {
         user: 'groupsofteng6@gmail.com',
         pass: 'afdmaktmymfaupmr',
