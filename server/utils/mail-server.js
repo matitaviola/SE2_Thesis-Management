@@ -5,10 +5,8 @@ const emailConfig = {
   service: 'gmail',
   auth: {
       user: 'groupsofteng6@gmail.com',
-      pass: 'afdmaktmymfaupmr'
+      pass: 'afdmaktmymfaupmr',
   },
-  secure: false, // Sensitive
-  requireTLS: false // Sensitive
 };
 
 const applicationMailData = async (studentId, options) => {
