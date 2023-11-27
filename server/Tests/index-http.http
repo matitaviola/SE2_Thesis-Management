@@ -1,0 +1,226 @@
+#NOTE THAT MANY OF THESE SHOULD FAIL, due to missing auth or validation
+
+# Testing Student Data Retrieval
+
+## Get student data
+GET http://localhost:3001/api/application/123/s123456 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get student data with invalid proposalId
+GET http://localhost:3001/api/application/invalidId/s123456 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get student data with invalid studentId
+GET http://localhost:3001/api/application/123/invalidId HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+# Testing Proposal Retrieval for Professor
+
+## Get proposals for a professor
+GET http://localhost:3001/api/proposals/teacher/d123456 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get proposals for a professor with invalid professorId
+GET http://localhost:3001/api/proposals/teacher/invalidId HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get proposals for a professor with non-existent professorId
+GET http://localhost:3001/api/proposals/teacher/d000000 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+# Testing Proposals Retrieval for Student
+
+## Get all proposals available for a student
+GET http://localhost:3001/api/proposals/students/s123456 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get proposals for a student with invalid studentId
+GET http://localhost:3001/api/proposals/students/invalidId HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get proposals for a student with non-existent studentId
+GET http://localhost:3001/api/proposals/students/s000000 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+# Testing Proposal Creation
+
+## Create a new proposal
+POST http://localhost:3001/api/proposals HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "title": "Test Proposal",
+    "supervisor": "d123456",
+    "cds": "testCDS",
+    "keywords": "test, proposal",
+    "type": "TestType",
+    "groups": "TestGroup",
+    "description": "Testing proposal creation",
+    "expiration": "2024-01-01",
+    "level": "BSc",
+    "degree": "TestDegree"
+}
+###
+
+## Create a new proposal with missing required fields
+POST http://localhost:3001/api/proposals HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "title": "Test Proposal"
+}
+###
+
+## Create a new proposal with invalid supervisor
+POST http://localhost:3001/api/proposals HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "title": "Test Proposal",
+    "supervisor": "invalidId",
+    "cds": "CS101",
+    "keywords": "test, proposal",
+    "type": "TestType",
+    "groups": "TestGroup",
+    "description": "Testing proposal creation",
+    "expiration": "2023-11-28",
+    "level": "BSc",
+    "degree": "testDegree"
+}
+###
+
+# Testing Proposal Deletion
+
+## Delete an existing proposal
+DELETE http://localhost:3001/api/proposals/1 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Delete a non-existent proposal
+DELETE http://localhost:3001/api/proposals/10000 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Delete a proposal with invalid proposal id
+DELETE http://localhost:3001/api/proposals/imaginary HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+# Testing Applications Retrieval for Professor
+
+## Get all applications of a professor
+GET http://localhost:3001/api/applications/teacher/d100001 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get applications for a professor with invalid professorId
+GET http://localhost:3001/api/applications/teacher/invalidId HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Get applications for a professor with non-existent professorId
+GET http://localhost:3001/api/applications/teacher/d000000 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+# Testing Applications Retrieval for Student
+
+## Get applications for a student
+GET http://localhost:3001/api/applications/student/s123456 HTTP/1.1
+X-USER-ROLE: STUDENT
+
+###
+
+## Get applications for a student with invalid studentId
+GET http://localhost:3001/api/applications/student/invalidId HTTP/1.1
+X-USER-ROLE: STUDENT
+###
+
+## Get applications for a student with non-existent studentId
+GET http://localhost:3001/api/applications/student/s000000 HTTP/1.1
+X-USER-ROLE: STUDENT
+###
+
+# Testing Application Creation
+
+## Create a new application
+POST http://localhost:3001/api/applications HTTP/1.1
+content-type: application/json
+X-USER-ROLE: STUDENT
+
+{
+    "proposalId": 123,
+    "studentId": "s123456"
+}
+###
+
+## Create a new application with missing required fields
+POST http://localhost:3001/api/applications HTTP/1.1
+content-type: application/json
+X-USER-ROLE: STUDENT
+
+{
+    "proposalId": 123
+}
+###
+
+## Create a new application for a student with a pending request
+POST http://localhost:3001/api/applications HTTP/1.1
+content-type: application/json
+X-USER-ROLE: STUDENT
+
+{
+    "proposalId": 123,
+    "studentId": "s123456"
+}
+###
+
+# Testing Application Status Update
+
+## Update application status to Accepted
+PATCH http://localhost:3001/api/application/123/s123456 HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "proposalId": 123,
+    "studentId": "s123456",
+    "status": "Accepted"
+}
+###
+
+## Update application status to Rejected
+PATCH http://localhost:3001/api/application/123/s123456 HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "proposalId": 123,
+    "studentId": "s123456",
+    "status": "Rejected"
+}
+###
+
+## Update application status with invalid status
+PATCH http://localhost:3001/api/application/123/ s123456 HTTP/1.1
+content-type: application/json
+X-USER-ROLE: TEACHER
+
+{
+    "proposalId": 123,
+    "studentId": "s123456",
+    "status": "InvalidStatus"
+}
+###
