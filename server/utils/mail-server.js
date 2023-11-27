@@ -6,6 +6,8 @@ const emailConfig = {
   auth: {
       user: 'groupsofteng6@gmail.com',
       pass: 'afdmaktmymfaupmr',
+      secure: false, // Sensitive
+      requireTLS: false // Sensitive
   },
 };
 

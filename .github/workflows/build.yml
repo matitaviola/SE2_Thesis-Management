@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - develop
+      - BE-Validation
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
