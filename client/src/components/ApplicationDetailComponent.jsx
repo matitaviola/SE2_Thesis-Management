@@ -62,7 +62,7 @@ function ApplicationDetailComponent(props) {
 
     return (
         <Container>
-            <h2 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>{application.proposal}</i></h2>
+            <h2 className='mt-5'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for <i>{application.proposal}</i></h2>
             <Card className='grades-table-card my-4'>
                 <Table className='grades-table' striped responsive>
                     <thead>
@@ -102,7 +102,6 @@ function ApplicationDetailComponent(props) {
                         cancelButtonColor: "red",
                         confirmButtonColor: "#007BFF",
                         reverseButtons: false,
-                        background: "#fff url(/assets/logo.jpg)"
                         /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
                         imageHeight: 300,
