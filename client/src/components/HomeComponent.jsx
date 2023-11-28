@@ -1,5 +1,3 @@
-import { FileUploadComponent } from "./FileUploadComponent";
-
 export default function HomeComponent() {
 
     return (

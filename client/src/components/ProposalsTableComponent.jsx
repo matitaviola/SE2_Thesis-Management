@@ -133,55 +133,9 @@ function StudentProposalsTableComponent(props) {
     fetchProposals()
   }, [filter, studentId]);
 
-/*  useEffect(() => {
-    const getApplications = async () => {
-        try {
-            let retrievedApplications = await API.getApplications(loggedInUser);
-            setApplications(retrievedApplications);
-        } catch (err) {
-            console.log("Applications getting an error: " + err);
-        }
-    };
-    getApplications();
-  }, []);*/
-
   const handleViewClick = (title) =>{
     let proposal = proposals.find(p => p.title == title);
-		navigate(`/proposals/${title}`, { state: { proposal } });
-  };
-
-  const handleShowUpdateModal = (proposal) => {
-    console.log(proposal);
-    setSelectedProposal(proposal);
-    setShowUpdateModal(true);
-  };
-
-  const handleCloseUpdateModal = () => setShowUpdateModal(false);
-
-  const handleSendApplication = (proposal) => {
-
-  const isValidFileType = (file) => {
-    const allowedFileTypes = ['application/pdf'];
-    return allowedFileTypes.includes(file.type);
-  };
-
-  const isValidFileSize = (file) => {
-    const maxSizeInBytes = 5 * 1024 * 1024;
-    return file.size <= maxSizeInBytes;
-  };
-
-  if(!isValidFileSize(file)){
-    alert("Max 10MB files accepted");
-    return;
-  }
-
-  if(!isValidFileType(file)){
-    alert("Only PDF file are accepted");
-    return;
-  }
-
-    API.addApplication(file, proposal.id, studentId);
-    setShowUpdateModal(false);
+		navigate(`/proposals/${title}`, { state: { proposal, studentId } });
   };
 
   return (
@@ -228,33 +182,10 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
                   <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
-                  <td>
-                    {p.canSendApplication ? (
-                      <span>Application sent</span>
-                    ) : (
-                      <Button onClick={() => handleShowUpdateModal(p)}>Apply</Button>
-                    )}
-                  </td>
+
                 </tr>
               }
             })}
-            <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
-              <Modal.Header closeButton>
-                <Modal.Title>{selectedProposal.title}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <FileUploadComponent setFile={setFile}></FileUploadComponent>
-                Are you sure to apply for {selectedProposal.title}?
-                </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseUpdateModal}>
-                  Close
-                </Button>
-                <Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
-                  Send Application
-                </Button>
-              </Modal.Footer>
-            </Modal>
           </tbody>
         </Table>
       </Row>
