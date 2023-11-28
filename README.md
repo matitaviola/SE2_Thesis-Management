@@ -55,3 +55,10 @@ To also get the tests coverage run
 ```bash
 npm run coverage
 ```
+
+
+## Users:
+### Students
+usr:john@studenti.polito.com psw:s200000
+### Teachers
+usr:michael@docenti.polito.com psw:d100001
