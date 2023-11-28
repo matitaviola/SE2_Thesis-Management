@@ -6,6 +6,7 @@ const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
 const authorizationMiddleware = require('./Middlewares/authorization-middleware');
+const mailServer = require('./utils/mail-server');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
@@ -184,31 +185,31 @@ async (req, res) => {
 app.post('/api/proposals', 
 async (req, res) => {
   try {
-    // const userRole = req.role;
-    // if (userRole !== 'TEACHER')
-    //   return res.status(403).json({ error: 'Forbidden' });
+    const userRole = req.role;
+    if (userRole !== 'TEACHER')
+      return res.status(403).json({ error: 'Forbidden' });
     const { body } = req;
-    if (!(body.title && body.supervisor && body.co_supervisor && body.cds &&
-          body.keywords && body.type && body.groups && body.description && 
-          body.req_knowledge && body.notes && body.expiration && body.level))
-        throw new Error('Missing parameters');
+    if (!(body.title && body.supervisor && body.cds && body.keywords && 
+          body.type && body.description && body.expiration && body.level))
+      return res.status(400).json({ error: 'Missing required fields' });
 
-    if (moment(body.expiration).isBefore(moment()))
-      throw new Error('Invalid expiration date');
+    if (moment(body.expiration).isBefore(moment(), 'days'))
+      return res.status(400).json({ error: 'Invalid expiration date' });
 
     if (body.level !== 'BSc' && body.level !== 'MSc')
-      throw new Error('Invalid level');
+      return res.status(400).json({ error: 'Invalid level' });
 
     const supervisor = await supervisorDao.getSupervisorById(body.supervisor);
     if (!supervisor)
-      throw new Error('Invalid supervisor');
-
+      return res.status(400).json({ error: 'Invalid supervisor' });
+    
+    body.groups = supervisor.COD_GROUP;
     const degree = await degreeDao.getDegreeByCode(body.cds);
     if (!degree)
-      throw new Error('Invalid degree');
+      return res.status(400).json({ error: 'Invalid degree' });
 
     const proposal = await propDao.addProposal(req.body);
-    res.json(proposal);
+    return res.json(proposal);
 } catch (error) {
     return res.status(500).json({ error: (error.message? error.message: error) })
 }
@@ -337,27 +338,43 @@ async (req, res) => {
 app.patch('/api/application/:proposalsId/:studentId',
    async (req, res) => {
     try { 
-        if(req.body.status === "Accepted"){
-          // Archives the proposal
-          const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
-
-          if (!archiveResult.success) {
-            throw new Error('An error occurred while archiving the proposal');
+        const proposal = await propDao.getProposalById(req.params.proposalsId);
+        if (proposal) {
+          if (req.body.status === "Accepted"){
+            // Archives the proposal
+            const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+  
+            if (!archiveResult.success) {
+              throw new Error('An error occurred while archiving the proposal');
+            }
+            mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.Title });
+          } else {
+            // Update the application status, will probably be a "rejected"
+            const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
+            if (!result.success) {
+              throw new Error('Application not found');
+            }
+            mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'rejected', proposal: proposal.Title });
           }
-
-      }else{
-        // Update the application status, will probably be a "rejected"
-        const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
-        if (!result.success) {
-            throw new Error('Application not found');
+  
+          res.status(200).end();
+        } else {
+          res.status(400).json({ error: 'Proposal not found' });
         }
-      }
-
-        res.status(200).end();
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred while updating application status' });
     }
+});
+
+app.get('/api/degrees', 
+  async (req, res) => {
+    try {
+        const degrees = await degreeDao.getAll();
+        res.json(degrees);
+    } catch (err){
+      res.status(500).end();
+  }
 });
 
 //#endregion

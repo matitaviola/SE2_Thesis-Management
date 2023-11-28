@@ -13,6 +13,9 @@ RUN npm install
 # Copy the local code to the container
 COPY . .
 
+# Build the DB
+RUN npm run populate
+
 # Expose port 3001 to the outside world
 EXPOSE 3001
 

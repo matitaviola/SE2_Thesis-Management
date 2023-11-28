@@ -163,7 +163,6 @@ function StudentProposalsTableComponent(props) {
               <th>Level <SearchButton filter={filter} setFilter={setFilter} keyword='level'/></th>
               <th>Degree <SearchButton filter={filter} setFilter={setFilter} keyword='degree'/></th>
               <th></th>
-              <th></th>
             </tr>
           </thead>
           <tbody>

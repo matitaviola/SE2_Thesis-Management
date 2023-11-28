@@ -73,7 +73,7 @@ const createTables = () => {
                 Title TEXT NOT NULL,
                 Supervisor TEXT NOT NULL,
                 Co_supervisor TEXT,
-                Keywords TEXT,
+                Keywords TEXT NOT NULL,
                 Type TEXT NOT NULL,
                 Groups TEXT NOT NULL,
                 Description TEXT NOT NULL,
@@ -81,7 +81,7 @@ const createTables = () => {
                 Notes TEXT,
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
-                CdS TEXT,
+                CdS TEXT NOT NULL,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
                 FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE)
             )`, (err) => {
@@ -155,31 +155,33 @@ const createTables = () => {
 const emptyTables = () => {
     return new Promise((resolve, reject) => {
         try{
-            // Empty the STUDENT table
-            db.run('DELETE FROM STUDENT');
+            db.serialize(() => {
+                // Empty the APPLICATION table
+                db.run('DELETE FROM APPLICATION');
 
-            // Empty the TEACHER table
-            db.run('DELETE FROM TEACHER');
+                // Empty the ARCHIVED_PROPOSAL table
+                db.run('DELETE FROM ARCHIVED_PROPOSAL');
 
-            // Empty the CAREER table
-            db.run('DELETE FROM CAREER');
+                // Empty the PROPOSAL table
+                db.run('DELETE FROM PROPOSAL');
 
-            // Empty the DEGREE table
-            db.run('DELETE FROM DEGREE');
+                // Empty the CAREER table
+                db.run('DELETE FROM CAREER');
 
-            // Empty the PROPOSAL table
-            db.run('DELETE FROM PROPOSAL');
+                // Empty the STUDENT table
+                db.run('DELETE FROM STUDENT');
 
-            // Empty the APPLICATION table
-            db.run('DELETE FROM APPLICATION');
+                // Empty the TEACHER table
+                db.run('DELETE FROM TEACHER');
 
-            // Empty the ARCHIVED_PROPOSAL table
-            db.run('DELETE FROM ARCHIVED_PROPOSAL');
+                // Empty the DEGREE table
+                db.run('DELETE FROM DEGREE');
 
-            // Empty the DEPARTMENT table
-            db.run('DELETE FROM DEPARTMENT');
+                // Empty the DEPARTMENT table
+                db.run('DELETE FROM DEPARTMENT');
 
-            resolve();
+                resolve();
+            })
         }
         catch(error){
             reject(error);

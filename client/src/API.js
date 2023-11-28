@@ -230,24 +230,26 @@ const addApplication = async (file, proposalId, studentId) => {
   
 } 
 
-const uploadResumee = async (file, ) => {
-  file.append();
-  try {
-    await axios.post(SERVER_URL + `/api/applications`, file, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+const getDegrees = async () => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const response = await fetch(SERVER_URL + `/api/degrees`, {
+    method: 'GET',
+    headers: reqheader  
+  });
 
-    console.log('File uploaded succesfully!');
-  } catch (error) {
-    console.error('Error during file upload:', error);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
-}
+  const degreesJson = await response.json();
+  return degreesJson;
+} 
 
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, uploadResumee};
+const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;
 
