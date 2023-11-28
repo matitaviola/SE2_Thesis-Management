@@ -9,7 +9,8 @@ const getUserInfo = async () => {
   if (response.ok) {
     return user;
   } else {
-    throw user;  // an object with the error coming from the server
+    console.log(user);
+    throw new Error('Session error! status: 401');  // an object with the error coming from the server
   }
 }
 const logout = async () => {
@@ -27,7 +28,7 @@ const logout = async () => {
 //#region Student
 const getStudentData = async (proposalId, studentId) =>{
   
-  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, );
+  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`,{ credentials: 'include'});
   const studentDataJson = await response.json();
   if(response.ok) {
     return studentDataJson;
@@ -43,7 +44,7 @@ const getProposals = async (user) =>{
   
   let response, proposalsJson;
   if(user.role == 'TEACHER'){
-    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`);
+    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`, { credentials: 'include'});
     proposalsJson = await response.json();
   } else{
     throw new Error("Error on getting the proposals: Invalid role");
@@ -64,7 +65,7 @@ const getStudentProposals = async (studentId, filter) =>{
   })
   path = path.slice(0, -1);
 
-  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`);
+  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, { credentials: 'include',});
   let responseJson = await response.json();
 
 
@@ -76,11 +77,12 @@ const getStudentProposals = async (studentId, filter) =>{
   }
 }
 
-const createProposal = async (proposal, user) => {
- 
+const createProposal = async (proposal) => {
+  console.log(proposal)
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
-    
+    credentials: 'include',
+    headers: {'Content-Type' : "application/json"},
     body: JSON.stringify(proposal)
   });
   if(!response.ok) {
@@ -93,7 +95,7 @@ const deleteProposal = async (proposal) => {
   
   const response = await fetch(SERVER_URL + `/api/proposals/${proposal}`, {
       method: 'DELETE',
-      
+      credentials: 'include'
   });
 
   if (!response.ok) {
@@ -116,7 +118,7 @@ const getApplications = async (user) =>{
   }else{
     throw new Error("Error on getting the applications: Invalid role");
   }
-  const response = await fetch(apiURL, );
+  const response = await fetch(apiURL, { credentials: 'include'});
   const applicationsJson = await response.json();
 
   if(response.ok) {
@@ -138,7 +140,8 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
-      
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
       body: JSON.stringify({
         'status': status
       }),
@@ -152,13 +155,10 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 };
 
 const addApplication = async (proposalId, studentId) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
   const response = await fetch(SERVER_URL + `/api/applications`, {
     method: 'POST',
-    
+    credentials: 'include',
+    headers: {'Content-Type' : "application/json"},
     body: JSON.stringify({ proposalId, studentId }),
   });
 
@@ -174,7 +174,7 @@ const getDegrees = async () => {
   
   const response = await fetch(SERVER_URL + `/api/degrees`, {
     method: 'GET',
-      
+    credentials: 'include'
   });
 
   if (!response.ok) {

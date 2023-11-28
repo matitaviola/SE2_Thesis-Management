@@ -12,10 +12,7 @@ describe('getProposals API', () => {
   });
 
 
-  const reqheaderT = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
+  const reqData = { credentials: 'include'};
 
   // Mock user data
   const teacherUser = { id: 1, role: 'TEACHER' };
@@ -84,7 +81,7 @@ describe('getProposals API', () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
     const result = await API.getProposals(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, reqData);
     expect(result).toEqual(teacherProposals);
   });
 
@@ -92,7 +89,7 @@ describe('getProposals API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getProposals(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/teacher/1`, reqData);
     expect(result).toEqual([]);
   });
 
@@ -126,14 +123,7 @@ describe('getApplications API', () => {
   const teacherUser = { id: "d000001", role: 'TEACHER' };
   const studentUser = { id: "s200002", role: 'STUDENT' };
   const otherUser = { id: 3, role: 'SOMETHING_ELSE' };
-  const reqheaderT = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
-  const reqheaderS = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
+  const reqData = { credentials: 'include'};
 
 
   // Mock response data
@@ -162,7 +152,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
     const result = await API.getApplications(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, reqData);
     expect(result).toEqual([{ id:1, studentId: "s200001", proposal_id:1, proposal: 'Test Proposal', status: 'Pending' }]);
   });
 
@@ -170,7 +160,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getApplications(teacherUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/teacher/d000001`, reqData);
     expect(result).toEqual([]);
   });
 
@@ -178,7 +168,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce(studentResponse);
 
     const result = await API.getApplications(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, reqData);
     expect(result).toEqual([{ id:1, studentId: "s200002", proposal_id:2, proposal: 'Another Proposal', status: 'Approved' }]);
   });
 
@@ -186,7 +176,7 @@ describe('getApplications API', () => {
     fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
     const result = await API.getApplications(studentUser);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications/student/s200002`, reqData);
     expect(result).toEqual([]);
   })
 
@@ -264,15 +254,7 @@ describe('getStudentData API', () => {
       return sdNE;
     }
   };
-  const reqheaderT = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
-  const reqheaderS = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
-
+  const reqData = { credentials: 'include'}
   // Mock fetch error response
   const errorResponse = {
     ok: false,
@@ -284,7 +266,7 @@ describe('getStudentData API', () => {
     fetch.mockResolvedValueOnce(successResponseE);
 
     const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, reqData);
     expect(result).toEqual(studentData);
   });
 
@@ -313,7 +295,7 @@ describe('getStudentData API', () => {
     fetch.mockResolvedValueOnce(successResponse);
 
     const result = await API.getStudentData(proposalId.trim(' '), studentData.studentId);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, {"headers":reqheaderT});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/Proposal 1/s200002`, reqData);
     expect(result.career).toEqual(mockCareer);
   });
 
@@ -353,10 +335,8 @@ describe('updateApplicationStatus API', () => {
     const result = await API.updateApplicationStatus("proposal123", "student456", true);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/proposal123/student456`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'TEACHER',
-      },
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
       body: JSON.stringify({
         'status': 'Accepted',
       }),
@@ -370,10 +350,8 @@ describe('updateApplicationStatus API', () => {
     const result = await API.updateApplicationStatus("proposal789", "student101", false);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/application/proposal789/student101`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'TEACHER',
-      },
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
       body: JSON.stringify({
         'status': 'Rejected',
       }),
@@ -390,7 +368,7 @@ describe('updateApplicationStatus API', () => {
   });
 });
 
-describe('API Login functions', () => {
+describe('API Session/Logout functions', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally
   });
@@ -410,12 +388,6 @@ describe('API Login functions', () => {
     json: async () => ({ id: 's000001', role: 'STUDENT' }),
   };
 
-  // Mock fetch response for unsuccessful login
-  const unsuccessfulLoginResponse = {
-    ok: false,
-    status: 401,
-  };
-
   // Mock fetch response for successful session request
   const successfulSessionResponse = {
     ok: true,
@@ -431,74 +403,49 @@ describe('API Login functions', () => {
   // Mock fetch response for unsuccessful session request
   const unsuccessfulSessionResponse = {
     ok: false,
-    status: 401,
+    status: 500,
+    json: async () => {return {status: "unsuccessfulSessionResponse"}},
   };
 
   // Mock fetch response for successful logout
   const successfulLogoutResponse = {
     ok: true,
+    status: 200,
+    json: () => {return {status: 200}},
   };
 
   // Mock fetch response for unsuccessful logout
   const unsuccessfulLogoutResponse = {
     ok: false,
     status: 500,
+    json: async () => {return {status: 500}},
   };
-
-  it('should successfully log in', async () => {
-    fetch.mockResolvedValueOnce(successfulLoginResponse);
-
-    const result = await API.login(credentials);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'LOGIN',
-      },
-      body: JSON.stringify({ credentials }),
-    });
-    expect(result).toEqual({ id: 's000001', role: 'STUDENT' });
-  });
-
-  it('should throw an error on unsuccessful login', async () => {
-    fetch.mockResolvedValueOnce(unsuccessfulLoginResponse);
-
-    await expect(API.login(credentials)).rejects.toThrow(
-      'Login error! status: 401'
-    );
-  });
 
   it('should successfully get user info', async () => {
     fetch.mockResolvedValueOnce(successfulSessionResponse);
 
     const result = await API.getUserInfo();
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'SESSION',
-      },
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/session`, {
+      credentials: 'include',
     });
     expect(result).toEqual({ id: 's000001', role: 'STUDENT' });
   });
 
-  it('should return false if teh user has yet to log in', async () => {
+  it('should return empty if teh user has yet to log in', async () => {
     fetch.mockResolvedValueOnce(emptySessionResponse);
 
     const result = await API.getUserInfo();
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'SESSION',
-      },
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/session`, {
+      credentials: 'include',
     });
-    expect(result).toEqual(false);
+    expect(result).toEqual({});
   });
 
   it('should throw an error on unsuccessful session request', async () => {
     fetch.mockResolvedValueOnce(unsuccessfulSessionResponse);
 
     await expect(API.getUserInfo()).rejects.toThrow(
-      'Login error! status: 401'
+      'Session error! status: 401'
     );
   });
 
@@ -506,12 +453,9 @@ describe('API Login functions', () => {
     fetch.mockResolvedValueOnce(successfulLogoutResponse);
 
     const result = await API.logout();
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/login`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'LOGOUT',
-      },
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/logout`, {
+      method: 'GET',
+      credentials: 'include',
     });
     expect(result).toEqual({ success: true });
   });
@@ -534,10 +478,7 @@ describe('searchProposal API', () => {
     global.fetch.mockRestore(); // Restore fetch after each test
   });
 
-  const reqheaderS = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
+  const reqData = { credentials: 'include'};
 
   const studentId = 's200000';
   const proposals = [{
@@ -598,7 +539,7 @@ describe('searchProposal API', () => {
     const noFilter = {};
 
     const result = await API.getStudentProposals(studentId, noFilter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}`, reqData);
     expect(result).toEqual(proposals);
   });
 
@@ -607,7 +548,7 @@ describe('searchProposal API', () => {
     const filter = {title: "3"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?title=3`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?title=3`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -616,7 +557,7 @@ describe('searchProposal API', () => {
     const filter = {supervisor: "John"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?supervisor=John`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?supervisor=John`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -625,7 +566,7 @@ describe('searchProposal API', () => {
     const filter = {coSupervisor: "B"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?coSupervisor=B`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?coSupervisor=B`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -634,7 +575,7 @@ describe('searchProposal API', () => {
     const filter = {keywords: "design"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?keywords=design`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?keywords=design`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -643,7 +584,7 @@ describe('searchProposal API', () => {
     const filter = {type: "C"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?type=C`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?type=C`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -652,7 +593,7 @@ describe('searchProposal API', () => {
     const filter = {groups: "Z"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?groups=Z`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?groups=Z`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -661,7 +602,7 @@ describe('searchProposal API', () => {
     const filter = {description: "3"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?description=3`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?description=3`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -670,7 +611,7 @@ describe('searchProposal API', () => {
     const filter = {reqKnowledge: "engineering"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?reqKnowledge=engineering`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?reqKnowledge=engineering`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -679,7 +620,7 @@ describe('searchProposal API', () => {
     const filter = {notes: "info"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?notes=info`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?notes=info`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -688,7 +629,7 @@ describe('searchProposal API', () => {
     const filter = {expiration: "2022"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?expiration=2022`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?expiration=2022`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -697,7 +638,7 @@ describe('searchProposal API', () => {
     const filter = {level: "BSc"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?level=BSc`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?level=BSc`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -706,7 +647,7 @@ describe('searchProposal API', () => {
     const filter = {degree: "CS102"};
 
     const result = await API.getStudentProposals(studentId, filter);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?degree=CS102`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?degree=CS102`, reqData);
     expect(result).toEqual([proposals[0]]);
   });
 
@@ -715,7 +656,7 @@ describe('searchProposal API', () => {
     const fakeId = 1;
 
     const result = await API.getStudentProposals(fakeId, {});
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${fakeId}`, {"headers":reqheaderS});
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${fakeId}`, reqData);
     expect(result).toEqual([]);
   });
 
@@ -757,7 +698,8 @@ describe('createProposal API', () => {
     const result = await API.createProposal(proposalData, teacherUser);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-USER-ROLE': 'TEACHER' },
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
       body: JSON.stringify(proposalData),
     });
     expect(result.ok).toBe(true);
@@ -794,10 +736,6 @@ describe('deleteProposal function', () => {
     // Arrange
     const proposalId = '123';
     const expectedUrl = SERVER_URL+`/api/proposals/${proposalId}`;
-    const expectedHeaders = {
-      'Content-Type': 'application/json',
-      'X-USER-ROLE': 'TEACHER',
-    };
 
     // Mock the fetch function
     fetch.mockResolvedValueOnce(successResponse);
@@ -808,7 +746,7 @@ describe('deleteProposal function', () => {
     // Assert
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: 'DELETE',
-      headers: expectedHeaders,
+      credentials: 'include',
     });
   });
 
@@ -816,10 +754,6 @@ describe('deleteProposal function', () => {
     // Arrange
     const proposalId = '123';
     const expectedUrl = SERVER_URL+`/api/proposals/${proposalId}`;
-    const expectedHeaders = {
-      'Content-Type': 'application/json',
-      'X-USER-ROLE': 'TEACHER',
-    };
     const errorMessage = 'Error deleting the proposal';
 
     // Mock the fetch function to simulate a failure
@@ -833,7 +767,7 @@ describe('deleteProposal function', () => {
     // Assert
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: 'DELETE',
-      headers: expectedHeaders,
+      credentials: 'include',
     });
   });
 });
@@ -868,9 +802,9 @@ describe('addApplication API', () => {
 
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'X-USER-ROLE': 'STUDENT',
       },
       body: JSON.stringify({ proposalId, studentId }),
     });
@@ -921,10 +855,7 @@ describe('getDegrees API', () => {
 
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/degrees`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-USER-ROLE': 'TEACHER',
-      },
+      credentials: 'include',
     });
 
     expect(result).toEqual(successResponse);

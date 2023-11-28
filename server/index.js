@@ -92,9 +92,9 @@ app.get('/api/session', (req, res) => {
 //#region Student
 
 //gets data of the studnet of the application
-//GET /api/application/:proposalsId/:studentId
-app.get('/api/application/:proposalsId/:studentId',
-  //isLoggedIn,
+//GET /api/application/:proposalId/:studentId
+app.get('/api/application/:proposalId/:studentId',
+  isLoggedIn,
   [
     check('proposalId').isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
@@ -129,7 +129,7 @@ app.get('/api/application/:proposalsId/:studentId',
 //gets proposals for a professor
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId', 
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
   ],
@@ -153,7 +153,7 @@ app.get('/api/proposals/teacher/:professorId',
 //gets all proposals available for a student
 //GET /api/proposals
 app.get('/api/proposals/students/:studentId', 
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
   ],
@@ -226,11 +226,9 @@ app.get('/api/proposals/students/:studentId',
 //creates a new proposal
 //POST /api/proposals
 app.post('/api/proposals', 
-//isLoggedIn,
+isLoggedIn,
   [
     check('title').not().isEmpty(),
-    check('supervisor').not().isEmpty(),
-    check('cds').not().isEmpty(),
     check('keywords').not().isEmpty(),
     check('type').not().isEmpty(),
     check('groups').not().isEmpty(),
@@ -258,7 +256,8 @@ app.post('/api/proposals',
     }),
   ],
   async (req, res) => {
-    //validation rejected 
+    //validation rejected
+    console.log(req.body)
     const errors = validationResult(req).formatWith(errorFormatter); // format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
@@ -276,7 +275,7 @@ app.post('/api/proposals',
 //deletes an existing proposal
 //DELETE /api/proposals/:proposalId
 app.delete('/api/proposals/:proposalId', 
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('proposalId').isInt()
   ],
@@ -309,7 +308,7 @@ app.delete('/api/proposals/:proposalId',
 //gets all applications of a professor 
 //GET /api/applications/teacher/:professorId
 app.get('/api/applications/teacher/:professorId', 
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
   ],
@@ -340,7 +339,7 @@ app.get('/api/applications/teacher/:professorId',
 
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId',
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
   ],
@@ -363,7 +362,7 @@ app.get('/api/applications/student/:studentId',
 
 //POST /api/application/
 app.post('/api/applications',
-  //isLoggedIn,
+  isLoggedIn,
   [
     check('proposalId').not().isEmpty().isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/),
@@ -387,9 +386,9 @@ app.post('/api/applications',
   }
 );
 
-//PATCH /api/application/:proposalsId/:studentId
-app.patch('/api/application/:proposalsId/:studentId',
-  //isLoggedIn,
+//PATCH /api/application/:proposalId/:studentId
+app.patch('/api/application/:proposalId/:studentId',
+  isLoggedIn,
   [
     check('proposalId').isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/),
@@ -403,11 +402,11 @@ app.patch('/api/application/:proposalsId/:studentId',
   }
 
   try { 
-      const proposal = await propDao.getProposalById(req.params.proposalsId);
+      const proposal = await propDao.getProposalById(req.params.proposalId);
       if (proposal) {
         if (req.body.status === "Accepted"){
           // Archives the proposal
-          const archiveResult = await propDao.archiveProposal(req.params.proposalsId, req.params.studentId);
+          const archiveResult = await propDao.archiveProposal(req.params.proposalId, req.params.studentId);
 
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
@@ -415,7 +414,7 @@ app.patch('/api/application/:proposalsId/:studentId',
           mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.Title });
         } else {
           // Update the application status, will probably be a "rejected"
-          const result = await appDao.setApplicationStatus(req.params.proposalsId, req.params.studentId, req.body.status);
+          const result = await appDao.setApplicationStatus(req.params.proposalId, req.params.studentId, req.body.status);
           if (!result.success) {
             throw new Error('Application not found');
           }
@@ -431,5 +430,18 @@ app.patch('/api/application/:proposalsId/:studentId',
   }
 });
 
+//#endregion
+
+//#region Degrees
+//GET localhost:3001/api/degrees
+app.get('/api/degrees', 
+  async (req, res) => {
+    try {
+        const degrees = await degreeDao.getAll();
+        res.json(degrees);
+    } catch (err){
+      res.status(500).end();
+  }
+});
 //#endregion
 
