@@ -2,48 +2,40 @@ const SERVER_URL = 'http://localhost:3001';
 
 //#region Login
 const login = async (credentials) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'LOGIN'
-  };
   const response = await fetch(SERVER_URL + `/api/login`, {
-    method: 'GET',
-    headers: reqheader,
-    // body: JSON.stringify({
-    //   'credentials': credentials
-    // }),
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      'credentials': credentials
+    }),
   });
-  // window.location.href = response.data.redirect;
-
-  // if (!response.ok) {
-  //   throw new Error(`Login error! status: ${response.status}`);
-  // }
-  // window.location.href = response.data.redirect;
-  // const userData = await response.json();
-  // return userData;
+  if (response.ok) {
+    const user = await response.json();
+    return user;
+  }
+  else {
+    const errDetails = await response.text();
+    throw errDetails;
+  }
 }
 const getUserInfo = async () => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'SESSION'
-  };
-  const response = await fetch(SERVER_URL + `/api/login`, {
-    headers: reqheader,
+  const response = await fetch(SERVER_URL + `/api/session`, {
+    credentials: 'include',
   });
-  if (!response.ok) {
-    throw new Error(`Login error! status: ${response.status}`);
+  const user = await response.json();
+  if (response.ok) {
+    return user;
+  } else {
+    throw user;  // an object with the error coming from the server
   }
-  const userData = await response.json();
-  return userData.id? userData : false;
 }
 const logout = async () => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'LOGOUT'
-  };
   const response = await fetch(SERVER_URL + `/api/login`, {
     method: 'DELETE',
-    headers: reqheader,
+    credentials: 'include'
   });
   if (!response.ok) {
     throw new Error(`Logout error! status: ${response.status}`);
@@ -54,13 +46,8 @@ const logout = async () => {
 
 //#region Student
 const getStudentData = async (proposalId, studentId) =>{
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
-  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
-    headers: reqheader
-  });
+  
+  const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, );
   const studentDataJson = await response.json();
   if(response.ok) {
     return studentDataJson;
@@ -73,10 +60,7 @@ const getStudentData = async (proposalId, studentId) =>{
 
 //#region Proposal
 const getProposals = async (user) =>{
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
+  
   let response, proposalsJson;
   if(user.role == 'TEACHER'){
     response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`, {headers:reqheader});
@@ -117,13 +101,10 @@ const getStudentProposals = async (studentId, filter) =>{
 }
 
 const createProposal = async (proposal, user) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE':user.role
-  };
+ 
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
-    headers: reqheader,
+    
     body: JSON.stringify(proposal)
   });
   if(!response.ok) {
@@ -133,13 +114,10 @@ const createProposal = async (proposal, user) => {
 }
 
 const deleteProposal = async (proposal) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
+  
   const response = await fetch(SERVER_URL + `/api/proposals/${proposal}`, {
       method: 'DELETE',
-      headers: reqheader
+      
   });
 
   if (!response.ok) {
@@ -152,10 +130,7 @@ const deleteProposal = async (proposal) => {
 
 //#region Application
 const getApplications = async (user) =>{
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE':user.role
-  };
+ 
   let apiURL = SERVER_URL +"/api/applications/";
 
   if(user.role == 'TEACHER'){
@@ -165,9 +140,7 @@ const getApplications = async (user) =>{
   }else{
     throw new Error("Error on getting the applications: Invalid role");
   }
-  const response = await fetch(apiURL, {
-    headers: reqheader
-  });
+  const response = await fetch(apiURL, );
   const applicationsJson = await response.json();
 
   if(response.ok) {
@@ -183,16 +156,13 @@ const getApplications = async (user) =>{
 }
 
 const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
+  
   //Choose if accept or reject based on the status passed
   const status = statusSet? "Accepted" : "Rejected";
 
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`, {
       method: 'PATCH',
-      headers: reqheader,
+      
       body: JSON.stringify({
         'status': status
       }),
@@ -212,7 +182,7 @@ const addApplication = async (proposalId, studentId) => {
   };
   const response = await fetch(SERVER_URL + `/api/applications`, {
     method: 'POST',
-    headers: reqheader,
+    
     body: JSON.stringify({ proposalId, studentId }),
   });
 
@@ -225,13 +195,10 @@ const addApplication = async (proposalId, studentId) => {
 } 
 
 const getDegrees = async () => {
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'TEACHER'
-  };
+  
   const response = await fetch(SERVER_URL + `/api/degrees`, {
     method: 'GET',
-    headers: reqheader  
+      
   });
 
   if (!response.ok) {

@@ -5,93 +5,73 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
-const authorizationMiddleware = require('./Middlewares/authorization-middleware');
+const {isLoggedIn, checkTeacherRole, checkStudentRole} = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
 const express = require('express');
 const bodyParser = require ('body-parser')
 const cors = require('cors');
-const app = express();
 const moment = require('moment');
-const PORT = 3001;
 const dayjs = require('dayjs');
-const passport = require('passport');
-const SamlStrategy = require('passport-saml').Strategy;
+const passport = require('./utils/saml-config');
 const session = require('express-session');
 
-app.use(cors({
-  origin: 'http://localhost:5173', // Replace with the actual origin of your React app
-  credentials: true,
-})); // Enable CORS for all routes
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+const PORT = 3001;
+const FRONTEND = "http://localhost:5173/"
+const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173",
+  optionsSuccessStatus: 200,
+  credentials: true
+}
+app.use(cors(corsOptions)); // Enable CORS for all routes
 
 //middleman to every call
 app.use(bodyParser.json()); //to read from req.body
-app.use(authorizationMiddleware.checkUserRole);
-let sessionUser = {};
 
+//session for login, using the passport defined in utils/saml-config
+// Session middleware
 app.use(session({
-  secret: 'thisisastrongkey',
-  resave: true,
-  saveUninitialized: true
+  secret: 'two men can share a secret, if one of them is dead',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 86400000, // 24 hours
+  }
 }));
 
-passport.use(new SamlStrategy({
-  entryPoint: 'https://dev-dqfulzy38tgncr2u.us.auth0.com/samlp/adPQ0Lsj5zo018PMIJbKLvnnZo9Vlap5',
-  issuer: 'urn:dev-dqfulzy38tgncr2u.us.auth0.com',
-  callbackUrl: 'http://localhost:3001/api/login/callback',
-  cert: 'MIIDHTCCAgWgAwIBAgIJE2bsX1dIbrW6MA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNVBAMTIWRldi1kcWZ1bHp5Mzh0Z25jcjJ1LnVzLmF1dGgwLmNvbTAeFw0yMzExMjYxNzM0MjRaFw0zNzA4MDQxNzM0MjRaMCwxKjAoBgNVBAMTIWRldi1kcWZ1bHp5Mzh0Z25jcjJ1LnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAO6/rqYKq5jQygwmzHRxW0Iwhcdq1w+awOfJ+LVySP6WwW72uz2mh9KhmkoS3IwhmWa7Re4wY1HIot+BJzE9Jpac1dv9eNtzHOvVg3qnZWHto2EydHhqjK+D4qr4bC7ElodmEfKCA+V7azptddd76YgGzRk1FBMbg5dY4Z5em8oxpRtN1te1dMb/0yqgz7rF01YDNTYjLpKNQbiK6Q2uJkKz9m0PtSgq6tCIRrG3QUchCS7xmJUwl1LasaoDz/gn2e+PfEwQebxVRMEiBuskjs5D6ZNS+hERyerIbTFOOXikY5sapCH5lfcWIca6CUHs3p75hLQWSvgur77wplFnQIkCAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUysZjs+Fs2G4NQbcBfWlrXkDm/mIwDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUAA4IBAQCQRMyvYZW8zIwE/V2l0BPy0S26ZTthTM5M/sNEJjTiiUQ8kinf5k+PT9TLYczgL9uSos7TyJQoL7N3qMm8aKcHzTfW3n6Z0fzpwXOvXWiEKGA1nonUUmuFarZPHv3mem6WZElFmC9olETKlw/mMwjdnftzdFe/doAP2/RHG/n90jocfdweE0uXOGe5ksn+CT1fZWe1DoxwRB3jEJRahsq7WbZplNw4hI9wUVyyR/hx4DPggfL+CdRgfLcWNvbS8SGSNcfLljl6XRDFOLalwob5uLzWKRdQPXXHMRfPSfsfJs+BIyVW7ZZMI8PAOHzwMLbP3jMUW1ALDDVwA6Cqs6tK'
-}, (profile, done) => {
-  return done(null, profile);
-}));
-
+// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(passport.authenticate('session'));
 
-app.get('/api/login', passport.authenticate('saml'));
-app.post('/api/login/callback', passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }), (req, res) => {
-  res.redirect('/');
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-//#region Login
-// //GET /api/login
-// app.get('/api/login', 
-//   async (req, res) => {
-//     try {
-//         //gets all the professor's active proposals
-//         res.json(sessionUser);
-//     } catch (err){
-//       console.log(err);
-//       res.status(500).end();
-//   }
-// });
-// //POST /api/login
-// app.post('/api/login', 
-//   async (req, res) => {
-//     try {
-//         //gets user with that credentials
-//         const user = await loginDao.effectLogin(req.body.credentials);
-//         sessionUser = user;
-//         res.json(user);
-//     } catch (err){
-//       console.log(err);
-//       res.status(500).json({error:err});
-//   }
-// });
-//DELETE /api/login
-app.delete('/api/login', 
-  async (req, res) => {
-    try {
-        //empties the session user info
-        sessionUser = {};
-        res.json(sessionUser);
-    } catch (err){
-      console.log(err);
-      res.status(500).json({error:err});
+
+app.get('/login', passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }));
+
+app.post('/login/callback',
+  (req, res, next) => {
+    console.log("Porcaputtana");
+    next();
+  },
+  bodyParser.urlencoded({ extended: false }),
+  passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
+  function(req, res, next) {
+    //console.log(req);
+    res.redirect(`${FRONTEND}`);
   }
+);
+//logout
+app.get('/logout', (req, res) => {
+  req.isAuthenticated() ?
+    req.logOut(function (err) {
+      if (err) { return next(err); }
+      return res.redirect(FRONTEND);
+    }) :
+    res.status(401).json({ message: 'Unauthorized' });
 });
-//#endregion
 
 //#region Student
 //gets data of the studnet of the application
