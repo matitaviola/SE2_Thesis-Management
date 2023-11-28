@@ -25,28 +25,21 @@ function App() {
 
 
 useEffect(() => {
-    const checkAuth = async () => {
-      const user = await API.getUserInfo(); // we have the user info here
-      setLoggedIn(user);
-    };
-    checkAuth();
-  }, []);
-
-  const handleLogin = async (credentials) => {
-    /*
-    try {
-      let user = await API.login(credentials);
-      setLoggedIn(user);
-    } catch (err) {
-      setErrorMessage(`Error during log in : ${err}`);
-    }
-    */
+  const checkAuth = async () => {
+    const user = await API.getUserInfo(); // we have the user info here
+    setLoggedIn(user);
   };
+  checkAuth();
+  }, []);
 
   const handleLogout = async () => {
     try {
       await API.logout();
-      setLoggedIn(false)
+      setLoggedIn(false);
+      //we go back to login now
+      const navigate = useNavigate();
+      console.log("imma navigate");
+      navigate('/login');
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);
     }
@@ -66,7 +59,7 @@ useEffect(() => {
             </Container>
           </>} >
           <Route index
-            element={loggedIn? <HomeComponent/> : <LoginForm login={handleLogin} />} />
+            element={loggedIn? <HomeComponent/> : <LoginForm/>} />
 
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
@@ -92,7 +85,7 @@ useEffect(() => {
               }
           <Route path='*' element={<NotFound />} />
           <Route path='/login' element={
-            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm login={handleLogin} />
+            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm />
           } />
 
         </Route>

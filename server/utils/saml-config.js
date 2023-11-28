@@ -10,6 +10,7 @@ const SAMLconfig = {
     entryPoint: 'https://thesis-management-06.eu.auth0.com/samlp/h4XhUaPJYpejFSJpNKdl1f9SCrd6baBh',
     issuer: 'urn:thesis-management-06.eu.auth0.com',
     callbackUrl: 'http://localhost:3001/login/callback',
+    //logoutUrl: 'http://localhost:3001/logout/callback',
     cert: certSAML,
     acceptedClockSkewMs: 30000
 };
@@ -18,7 +19,6 @@ passport.use(new SamlStrategy(SAMLconfig,
     async (profile, done) => {
         try{
             const user = await loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn']); //uses the email
-            console.log(user);
             return done(null, user);
         }catch(err){
             return done(err,false);

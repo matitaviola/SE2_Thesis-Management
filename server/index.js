@@ -49,13 +49,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+//login
 app.get('/login', passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }));
 
 app.post('/login/callback',
-  (req, res, next) => {
-    console.log("Porcaputtana");
-    next();
-  },
   bodyParser.urlencoded({ extended: false }),
   passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
   function(req, res, next) {
@@ -66,17 +63,18 @@ app.post('/login/callback',
     });
   }
 );
+
 //logout
 app.get('/logout', (req, res) => {
   req.isAuthenticated() ?
-   //this is a passport-saml function used to clean the session data
-    req.logOut(function (err) {
-      if (err) return next(err); 
-      console.log("so close");
-      res.redirect(`${FRONTEND}proposals`);
-    }) :
-    res.status(401).json({ message: 'Unauthorized' });
+  //this is a passport-saml function used to clean the session data
+  req.logOut(function (err) {
+     if (err) return res.status(500).json({ message: 'Internal Server Error' });; 
+     return res.status(200).json({message: 'Successfully logged out'});
+   }) :
+   res.status(401).json({ message: 'Unauthorized' });
 });
+
 //session
 app.get('/api/session', (req, res) => {
   if(req.isAuthenticated()) {
