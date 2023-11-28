@@ -59,6 +59,7 @@ app.post('/login/callback',
   bodyParser.urlencoded({ extended: false }),
   passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
   function(req, res, next) {
+    //this is a passport-saml function used to save the session data
     req.logIn(req.user, function(err) {
       if (err) return next(err);
       return res.redirect(FRONTEND+"proposals");
@@ -68,9 +69,11 @@ app.post('/login/callback',
 //logout
 app.get('/logout', (req, res) => {
   req.isAuthenticated() ?
+   //this is a passport-saml function used to clean the session data
     req.logOut(function (err) {
       if (err) return next(err); 
-      return res.redirect('/login');
+      console.log("so close");
+      res.redirect(`${FRONTEND}proposals`);
     }) :
     res.status(401).json({ message: 'Unauthorized' });
 });

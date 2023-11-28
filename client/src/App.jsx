@@ -50,7 +50,6 @@ useEffect(() => {
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);
     }
-
   };
 
   return (
