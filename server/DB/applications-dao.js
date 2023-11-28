@@ -93,3 +93,17 @@ exports.createApplication = (proposalId, studentId) => {
         });
     });
 }
+
+//creates a new application for a proposal for the given student
+exports.getLastId = () => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT seq from sqlite_sequence where name="APPLICATION"';
+        db.get(sql, [], function (err, row) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row.seq)
+            }
+        });
+    });
+}

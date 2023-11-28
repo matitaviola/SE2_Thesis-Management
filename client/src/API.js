@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const SERVER_URL = 'http://localhost:3001';
 
 //#region Login
@@ -203,15 +205,21 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
   return {ok:true};
 };
 
-const addApplication = async (proposalId, studentId) => {
+const addApplication = async (file, proposalId, studentId) => {
   const reqheader = {
-    'Content-Type':'application/json',
+    'Content-Type':'multipart/form-data',
     'X-USER-ROLE': 'STUDENT'
   };
-  const response = await fetch(SERVER_URL + `/api/applications`, {
-    method: 'POST',
+  
+  const formData = new FormData();
+
+  //preserve the order of appending, otherwise muler won't be able to parse correctly the data
+  formData.append("proposalId", proposalId);
+  formData.append("studentId", studentId);
+  formData.append("file", file);
+  console.log(formData)
+  const response = await axios.post(SERVER_URL + `/api/applications`, formData, {
     headers: reqheader,
-    body: JSON.stringify({ proposalId, studentId }),
   });
 
   if (!response.ok) {
@@ -222,9 +230,10 @@ const addApplication = async (proposalId, studentId) => {
   
 } 
 
-const uploadResumee = async (file) => {
+const uploadResumee = async (file, ) => {
+  file.append();
   try {
-    await axios.post('http://localhost:3001/upload', file, {
+    await axios.post(SERVER_URL + `/api/applications`, file, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

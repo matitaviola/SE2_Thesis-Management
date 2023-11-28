@@ -5,6 +5,7 @@ import { useNavigate  } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
+import { FileUploadComponent } from "./FileUploadComponent.jsx";
 
 
 
@@ -113,6 +114,7 @@ function ProposalRow(props) {
 
 function StudentProposalsTableComponent(props) {
 
+  const [file, setFile] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState({});
@@ -131,7 +133,7 @@ function StudentProposalsTableComponent(props) {
     fetchProposals()
   }, [filter, studentId]);
 
-  useEffect(() => {
+/*  useEffect(() => {
     const getApplications = async () => {
         try {
             let retrievedApplications = await API.getApplications(loggedInUser);
@@ -141,7 +143,7 @@ function StudentProposalsTableComponent(props) {
         }
     };
     getApplications();
-  }, [applications]);
+  }, []);*/
 
   const handleViewClick = (title) =>{
     let proposal = proposals.find(p => p.title == title);
@@ -157,8 +159,28 @@ function StudentProposalsTableComponent(props) {
   const handleCloseUpdateModal = () => setShowUpdateModal(false);
 
   const handleSendApplication = (proposal) => {
-    console.log(proposal);
-    API.addApplication(proposal.id, studentId);
+
+  const isValidFileType = (file) => {
+    const allowedFileTypes = ['application/pdf'];
+    return allowedFileTypes.includes(file.type);
+  };
+
+  const isValidFileSize = (file) => {
+    const maxSizeInBytes = 5 * 1024 * 1024;
+    return file.size <= maxSizeInBytes;
+  };
+
+  if(!isValidFileSize(file)){
+    alert("Max 10MB files accepted");
+    return;
+  }
+
+  if(!isValidFileType(file)){
+    alert("Only PDF file are accepted");
+    return;
+  }
+
+    API.addApplication(file, proposal.id, studentId);
     setShowUpdateModal(false);
   };
 
@@ -187,11 +209,12 @@ function StudentProposalsTableComponent(props) {
               <th>Level <SearchButton filter={filter} setFilter={setFilter} keyword='level'/></th>
               <th>Degree <SearchButton filter={filter} setFilter={setFilter} keyword='degree'/></th>
               <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {proposals.map(p => {
-              const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
+              //const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
               {
                 return <tr key={p.title}>
                   <td>{p.title} </td>
@@ -206,7 +229,7 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.cdsName}</td>
                   <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
                   <td>
-                    {applicationExists ? (
+                    {p.canSendApplication ? (
                       <span>Application sent</span>
                     ) : (
                       <Button onClick={() => handleShowUpdateModal(p)}>Apply</Button>
@@ -219,7 +242,10 @@ function StudentProposalsTableComponent(props) {
               <Modal.Header closeButton>
                 <Modal.Title>{selectedProposal.title}</Modal.Title>
               </Modal.Header>
-              <Modal.Body>Are you sure to apply for {selectedProposal.title}?</Modal.Body>
+              <Modal.Body>
+                <FileUploadComponent setFile={setFile}></FileUploadComponent>
+                Are you sure to apply for {selectedProposal.title}?
+                </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseUpdateModal}>
                   Close

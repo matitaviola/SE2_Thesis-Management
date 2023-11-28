@@ -1,27 +1,23 @@
 // FileUploadComponent.jsx
 import React, { useState } from 'react';
 import API from '../API';
-import { Button } from 'react-bootstrap';
+import { Button, Container, Form, Row, Col } from 'react-bootstrap';
 
 
-export function FileUploadComponent(){
-  const [file, setFile] = useState(null);
+export function FileUploadComponent(props){
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-  };
-
-  const handleUpload = async () => {
-    await API.uploadResumee(file);
+    props.setFile(selectedFile);
   };
   
+
   return (
-    <div>
-      <Button  onClick={()=>setFile(null)}>Clear</Button>
-      <Form.Control type="file" size="lg" onChange={handleFileChange}/>
-      <Button onClick={handleUpload}>Upload</Button>
-    </div>
+    <Container>
+      <Row>
+      <Col><Form.Control type="file" onChange={handleFileChange} accept=".pdf" /></Col>
+      </Row>
+    </Container>
   );
 };
 

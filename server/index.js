@@ -13,6 +13,8 @@ const app = express();
 const moment = require('moment');
 const PORT = 3001;
 const dayjs = require('dayjs');
+const multer = require('multer');
+const fs = require('fs');
 
 
 app.use(cors()); // Enable CORS for all routes
@@ -160,7 +162,16 @@ async (req, res) => {
         filter['degree'] = req.query.degree;
       }
 
-      const proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      const applications = await appDao.getApplicationsByStudent(req.params.studentId);
+      proposals = proposals.map(p => {
+        if(applications.some(app => app.title === p.title && app.status === "Pending")){
+          return {...p, canSendApplication: true};
+        }
+        return {...p, canSendApplication: false};
+
+      })
+
       res.json(proposals);
   } catch (err){
     console.log(err);
@@ -260,13 +271,51 @@ app.get('/api/applications/student/:studentId',
   }
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    
+    cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
+  },
+  filename: (req, file, cb) => {
+    appDao.getLastId().then((id)=>{
+      console.log(id)
+      cb(null, `APP_${id}.${file.originalname.split('.').pop()}`);
+    });
+  },
+});
+
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 10000000}, //10mb
+  fileFilter: function (req, file, cb) {
+    const allowedFileTypes = ['application/pdf'];
+    if(!allowedFileTypes.includes(file.mimetype)){
+      req.fileValidationError = 'File type not accepted';
+      console.error(req.fileValidationError)
+      return cb(null, false, new Error('File type not accepted'));
+    }
+    cb(null, true);
+   }
+});
+
+
 //POST /api/application/
-app.post('/api/applications',
+app.post('/api/applications', upload.single('file'),
 async (req, res) => {
+  const file = req.file;
   try {
+
+    if (!file || !file.originalname) {
+      return res.status(400).send('Invalid File');
+    }
+
     const pendingApps = await appDao.getApplicationsByStudent(req.body.studentId).then((rows) => rows.filter(r => r.status=="Pending"||r.status=="Accepted").length);
 
     if(pendingApps>0){
+      if(file){
+        console.log(file.path)
+        fs.unlinkSync(file.path);
+      }
       console.log("Error length")
       return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
     }
@@ -275,6 +324,10 @@ async (req, res) => {
 
     res.json(application);
   } catch (err){
+    if(file){
+      console.log(file.path)
+      fs.unlinkSync(file.path);
+    }
     console.log(err);
     return res.status(500).json({ error: 'An error occurred while creating the application' });
   }
