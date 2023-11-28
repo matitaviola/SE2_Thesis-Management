@@ -7,17 +7,20 @@ const login = async (credentials) => {
     'X-USER-ROLE': 'LOGIN'
   };
   const response = await fetch(SERVER_URL + `/api/login`, {
-    method: 'POST',
+    method: 'GET',
     headers: reqheader,
-    body: JSON.stringify({
-      'credentials': credentials
-    }),
+    // body: JSON.stringify({
+    //   'credentials': credentials
+    // }),
   });
-  if (!response.ok) {
-    throw new Error(`Login error! status: ${response.status}`);
-  }
-  const userData = await response.json();
-  return userData;
+  // window.location.href = response.data.redirect;
+
+  // if (!response.ok) {
+  //   throw new Error(`Login error! status: ${response.status}`);
+  // }
+  // window.location.href = response.data.redirect;
+  // const userData = await response.json();
+  // return userData;
 }
 const getUserInfo = async () => {
   const reqheader = {

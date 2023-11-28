@@ -14,9 +14,14 @@ const app = express();
 const moment = require('moment');
 const PORT = 3001;
 const dayjs = require('dayjs');
+const passport = require('passport');
+const SamlStrategy = require('passport-saml').Strategy;
+const session = require('express-session');
 
-
-app.use(cors()); // Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:5173', // Replace with the actual origin of your React app
+  credentials: true,
+})); // Enable CORS for all routes
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
@@ -27,31 +32,53 @@ app.use(bodyParser.json()); //to read from req.body
 app.use(authorizationMiddleware.checkUserRole);
 let sessionUser = {};
 
+app.use(session({
+  secret: 'thisisastrongkey',
+  resave: true,
+  saveUninitialized: true
+}));
+
+passport.use(new SamlStrategy({
+  entryPoint: 'https://dev-dqfulzy38tgncr2u.us.auth0.com/samlp/adPQ0Lsj5zo018PMIJbKLvnnZo9Vlap5',
+  issuer: 'urn:dev-dqfulzy38tgncr2u.us.auth0.com',
+  callbackUrl: 'http://localhost:3001/api/login/callback',
+  cert: 'MIIDHTCCAgWgAwIBAgIJE2bsX1dIbrW6MA0GCSqGSIb3DQEBCwUAMCwxKjAoBgNVBAMTIWRldi1kcWZ1bHp5Mzh0Z25jcjJ1LnVzLmF1dGgwLmNvbTAeFw0yMzExMjYxNzM0MjRaFw0zNzA4MDQxNzM0MjRaMCwxKjAoBgNVBAMTIWRldi1kcWZ1bHp5Mzh0Z25jcjJ1LnVzLmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAO6/rqYKq5jQygwmzHRxW0Iwhcdq1w+awOfJ+LVySP6WwW72uz2mh9KhmkoS3IwhmWa7Re4wY1HIot+BJzE9Jpac1dv9eNtzHOvVg3qnZWHto2EydHhqjK+D4qr4bC7ElodmEfKCA+V7azptddd76YgGzRk1FBMbg5dY4Z5em8oxpRtN1te1dMb/0yqgz7rF01YDNTYjLpKNQbiK6Q2uJkKz9m0PtSgq6tCIRrG3QUchCS7xmJUwl1LasaoDz/gn2e+PfEwQebxVRMEiBuskjs5D6ZNS+hERyerIbTFOOXikY5sapCH5lfcWIca6CUHs3p75hLQWSvgur77wplFnQIkCAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUysZjs+Fs2G4NQbcBfWlrXkDm/mIwDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUAA4IBAQCQRMyvYZW8zIwE/V2l0BPy0S26ZTthTM5M/sNEJjTiiUQ8kinf5k+PT9TLYczgL9uSos7TyJQoL7N3qMm8aKcHzTfW3n6Z0fzpwXOvXWiEKGA1nonUUmuFarZPHv3mem6WZElFmC9olETKlw/mMwjdnftzdFe/doAP2/RHG/n90jocfdweE0uXOGe5ksn+CT1fZWe1DoxwRB3jEJRahsq7WbZplNw4hI9wUVyyR/hx4DPggfL+CdRgfLcWNvbS8SGSNcfLljl6XRDFOLalwob5uLzWKRdQPXXHMRfPSfsfJs+BIyVW7ZZMI8PAOHzwMLbP3jMUW1ALDDVwA6Cqs6tK'
+}, (profile, done) => {
+  return done(null, profile);
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/api/login', passport.authenticate('saml'));
+app.post('/api/login/callback', passport.authenticate('saml', { failureRedirect: '/', failureFlash: true }), (req, res) => {
+  res.redirect('/');
+});
 //#region Login
-//GET /api/login
-app.get('/api/login', 
-  async (req, res) => {
-    try {
-        //gets all the professor's active proposals
-        res.json(sessionUser);
-    } catch (err){
-      console.log(err);
-      res.status(500).end();
-  }
-});
-//POST /api/login
-app.post('/api/login', 
-  async (req, res) => {
-    try {
-        //gets user with that credentials
-        const user = await loginDao.effectLogin(req.body.credentials);
-        sessionUser = user;
-        res.json(user);
-    } catch (err){
-      console.log(err);
-      res.status(500).json({error:err});
-  }
-});
+// //GET /api/login
+// app.get('/api/login', 
+//   async (req, res) => {
+//     try {
+//         //gets all the professor's active proposals
+//         res.json(sessionUser);
+//     } catch (err){
+//       console.log(err);
+//       res.status(500).end();
+//   }
+// });
+// //POST /api/login
+// app.post('/api/login', 
+//   async (req, res) => {
+//     try {
+//         //gets user with that credentials
+//         const user = await loginDao.effectLogin(req.body.credentials);
+//         sessionUser = user;
+//         res.json(user);
+//     } catch (err){
+//       console.log(err);
+//       res.status(500).json({error:err});
+//   }
+// });
 //DELETE /api/login
 app.delete('/api/login', 
   async (req, res) => {
