@@ -59,8 +59,10 @@ app.post('/login/callback',
   bodyParser.urlencoded({ extended: false }),
   passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
   function(req, res, next) {
-    //console.log(req);
-    res.redirect(`${FRONTEND}`);
+    req.logIn(req.user, function(err) {
+      if (err) return next(err);
+      return res.redirect(FRONTEND+"proposals");
+    });
   }
 );
 //logout
@@ -72,6 +74,14 @@ app.get('/logout', (req, res) => {
     }) :
     res.status(401).json({ message: 'Unauthorized' });
 });
+
+//session
+app.get('/api/session', (req, res) => {
+  if(req.isAuthenticated()) {
+    res.status(200).json(req.user);}
+  else
+    res.status(401).json({error: 'Not authenticated'});
+})
 
 //#region Student
 //gets data of the studnet of the application
