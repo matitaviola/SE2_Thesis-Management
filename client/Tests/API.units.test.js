@@ -889,3 +889,50 @@ describe('addApplication API', () => {
     );
   });
 });
+
+describe('getDegrees API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock response data
+  const successResponse = [
+    { id: '1', title: 'Degree 1' },
+    { id: '2', title: 'Degree 2' },
+  ];
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 400,
+  };
+
+  it('should fetch degrees successfully', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => successResponse,
+    });
+
+    const result = await API.getDegrees();
+
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/degrees`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-USER-ROLE': 'TEACHER',
+      },
+    });
+
+    expect(result).toEqual(successResponse);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getDegrees()).rejects.toThrow('HTTP error! status: 400');
+  });
+});

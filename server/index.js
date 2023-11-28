@@ -5,7 +5,7 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
-const authorizationMiddleware = require('./Middlewares/authorization-middleware');
+const {isLoggedIn, checkTeacherRole, checkStudentRole} = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
 const bodyParser = require ('body-parser');
 const express = require('express');
@@ -14,67 +14,80 @@ const moment = require('moment');
 const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
 
-const app = express();
+const passport = require('./utils/saml-config');
+const session = require('express-session');
+
 const PORT = 3001;
-
-
+const FRONTEND = "http://localhost:5173/"
+const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173",
+  optionsSuccessStatus: 200,
+  credentials: true
+}
 //middleman to every call
-app.use(cors()); // Enable CORS for all routes
+app.use(cors(corsOptions)); // Enable CORS for all routes
 app.use(bodyParser.json()); //to read from req.body
-app.use(authorizationMiddleware.checkUserRole); //TODO: needs to be changed for saml
 app.use(express.json()); //used for the validator
+
+//session for login, using the passport defined in utils/saml-config
+// Session middleware
+app.use(session({
+  secret: 'two men can share a secret, if one of them is dead',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 86400000, // 24 hours
+  }
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(passport.authenticate('session'));
 
 // This function is used to format express-validator errors as strings
 const errorFormatter = ({ location, msg, path, value, nestedErrors}) => {
   return `${location}[${path}]: ${msg}`;
 };
-
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
 
+//login
+app.get('/login', passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }));
 
-let sessionUser = {}; //TODO: needs to use cookies
+app.post('/login/callback',
+  bodyParser.urlencoded({ extended: false }),
+  passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
+  function(req, res, next) {
+    //this is a passport-saml function used to save the session data
+    req.logIn(req.user, function(err) {
+      if (err) return next(err);
+      return res.redirect(FRONTEND+"proposals");
+    });
+  }
+);
 
-//#region Login
-//GET /api/login
-app.get('/api/login', 
-  async (req, res) => {
-    try {
-        //gets all the professor's active proposals
-        res.json(sessionUser);
-    } catch (err){
-      console.log(err);
-      res.status(500).end();
-  }
+//logout
+app.get('/logout', (req, res) => {
+  req.isAuthenticated() ?
+  //this is a passport-saml function used to clean the session data
+  req.logOut(function (err) {
+     if (err) return res.status(500).json({ message: 'Internal Server Error' });; 
+     return res.status(200).json({message: 'Successfully logged out'});
+   }) :
+   res.status(401).json({ message: 'Unauthorized' });
 });
-//POST /api/login
-app.post('/api/login', 
-  async (req, res) => {
-    try {
-        //gets user with that credentials
-        const user = await loginDao.effectLogin(req.body.credentials);
-        sessionUser = user;
-        res.json(user);
-    } catch (err){
-      console.log(err);
-      res.status(500).json({error:err});
-  }
-});
-//DELETE /api/login
-app.delete('/api/login', 
-  async (req, res) => {
-    try {
-        //empties the session user info
-        sessionUser = {};
-        res.json(sessionUser);
-    } catch (err){
-      console.log(err);
-      res.status(500).json({error:err});
-  }
-});
-//#endregion
+
+//session
+app.get('/api/session', (req, res) => {
+  if(req.isAuthenticated()) {
+    res.status(200).json(req.user);}
+  else
+    res.status(401).json({error: 'Not authenticated'});
+})
 
 //#region Student
 

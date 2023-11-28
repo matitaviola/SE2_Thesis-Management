@@ -9,7 +9,7 @@ exports.getSupervisorById = (supervisorId) => {
       else if (row === undefined || row.length === 0) {
         resolve();
       } else {
-        resolve(row);
+        resolve(row[0]);
       }
     });
   });
