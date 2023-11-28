@@ -1,26 +1,6 @@
 const SERVER_URL = 'http://localhost:3001';
 
 //#region Login
-const login = async (credentials) => {
-  const response = await fetch(SERVER_URL + `/api/login`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      'credentials': credentials
-    }),
-  });
-  if (response.ok) {
-    const user = await response.json();
-    return user;
-  }
-  else {
-    const errDetails = await response.text();
-    throw errDetails;
-  }
-}
 const getUserInfo = async () => {
   const response = await fetch(SERVER_URL + `/api/session`, {
     credentials: 'include',
@@ -33,8 +13,8 @@ const getUserInfo = async () => {
   }
 }
 const logout = async () => {
-  const response = await fetch(SERVER_URL + `/api/login`, {
-    method: 'DELETE',
+  const response = await fetch(SERVER_URL + `/logout`, {
+    method: 'GET',
     credentials: 'include'
   });
   if (!response.ok) {
@@ -63,7 +43,7 @@ const getProposals = async (user) =>{
   
   let response, proposalsJson;
   if(user.role == 'TEACHER'){
-    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`, {headers:reqheader});
+    response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}`);
     proposalsJson = await response.json();
   } else{
     throw new Error("Error on getting the proposals: Invalid role");
@@ -77,10 +57,6 @@ const getProposals = async (user) =>{
 }
 
 const getStudentProposals = async (studentId, filter) =>{
-  const reqheader = {
-    'Content-Type':'application/json',
-    'X-USER-ROLE': 'STUDENT'
-  };
 
   let path = '?';
   Object.keys(filter).filter(k => filter[k]).forEach(k =>{
@@ -88,7 +64,7 @@ const getStudentProposals = async (studentId, filter) =>{
   })
   path = path.slice(0, -1);
 
-  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, {headers:reqheader});
+  let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`);
   let responseJson = await response.json();
 
 
@@ -211,6 +187,6 @@ const getDegrees = async () => {
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
+const API = {getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;
 

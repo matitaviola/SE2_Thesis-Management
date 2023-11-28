@@ -33,12 +33,14 @@ useEffect(() => {
   }, []);
 
   const handleLogin = async (credentials) => {
+    /*
     try {
       let user = await API.login(credentials);
       setLoggedIn(user);
     } catch (err) {
       setErrorMessage(`Error during log in : ${err}`);
     }
+    */
   };
 
   const handleLogout = async () => {

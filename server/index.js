@@ -69,12 +69,11 @@ app.post('/login/callback',
 app.get('/logout', (req, res) => {
   req.isAuthenticated() ?
     req.logOut(function (err) {
-      if (err) { return next(err); }
-      return res.redirect(FRONTEND);
+      if (err) return next(err); 
+      return res.redirect('/login');
     }) :
     res.status(401).json({ message: 'Unauthorized' });
 });
-
 //session
 app.get('/api/session', (req, res) => {
   if(req.isAuthenticated()) {
