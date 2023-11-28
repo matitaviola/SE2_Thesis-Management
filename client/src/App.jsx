@@ -82,7 +82,7 @@ useEffect(() => {
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent />} />
           <Route path='proposals/new'
-              element={<ProposalsFormComponent s/>} />
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='applications'
               element={<ApplicationsTable />}/>
           <Route path='application/:proposalId/:studentId'

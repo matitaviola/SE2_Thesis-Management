@@ -47,3 +47,13 @@
 .student {
   font-weight: bold;
 }
+
+.place-holder-style {
+  font-style:italic;
+  width: 50vw;
+  border: 1.5px solid;
+}
+
+.text-danger {
+  color: rgb(132, 15, 15) !important;
+}

@@ -73,7 +73,7 @@ const createTables = () => {
                 Title TEXT NOT NULL,
                 Supervisor TEXT NOT NULL,
                 Co_supervisor TEXT,
-                Keywords TEXT,
+                Keywords TEXT NOT NULL,
                 Type TEXT NOT NULL,
                 Groups TEXT NOT NULL,
                 Description TEXT NOT NULL,
@@ -81,7 +81,7 @@ const createTables = () => {
                 Notes TEXT,
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
-                CdS TEXT,
+                CdS TEXT NOT NULL,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
                 FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE)
             )`, (err) => {

@@ -125,9 +125,8 @@ const createProposal = async (proposal, user) => {
   });
   if(!response.ok) {
     const errMessage = await response.json();
-    throw new Error(errMessage.error);
-  }
-  return {ok:true};
+    throw new Error("Error on creating the proposal: " + errMessage.error);
+  } else return {ok:true};
 }
 
 const deleteProposal = async (proposal) => {
@@ -222,9 +221,26 @@ const addApplication = async (proposalId, studentId) => {
   
 } 
 
+const getDegrees = async () => {
+  const reqheader = {
+    'Content-Type':'application/json',
+    'X-USER-ROLE': 'TEACHER'
+  };
+  const response = await fetch(SERVER_URL + `/api/degrees`, {
+    method: 'GET',
+    headers: reqheader  
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const degreesJson = await response.json();
+  return degreesJson;
+} 
+
 
 //#endregion
 
-const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication};
+const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;
 
