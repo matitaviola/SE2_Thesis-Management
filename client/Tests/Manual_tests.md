@@ -105,44 +105,49 @@ Please note that each of the following test is written to be executed on a fresh
 ## Story #5 - Accept Application
 - Should update 1 applications by rejecting
 ```
-- Login as usr:david@example.com psw:d100003
+- Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
-- Click on ["Proposal 3" application by student s200001], a.k.a. the second row
-- Should be visible the student's data [Alice Smith s200001] and the career, with 1 exams
+- Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
+- Click on [s200013]
+- Should be visible the student's data [Isabella Gonzalez s200013] and the career, with 1 exam
 - Click on the "Reject" button
+- Confirm the choice pressing "Yes, decline it!"
 - Should be automatically returned to the applications list page
 - Should not see the rejected application anymore
+- Should see 3 applications
 ```
 - Should update 2 applications by accepting
 ```
-- Login as usr:david@example.com psw:d100003
+- Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
-- Click on ["Proposal 3" application by student s200003], a.k.a. the second row
-- Should be visible the student's data [Ling Wang s200003] and the career, with 3 exams
+- Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
+- Click on [s200001]
+- Should be visible the student's data [Alice Smith s200001] and the career, with 1 exam
 - Click on the "Accept" button
+- Confirm the choice pressing "Yes, accept it!"
 - Should be automatically returned to the applications list page
-- Should see only the 2 applications for "Proposal 13"
+- Should see 1 application, also the other application for the same proposal should not be visible
 ```
 
 ## Story #6 - Browse Applications Decisions
 - Should show 2 applications with different status (a.k.a. the decision)
 ```
-- Login as usr:john@example.com psw:s200000
+- Login as usr:john@studenti.polito.com psw:s200000
 - Go to "Applications" tab
 - Should see two applications:
-    - ["Proposal 1" Status: Pending], with the status info written in black
-    - ["Proposal 2" Status: Rejected], with the status info written in red
+    - [Title: "Proposal 1", Status: Pending], with background color of the row light-yellow
+    - [Title:"Proposal 7", Status: Cancelled], with background color of the row white
 ```
 - Should show 1 application with rejected status
 ```
-- Login as usr:raj@example.com psw:s200004
+- Login as usr:raj@studenti.polito.com psw:s200004
 - Go to "Applications" tab
 - Should see one application:
-    - ["Proposal 4" Status: Rejected], with the status written in green
+    - ["Proposal 4" Status: Rejected], with the background color of the row red
 ```
 - Should show 0 applications 
 ```
-- Login as usr:maria@example.com psw:s200009
+- Login as carlos@studenti.polito.com psw:s200002
 - Go to "Applications" tab
 - Should see no applications
 ```
@@ -208,7 +213,7 @@ CdS/Programmes
 ## Story #10 - Delete Proposals:
 - Should delete a proposal and its data:
 ```
-- Login as usr:michael@example.com psw:d100001
+- Login as usr:michael@docenti.polito.com psw:d100001
 - Click on the "Proposals" tab
 - Should see 2 proposals for this teacher:
     - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101 | Not assigned]
