@@ -118,6 +118,7 @@ body {
   transform: scale(1.1);
   float: right;
 }
+
 .place-holder-style {
   font-style:italic;
   width: 50vw;
@@ -126,4 +127,12 @@ body {
 
 .text-danger {
   color: rgb(132, 15, 15) !important;
+}
+
+.centered-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 50px; /* adjust this value as needed */
 }

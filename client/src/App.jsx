@@ -14,6 +14,7 @@ import ErrorToast from './components/ErrorToastComponent.jsx';
 import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
 import API from './API.js';
 import HomeComponent from './components/HomeComponent.jsx';
+import CancelledProposalMessage from './components/CancelledProposalComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -68,6 +69,8 @@ useEffect(() => {
               element={<StudentProposalComponent />} />
               <Route path='applications'
               element={<ApplicationsTable />} />
+              <Route path='applications/null'
+              element={<CancelledProposalMessage />} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
