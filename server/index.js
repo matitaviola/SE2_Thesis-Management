@@ -122,6 +122,25 @@ app.get('/api/application/:proposalId/:studentId',
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
   }
 });
+
+// Added for ApplicationTableComponent
+app.get('/api/students', async (req, res) => {
+  try {
+      const students = await studDao.getStudents();
+      if(students === undefined)
+          throw(new Error("No students found"));
+      //we remove private/useless data:
+      students.forEach(student => {
+          delete student.gender;
+          delete student.nationality;
+          delete student.enrollment;
+      });
+      res.json(students);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while retrieving students data' });
+  }
+});
 //#endregion
 
 //#region Proposals

@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import API from '../API';
+import '../App.css';
 
 export function ProposalComponent() {
 	let navigate = useNavigate();
@@ -46,10 +47,10 @@ export function ProposalComponent() {
 				DELETE PROPOSAL
 				</Button>
 			</Row>
+
 	  </Container>
 	);
 }
-
 export function StudentProposalComponent() {
 
 	const location = useLocation();
@@ -80,6 +81,11 @@ export function StudentProposalComponent() {
 			<Row style={{ marginTop: '20px' }}>
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
+			<Row className="justify-content-end">
+            <Col xs="auto" >
+                <Button className="apply-button">Apply</Button>
+            </Col>
+        </Row>
 	  </Container>
 	);
 }
