@@ -331,13 +331,14 @@ app.post('/api/proposals',
   ],
   async (req, res) => {
     //validation rejected
-    console.log(req.body)
+    const supervisor = await supervisorDao.getSupervisorById(req.body.supervisor);
     const errors = validationResult(req).formatWith(errorFormatter); // format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
 
     try {
+      req.body.groups = supervisor.COD_GROUP;
       const proposal = await propDao.addProposal(req.body);
       res.json(proposal);
     } catch (error) {
