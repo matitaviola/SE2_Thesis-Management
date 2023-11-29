@@ -42,7 +42,7 @@ function TeacherProposalsTableComponent() {
 
 	return (
 		<div className="proposal-table">
-			<p className="lead" style={{ fontSize: '30px' }}>Active Proposals Table</p>
+			<h1>Active Proposals Table</h1>
       <Link to="/proposals/new">
         <button className="btn btn-primary" style={{ marginBottom: '10px' }}>Add New Proposal</button>
       </Link>
@@ -129,7 +129,7 @@ function StudentProposalsTableComponent(props) {
 
   return (
     <div className="proposal-table">
-      <p className="lead" style={{ fontSize: '30px' }}>Thesis Proposals</p>
+      <h1>Thesis Proposals</h1>
 
       <Row className="mb-2 justify-content-end" >
         <SearchBarComponent filter={filter} setFilter={setFilter}></SearchBarComponent>
