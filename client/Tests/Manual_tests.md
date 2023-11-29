@@ -8,12 +8,12 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher (proposals 3, 6, 9, 13, 16)
 - Click on "Add New Proposal" button
-- Enter all the fields as specified in the form:
+- Enter all the fields as specified in the form (co-supervisor, notes, and required knowledge are optional):
     - Title must not be duplicate
     - Expiration date must be after today
     - CdS must be a valid degree
-- Click on submit
-- After clicking on submit you will be redirected to proposals table and now you must see the new proposal added to the previous ones so 6 proposals in general
+- Click on save
+- After clicking on save you will be redirected to proposals table and now you must see the new proposal added to the previous ones so 6 proposals in general
 ```
 - Should not create proposal
 ```
@@ -21,9 +21,9 @@ Please note that each of the following test is written to be executed on a fresh
 - Should see 5 proposals for this teacher
 - Click on "Add New Proposal" button
 - Enter all the fields:
-    - Select the expiration date as a day in last month
-- Click on submit
-- After clicking on submit nothing should happen
+    - Leave one of the required fields empty
+- Click on save
+- After clicking on save you can see an error
 - Click on the proposals you still see 5 proposals for this teacher and nothing is added
 ```
 
@@ -109,6 +109,7 @@ Please note that each of the following test is written to be executed on a fresh
 - Should be automatically returned to the applications list page
 - Should not see the rejected application anymore
 - Should see 3 applications
+- An email is sent to the student to notify him/her about the rejection
 ```
 - Should update 2 applications by accepting
 ```
@@ -121,6 +122,7 @@ Please note that each of the following test is written to be executed on a fresh
 - Confirm the choice pressing "Yes, accept it!"
 - Should be automatically returned to the applications list page
 - Should see 1 application, also the other application for the same proposal should not be visible
+- An email is sent to the student to notify him/her about the acceptance
 ```
 
 ## Story #6 - Browse Applications Decisions
