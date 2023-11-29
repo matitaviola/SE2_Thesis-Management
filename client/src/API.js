@@ -144,8 +144,6 @@ if (!response.ok) {
   console.log(response);
     throw new Error(`HTTP error! status: ${response.status}`);
 }
-  
-return {ok:true};
 }
 
 //#endregion

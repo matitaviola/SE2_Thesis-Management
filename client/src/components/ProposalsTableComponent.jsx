@@ -32,7 +32,8 @@ function TeacherProposalsTableComponent() {
 		const getProposals = async () => {
 			try {
 				const retrievedProposals = await API.getProposals(loggedInUser);
-				setProposals(retrievedProposals);
+        const retrievedProposals2 = await API.getProposals(loggedInUser);
+				setProposals(retrievedProposals2);
 			} catch (err) {
 				console.log("Proposals getting an error: " + err);
 			}
