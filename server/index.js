@@ -98,6 +98,7 @@ app.get('/api/session', (req, res) => {
 //GET /api/application/:proposalId/:studentId
 app.get('/api/application/:proposalId/:studentId',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('proposalId').isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
@@ -126,7 +127,9 @@ app.get('/api/application/:proposalId/:studentId',
   });
 
 // Added for ApplicationTableComponent
-app.get('/api/students', async (req, res) => {
+app.get('/api/students', 
+  isLoggedIn,
+  async (req, res) => {
   try {
     const students = await studDao.getStudents();
     if (students === undefined)
@@ -151,6 +154,7 @@ app.get('/api/students', async (req, res) => {
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
   ],
@@ -175,6 +179,7 @@ app.get('/api/proposals/teacher/:professorId',
 //GET /api/proposals
 app.get('/api/proposals/students/:studentId',
   isLoggedIn,
+  checkStudentRole,
   [
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
   ],
@@ -257,6 +262,7 @@ app.get('/api/proposals/students/:studentId',
 //POST /api/proposals
 app.post('/api/proposals',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('title').not().isEmpty(),
     check('keywords').not().isEmpty(),
@@ -306,6 +312,7 @@ app.post('/api/proposals',
 //DELETE /api/proposals/:proposalId
 app.delete('/api/proposals/:proposalId',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('proposalId').isInt()
   ],
@@ -339,6 +346,7 @@ app.delete('/api/proposals/:proposalId',
 //GET /api/applications/teacher/:professorId
 app.get('/api/applications/teacher/:professorId',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
   ],
@@ -370,6 +378,7 @@ app.get('/api/applications/teacher/:professorId',
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId',
   isLoggedIn,
+  checkStudentRole,
   [
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
   ],
@@ -418,7 +427,9 @@ const upload = multer({
 
 
 //POST /api/application/
-app.post('/api/applications', isLoggedIn,
+app.post('/api/applications', 
+  isLoggedIn,
+  checkStudentRole,
   [
     check('proposalId').not().isEmpty().isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/),
@@ -454,6 +465,7 @@ app.post('/api/applications', isLoggedIn,
 //PATCH /api/application/:proposalId/:studentId
 app.patch('/api/application/:proposalId/:studentId',
   isLoggedIn,
+  checkTeacherRole,
   [
     check('proposalId').isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/),
@@ -500,6 +512,7 @@ app.patch('/api/application/:proposalId/:studentId',
 //#region Degrees
 //GET localhost:3001/api/degrees
 app.get('/api/degrees',
+  isLoggedIn,
   async (req, res) => {
     try {
       const degrees = await degreeDao.getAll();
