@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, autoRejectApplication, autoDeleteApplication, createApplication } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, createApplication, getLastId } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -269,3 +269,48 @@ describe('createApplication', () => {
   });
 });
 
+describe('getLastId', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with the last application ID when found', async () => {
+    const expectedSql = 'SELECT seq from sqlite_sequence where name="APPLICATION"';
+    const lastId = 123;
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, { seq: lastId });
+    });
+
+    const result = await getLastId();
+    expect(result).toEqual(lastId);
+  });
+
+  it('should resolve with null when no application ID is found', async () => {
+    const expectedSql = 'SELECT seq from sqlite_sequence where name="APPLICATION"';
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, null); //no application ID is found
+    });
+
+    const result = await getLastId();
+    expect(result).toBeNull();
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const expectedSql = 'SELECT seq from sqlite_sequence where name="APPLICATION"';
+    const expectedError = 'Database error occurred';
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(expectedError, null);
+    });
+
+    await expect(getLastId()).rejects.toEqual(expectedError);
+  });
+});

@@ -102,7 +102,9 @@ exports.getLastId = () => {
             if (err) {
                 reject(err);
             } else {
-                resolve(row.seq)
+                if(row)
+                    resolve(row.seq)
+                resolve(null); //Maybe it should be reject?
             }
         });
     });

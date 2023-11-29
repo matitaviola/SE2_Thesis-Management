@@ -35,7 +35,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
     });
 
     const result = await getActiveProposalsByProfessor(professorId);
-    expect(result).toEqual({});
+    expect(result).toEqual(mockedRows);
   });
 
   it('should resolve with an array of proposals when they are found for a professor', async () => {

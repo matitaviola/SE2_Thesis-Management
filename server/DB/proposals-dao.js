@@ -9,7 +9,7 @@ exports.getActiveProposalsByProfessor = (professorId) => {
             if (err)
                 reject(err);
             else if (rows === undefined || rows.length === 0) {
-                resolve({}); //if no applications yet for that 
+                resolve([]); //if no applications yet for that 
             }
             else {
                 const proposals = rows.map( r => {
