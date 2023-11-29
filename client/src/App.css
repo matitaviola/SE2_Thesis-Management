@@ -139,6 +139,7 @@ body {
   font-size: 15px;
   cursor: pointer;
   margin-right: 15px;
+  margin-bottom: 15px;
   transform: scale(1.1);
   float: right;
 }
