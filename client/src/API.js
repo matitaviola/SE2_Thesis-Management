@@ -189,15 +189,12 @@ const addApplication = async (file, proposalId, studentId) => {
   
   const formData = new FormData();
 
-  //preserve the order of appending, otherwise muler won't be able to parse correctly the data
   formData.append("proposalId", proposalId);
   formData.append("studentId", studentId);
   formData.append("file", file);
-  console.log(formData)
   const response = await axios.post(SERVER_URL + `/api/applications`, formData, {
     headers: reqheader,
     withCredentials: true,
-    credentials: 'include'
   });
 
   if (!response.ok) {
