@@ -6,8 +6,6 @@ import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
 
-
-
 export default function ProposalsTableComponent() {
 
 
@@ -101,7 +99,7 @@ function ProposalRow(props) {
                     : "Not assigned"}
             </td>
 			<td>
-				<Button variant="info" onClick={handleViewClick}>
+				<Button onClick={handleViewClick}>
 					View
 				</Button>
             </td>
@@ -114,11 +112,8 @@ function ProposalRow(props) {
 function StudentProposalsTableComponent(props) {
 
   const [proposals, setProposals] = useState([]);
-  const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState({});
   const [studentId, setStudentId] = useState(props.studentId);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedProposal, setSelectedProposal] = useState({title:"", id:-1});
 	const navigate = useNavigate();
   const loggedInUser = useContext(AuthContext);
 
@@ -127,39 +122,14 @@ function StudentProposalsTableComponent(props) {
     const fetchProposals = async () => {
       let proposalsResponse = await API.getStudentProposals(studentId, filter);
       setProposals(proposalsResponse);
+      
     }
     fetchProposals()
   }, [filter, studentId]);
 
-  useEffect(() => {
-    const getApplications = async () => {
-        try {
-            let retrievedApplications = await API.getApplications(loggedInUser);
-            setApplications(retrievedApplications);
-        } catch (err) {
-            console.log("Applications getting an error: " + err);
-        }
-    };
-    getApplications();
-  }, [applications]);
-
-  const handleViewClick = (title) =>{
-    let proposal = proposals.find(p => p.title == title);
-		navigate(`/proposals/${title}`, { state: { proposal } });
-  };
-
-  const handleShowUpdateModal = (proposal) => {
-    console.log(proposal);
-    setSelectedProposal(proposal);
-    setShowUpdateModal(true);
-  };
-
-  const handleCloseUpdateModal = () => setShowUpdateModal(false);
-
-  const handleSendApplication = (proposal) => {
-    console.log(proposal);
-    API.addApplication(proposal.id, studentId);
-    setShowUpdateModal(false);
+  const handleViewClick = (id) =>{
+    let proposal = proposals.find(p => p.id == id);
+		navigate(`/proposals/${id}`, { state: { proposal, studentId } });
   };
 
   return (
@@ -173,7 +143,7 @@ function StudentProposalsTableComponent(props) {
       </Row>
 
       <Row>
-        <Table bordered hover >
+        <Table bordered hover responsive>
           <thead>
             <tr>
               <th>Title <SearchButton filter={filter} setFilter={setFilter} keyword='title'/></th>
@@ -191,9 +161,9 @@ function StudentProposalsTableComponent(props) {
           </thead>
           <tbody>
             {proposals.map(p => {
-              const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
+              //const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
               {
-                return <tr key={p.title}>
+                return <tr key={p.id}>
                   <td>{p.title} </td>
                   <td>{p.supervisorName} {p.supervisorSurname}</td>
                   <td>{p.coSupervisor}</td>
@@ -204,31 +174,11 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.expiration.slice(0,10)}</td>
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
-                  <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
-                  <td>
-                    {applicationExists ? (
-                      <span>Application sent</span>
-                    ) : (
-                      <Button onClick={() => handleShowUpdateModal(p)}>Apply</Button>
-                    )}
-                  </td>
+                  <td><Button onClick={() => handleViewClick(p.id)}>View</Button></td>
+
                 </tr>
               }
             })}
-            <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
-              <Modal.Header closeButton>
-                <Modal.Title>{selectedProposal.title}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>Are you sure to apply for {selectedProposal.title}?</Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseUpdateModal}>
-                  Close
-                </Button>
-                <Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
-                  Send Application
-                </Button>
-              </Modal.Footer>
-            </Modal>
           </tbody>
         </Table>
       </Row>

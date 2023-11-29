@@ -76,7 +76,7 @@ export default function ApplicationTable(props) {
                             <thead>
                                 <tr>
                                     <th>Title</th>
-                                    <th>Student ID</th>
+                                    {/*<th>StudentID</th>*/}
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -102,7 +102,7 @@ export default function ApplicationTable(props) {
                                                 state={{ application: application }}
                                                 style={{ textDecoration: 'none' }} >{application.proposal}
                                             </Link></td>
-                                            <td>{application.studentId}</td>
+                                            {/*<td>{application.studentId}</td>*/}
                                             <td>{application.status}</td>
                                         </tr>
                                     )

@@ -94,12 +94,12 @@ describe('getApplicationsByStudent', () => {
     const studentId = 2; 
     const expectedSql = 'SELECT * FROM APPLICATION WHERE STUDENT_ID=?';
     const mockedRows = [
-      { id:1, Student_ID: studentId, Proposal_ID:1, Archived_Proposal_ID:null, Proposal: 'Proposal 1', Status: 'Pending' },
-      { id:2, Student_ID: studentId, Proposal_ID:null, Archived_Proposal_ID:2, Proposal: 'Proposal 2', Status: 'Accepted' }
+      { Id:1, Student_ID: studentId, Proposal_ID:1, Archived_Proposal_ID:null, Proposal: 'Proposal 1', Status: 'Pending' },
+      { Id:2, Student_ID: studentId, Proposal_ID:null, Archived_Proposal_ID:2, Proposal: 'Proposal 2', Status: 'Accepted' }
       // Add more sample application data as needed
     ];
     const expectedApplications = mockedRows.map(r => ({
-      id: r.id,
+      id: r.Id,
       studentId: r.Student_ID,
       proposal: r.Proposal_ID? r.Proposal_ID : r.Archived_Proposal_ID,
       title: r.Proposal,
