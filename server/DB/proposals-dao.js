@@ -122,6 +122,64 @@ exports.archiveProposal = (proposalId, studentId) => {
     });
 }
 
+exports.archiveProposalWithoutApplication = (proposalId) => {
+    return new Promise((resolve, reject) => {
+        // Step 1: Retrieve data from PROPOSAL table
+        db.get('SELECT * FROM PROPOSAL WHERE Id = ?', [proposalId], (err, row) => {
+            if (err) {
+                reject(err);
+            }else if (row){
+                const originalProposal = row;
+                // Step 2: Add the Proposal to the archived ones and delete it from the old one
+                //There's a trigger to update the remaining proposals
+                const insertSQL = "INSERT INTO ARCHIVED_PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                const deleteSQL = "DELETE FROM PROPOSAL WHERE Id=?";
+                // Begin a transaction
+                db.serialize(() => {
+                    db.run("BEGIN TRANSACTION");
+
+                    // Execute the first SQL statement
+                    db.run(insertSQL, [
+                        proposalId,
+                        originalProposal.Title,
+                        originalProposal.Supervisor,
+                        originalProposal.Co_supervisor,
+                        originalProposal.Keywords,
+                        originalProposal.Type,
+                        originalProposal.Groups,
+                        originalProposal.Description,
+                        originalProposal.Req_knowledge,
+                        originalProposal.Notes,
+                        originalProposal.Expiration,
+                        originalProposal.Level,
+                        originalProposal.CdS,
+                        "Archived",
+                        null
+                    ], (err) => {
+                        if (err) {
+                            // Roll back the transaction if an error occurs
+                            db.run("ROLLBACK");
+                            reject(err);
+                        }
+                        db.run(deleteSQL, [proposalId], (err) => {
+                            if(err){
+                                db.run("ROLLBACK");
+                                reject(err);
+                            }
+
+                            // Commit the transaction if all statements succeed
+                            db.run("COMMIT");
+                            resolve({ success: true });
+                        });
+                    });
+                });
+            } else{
+                reject('Proposal not found.');
+            }
+        });
+    });
+}
+
 exports.getAvailableProposals = (studentId, filter) => {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
