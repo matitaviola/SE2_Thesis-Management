@@ -120,7 +120,7 @@ export function StudentProposalComponent() {
 			</Row>
 			<Row>
 				{proposal.applicationExists ? (
-					<span>Application sent</span>
+					<h2 className='text-center mt-4'>Application Sent!</h2>
 				) : (
 					<Button onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
 				)}
