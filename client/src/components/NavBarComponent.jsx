@@ -9,7 +9,7 @@ function NavHeader(props) {
   const location = useLocation();
 
   return (
-    <Navbar bg="primary" variant="dark">
+    <Navbar bg="primary" variant="dark" className='navbar'>
       <Container fluid>
         <Link to='/' className='navbar-brand'>POLITO Thesis</Link>
         <Nav className="me-auto">

@@ -1,6 +1,11 @@
+body {
+  font-size: large; /* You can adjust the size as needed */
+}
+
 /*Navbar*/
 .navbar {
-  height: 10vh;
+  height: 12vh;
+  font-size: x-large;
 }
 
 .navbar-brand,
@@ -58,6 +63,11 @@
   background-color: azure;
 }
 
+.evaluate-button{
+  color: white;
+  font-size: large;
+}
+
 .application-info {
   font-size: 20px;
 }
@@ -107,7 +117,7 @@
   margin-right: 15px;
   transform: scale(1.1);
   float: right;
-=======
+}
 .place-holder-style {
   font-style:italic;
   width: 50vw;

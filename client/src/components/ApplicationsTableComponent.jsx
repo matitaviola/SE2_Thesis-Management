@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Table, Card } from 'react-bootstrap';
+import { Container, Button, Table, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../App';
 import API from '../API';
@@ -40,14 +40,15 @@ export default function ApplicationTable(props) {
             {
                 loggedInUser.role === 'TEACHER' ?
                     <Card className='grades-table-card my-4'>
-                        <Table className='grades-table' striped responsive>
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Student Anagraphic</th>
-                                    <th>StudentID</th>
-                                </tr>
-                            </thead>
+                        <Table className='grades-table' striped hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Student Anagraphic</th>
+                                <th>StudentID</th>
+                                <th></th>
+                            </tr>
+                        </thead>
                             <tbody>
                                 {applications.map((application, index) => {
                                     let student;
@@ -59,11 +60,16 @@ export default function ApplicationTable(props) {
                                             <tr key={index}>
                                                 <td>{application.proposal}</td>
                                                 <td>{student ? student.name + ' ' + student.surname : 'N/A'}</td>
-                                                <td><Link to={`/application/${application.proposal_id}/${application.studentId}`}
-                                                    state={{ application }}
-                                                    style={{ textDecoration: 'none' }}>
-                                                    {application.studentId}
-                                                </Link></td>
+                                                <td>{application.studentId}</td>
+                                                <td>
+                                                    <Button variant="primary" className='evaluate-button'>
+                                                    <Link to={`/application/${application.proposal_id}/${application.studentId}`}
+                                                        state={{ application }}
+                                                        style={{ textDecoration: 'none', color: 'inherit' }}>
+                                                            Evaluate
+                                                    </Link>
+                                                    </Button>
+                                                </td>
                                             </tr>)
                                     }
                                 })}
