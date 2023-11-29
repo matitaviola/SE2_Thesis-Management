@@ -99,7 +99,7 @@ function ProposalRow(props) {
                     : "Not assigned"}
             </td>
 			<td>
-				<Button variant="info" onClick={handleViewClick}>
+				<Button onClick={handleViewClick}>
 					View
 				</Button>
             </td>
@@ -143,7 +143,7 @@ function StudentProposalsTableComponent(props) {
       </Row>
 
       <Row>
-        <Table bordered hover >
+        <Table bordered hover responsive>
           <thead>
             <tr>
               <th>Title <SearchButton filter={filter} setFilter={setFilter} keyword='title'/></th>
