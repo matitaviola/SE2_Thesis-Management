@@ -911,3 +911,65 @@ describe('getStudents API', () => {
     await expect(API.getStudents()).rejects.toThrow('Error on getting the students: Error occurred');
   });
 });
+
+describe('getSingleProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const proposalId = '123';
+  const reqData = { credentials: 'include' };
+
+  // Mock response data
+  const successResponse = {
+    ok: true,
+    json: async () => ({
+      id: proposalId,
+      title: 'Test Proposal',
+      description: 'This is a test proposal',
+    }),
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 404,
+    json: async () => 'Proposal not found',
+  };
+
+  it('should get a single proposal successfully', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.getSingleProposal(proposalId);
+    
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalId}`, reqData);
+    expect(result).toEqual({
+      id: proposalId,
+      title: 'Test Proposal',
+      description: 'This is a test proposal',
+    });
+  });
+
+  it('should throw an error when the proposal is not found', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getSingleProposal(proposalId)).rejects.toThrow(
+      'Error on getting the proposal: Proposal not found'
+    );
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => 'Server error',
+    });
+
+    await expect(API.getSingleProposal(proposalId)).rejects.toThrow(
+      'Error on getting the proposal: Server error'
+    );
+  });
+});

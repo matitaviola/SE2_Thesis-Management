@@ -69,6 +69,8 @@ useEffect(() => {
               element={<StudentProposalComponent />} />
               <Route path='applications'
               element={<ApplicationsTable />} />
+              <Route path='applications/:proposalId'
+              element={<ApplicationDetailComponent />} />
               <Route path='applications/null'
               element={<CancelledProposalMessage />} />
               </>

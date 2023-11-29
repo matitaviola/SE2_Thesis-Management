@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import API from '../API';
-import '../App.css';
+import { AuthContext } from '../App';
 import { Container, Row, Col, Table, Card } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -10,6 +10,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
 
 function ApplicationDetailComponent(props) {
+    const loggedInUser = useContext(AuthContext);
+    if (loggedInUser.role=='TEACHER'){
+        return(<TeacherApplicationDetail></TeacherApplicationDetail>)
+    }
+    return(<StudentApplicationDetail studId={loggedInUser.id}></StudentApplicationDetail>)
+}
+function TeacherApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
     const { proposalId, studentId } = useParams();
     const navigate = useNavigate();
@@ -146,5 +153,82 @@ function ApplicationDetailComponent(props) {
         </Container>
     )
 }
+function StudentApplicationDetail(props){
+    const [studentData, setStudentData] = useState(null);
+    const [proposalData, setProposalData] = useState(null);
+    const { proposalId } = useParams();
+    const studentId = props.studId;
+    const navigate = useNavigate();
 
+    const location = useLocation();
+    const { application } = location.state;
+
+    useEffect(() => {
+        const getStudentData = async () => {
+            try {
+                const retrievedStudentData = await API.getStudentData(proposalId, studentId);
+                setStudentData(retrievedStudentData);
+            } catch (err) {
+                //should use toast instead
+                console.error(err);
+            }
+        };
+        getStudentData();
+    }, []);
+
+    useEffect(() => {
+        const getProposalData = async () => {
+            try {
+                const retrievedProposalData = await API.getSingleProposal(proposalId);
+                setProposalData(retrievedProposalData);
+                console.log(retrievedProposalData);
+            } catch (err) {
+                //should use toast instead
+                console.error(err);
+            }
+        };
+        getProposalData();
+    }, []);
+
+    if (!studentData) {
+        return <div>Loading... still missing your data</div>;
+    }
+
+    return (
+        <Container>
+            <h1 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>{application.proposal}</i></h1>
+            <p>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.Groups}</i> group</p>
+            <p>Expires on <b>{proposalData.Expiration}</b></p>
+            <Card className='grades-table-card my-4'>
+                <h2>Your CV</h2>
+                <Table className='grades-table' striped responsive>
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th className='text-center'>ECTS</th>
+                            <th className='text-center'>Grade</th>
+                            <th className='text-center'>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {studentData.career.length === 0 ? <></> :
+                            studentData.career.map(careerItem => {
+                                {
+                                    return (
+                                        <tr key={careerItem.code_c}>
+                                            <td className='grades-table-td'>{careerItem.title_c}</td>
+                                            <td className='grades-table-td text-center'>{careerItem.cfu}</td>
+                                            <td className='grades-table-td text-center'>{careerItem.grade}</td>
+                                            <td className='grades-table-td text-center'>{careerItem.date}</td>
+                                        </tr>)
+                                }
+                            })
+                        }
+                    </tbody>
+                </Table>
+            </Card>
+            {/*TODO: put here the download of the uploaded file*/}
+        </Container>
+    )
+}
 export default ApplicationDetailComponent;

@@ -98,7 +98,6 @@ app.get('/api/session', (req, res) => {
 //GET /api/application/:proposalId/:studentId
 app.get('/api/application/:proposalId/:studentId',
   isLoggedIn,
-  checkTeacherRole,
   [
     check('proposalId').isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
@@ -152,6 +151,29 @@ app.get('/api/students',
 
 //gets proposals for a professor
 //GET /api/proposals/teacher/:professorId
+app.get('/api/proposals/:proposalId',
+  isLoggedIn,
+  [
+    check('proposalId').not().isEmpty().isInt()
+  ],
+  async (req, res) => {
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      //gets all the professor's active proposals
+      const proposal = await propDao.getProposalById(req.params.proposalId);
+      res.json(proposal);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: err });
+    }
+});
+
+//GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId',
   isLoggedIn,
   checkTeacherRole,
@@ -173,7 +195,7 @@ app.get('/api/proposals/teacher/:professorId',
       console.log(err);
       res.status(500).json({ error: err });
     }
-  });
+});
 
 //gets all proposals available for a student
 //GET /api/proposals

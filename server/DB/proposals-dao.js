@@ -274,12 +274,12 @@ exports.deleteProposal = (proposalId) => {
 exports.getProposalById = (proposalId) => {
     return new Promise((resolve, reject) => {
       const sql = "SELECT * FROM PROPOSAL WHERE ID=?";
-      db.all(sql, [proposalId], (err, row) => {
+      db.get(sql, [proposalId], (err, row) => {
         if (err) reject(err);
         else if (row === undefined || row.length === 0) {
           resolve();
         } else {
-          resolve(row[0]);
+          resolve(row);
         }
       });
     });

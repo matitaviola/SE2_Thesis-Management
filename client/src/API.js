@@ -54,6 +54,19 @@ const getStudents = async () => {
 //#endregion
 
 //#region Proposal
+const getSingleProposal = async (proposalId) =>{
+  
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, { credentials: 'include'});
+  const proposalsJson = await response.json();
+
+  if(response.ok) {
+    return(proposalsJson);
+  }
+  else{
+    throw new Error("Error on getting the proposal: "+proposalsJson);
+  }
+}
+
 const getProposals = async (user) =>{
   
   let response, proposalsJson;
@@ -172,7 +185,6 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
 const addApplication = async (file, proposalId, studentId) => {
   const reqheader = {
     'Content-Type':'multipart/form-data',
-    'X-USER-ROLE': 'STUDENT'
   };
   
   const formData = new FormData();
@@ -184,7 +196,8 @@ const addApplication = async (file, proposalId, studentId) => {
   console.log(formData)
   const response = await axios.post(SERVER_URL + `/api/applications`, formData, {
     headers: reqheader,
-    withCredentials: true
+    withCredentials: true,
+    credentials: 'include'
   });
 
   if (!response.ok) {
@@ -212,5 +225,5 @@ const getDegrees = async () => {
 
 //#endregion
 
-const API = {getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
+const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;

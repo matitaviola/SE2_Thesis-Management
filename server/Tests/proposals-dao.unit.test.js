@@ -963,10 +963,10 @@ describe('getOneProposal', () => {
   it('should resolve with a proposal when the proposal is found', async () => {
     const proposalId = 8;
     const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`
-    db.all.mockImplementation((sql, params, callback) => {
+    db.get.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
       expect(params).toEqual([proposalId]);
-      callback(null, [proposalResult]);
+      callback(null, proposalResult);
     });
 
     const result = await getProposalById(proposalId);
@@ -976,7 +976,7 @@ describe('getOneProposal', () => {
   it('should resolve with no proposal when no proposal is found', async () => {
     const proposalId = 8;
     const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`;
-    db.all.mockImplementation((sql, params, callback) => {
+    db.get.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
       expect(params).toEqual([proposalId]);
       callback(null, []);
@@ -991,7 +991,7 @@ describe('getOneProposal', () => {
     const expectedSql = `SELECT * FROM PROPOSAL WHERE ID=?`;
     const expectedError = 'Database error occurred';
     
-    db.all.mockImplementation((sql, params, callback) => {
+    db.get.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
       expect(params).toEqual([proposalId]);
       callback(expectedError, null);
