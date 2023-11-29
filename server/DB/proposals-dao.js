@@ -247,7 +247,7 @@ exports.addProposal = (body) => {
 exports.deleteProposal = (proposalId) => {
     return new Promise((resolve, reject) => {
         const sqlDeleteProp = 'DELETE FROM PROPOSAL WHERE Id = ?';
-        const sqlDeleteApps = 'DELETE FROM APPLICATION WHERE Proposal_ID = ? and Archived_Proposal_ID = ?';
+        const sqlCancelApps = 'UPDATE APPLICATION SET Status="Cancelled" WHERE Proposal_ID IS NULL and Archived_Proposal_ID IS NULL';
         db.serialize(() => {
             db.run("BEGIN TRANSACTION");
             db.run(sqlDeleteProp, [proposalId], function (err) {
@@ -257,7 +257,7 @@ exports.deleteProposal = (proposalId) => {
                     reject({ error: 'Proposal not found' });
                 } else {
                     //we remove the applications for this proposal
-                    db.run(sqlDeleteApps, [null, null], function(err) {
+                    db.run(sqlCancelApps, [], function(err) {
                         if (err) {
                             reject(err);
                         }

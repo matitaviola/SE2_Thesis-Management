@@ -835,7 +835,7 @@ describe('deleteProposal Function Tests', () => {
   it('should resolve with success message after deleting a proposal and associated applications', async () => {
     const proposalId = 1;
     const expectedDeletePropSql = 'DELETE FROM PROPOSAL WHERE Id = ?';
-    const expectedDeleteAppsSql = 'DELETE FROM APPLICATION WHERE Proposal_ID = ? and Archived_Proposal_ID = ?';
+    const expectedCancelAppsSql = 'UPDATE APPLICATION SET Status="Cancelled" WHERE Proposal_ID IS NULL and Archived_Proposal_ID IS NULL';
 
     // Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
@@ -847,12 +847,14 @@ describe('deleteProposal Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
 
     db.run.mockImplementationOnce((query, params, callback) => {
+        expect(query).toEqual(expectedDeletePropSql);
         expect(params).toEqual([proposalId]);
         callback.call({ changes: 1 });
     });
 
     db.run.mockImplementationOnce((query, params, callback) => {
-      expect(params).toEqual([null, null]);
+      expect(query).toEqual(expectedCancelAppsSql);
+      expect(params).toEqual([]);
       callback(null);
     })
 
@@ -875,6 +877,7 @@ describe('deleteProposal Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
 
     db.run.mockImplementationOnce((query, params, callback) => {
+        expect(query).toEqual(expectedDeletePropSql);
         expect(params).toEqual([proposalId]);
         callback.call({ changes: 0 },null); // Simulate proposal not found
     });
@@ -919,12 +922,13 @@ describe('deleteProposal Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
 
     db.run.mockImplementationOnce((query, params, callback) => {
+      expect(query).toEqual(expectedDeletePropSql);
       expect(params).toEqual([proposalId]);
       callback.call({ changes: 1 },null); // Simulate proposal found
     });
 
     db.run.mockImplementationOnce((query, params, callback) => {
-        expect(params).toEqual([null, null]);
+        expect(params).toEqual([]);
         callback(expectedError);
     });
 

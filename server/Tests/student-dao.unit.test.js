@@ -1,4 +1,4 @@
-const { getStudentData, getCarreerByStudent } = require('../DB/students-dao');
+const { getStudentData, getCarreerByStudent, getStudents } = require('../DB/students-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -80,7 +80,7 @@ describe('getCarreerByStudent', () => {
     jest.clearAllMocks();
   });
 
-  it('should resolve with an empty object when no career data is found for a student', async () => {
+  it('should resolve with an empty array when no career data is found for a student', async () => {
     const studentId = "s200001";
     const expectedSql = 'SELECT * FROM CAREER WHERE ID=?';
     const mockedRows = [];
@@ -91,7 +91,7 @@ describe('getCarreerByStudent', () => {
     });
 
     const result = await getCarreerByStudent(studentId);
-    expect(result).toEqual({});
+    expect(result).toEqual(mockedRows);
   });
 
   it('should resolve with an array of career data when it is found for a student', async () => {
@@ -130,5 +130,72 @@ describe('getCarreerByStudent', () => {
     });
 
     await expect(getCarreerByStudent(studentId)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('getStudents', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with an empty array when no student data is found', async () => {
+    const expectedSql = 'SELECT * FROM STUDENT';
+    const mockedRows = [];
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, mockedRows);
+    });
+
+    const result = await getStudents();
+    expect(result).toEqual([]);
+  });
+
+  it('should resolve with an array of student data when it is found', async () => {
+    const expectedSql = 'SELECT * FROM STUDENT';
+    const mockedRows = [
+      {
+        ID: 's200001',
+        SURNAME: 'Doe',
+        NAME: 'John',
+        GENDER: 'Male',
+        NATIONALITY: 'US',
+        EMAIL: 'john.doe@example.com',
+        CODE_DEGREE: 'CS101',
+        ENROLLMENT_YEAR: 2022
+      },
+      // Add more mocked data as needed
+    ];
+    const expectedStudents = mockedRows.map(row => ({
+      studentId: row.ID,
+      surname: row.SURNAME,
+      name: row.NAME,
+      gender: row.GENDER,
+      nationality: row.NATIONALITY,
+      email: row.EMAIL,
+      code_degree: row.CODE_DEGREE,
+      enrollment: row.ENROLLMENT_YEAR
+    }));
+
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, mockedRows);
+    });
+
+    const result = await getStudents();
+    expect(result).toEqual(expectedStudents);
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const expectedSql = 'SELECT * FROM STUDENT';
+    const expectedError = 'Database error occurred';
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(expectedError, null);
+    });
+
+    await expect(getStudents()).rejects.toEqual(expectedError);
   });
 });

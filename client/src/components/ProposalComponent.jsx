@@ -41,7 +41,7 @@ export function ProposalComponent() {
 			</Row>
 			<Row className='text-center mt-4'>
 				<Button  className="btn btn-danger" onClick={() => {
-					API.deleteProposal(proposal.title);
+					API.deleteProposal(proposal.id);
 					routeChange();
 				}}>
 				DELETE PROPOSAL
