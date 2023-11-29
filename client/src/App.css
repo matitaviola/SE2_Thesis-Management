@@ -85,4 +85,13 @@
   margin-right: 15px;
   transform: scale(1.1);
   float: right;
+=======
+.place-holder-style {
+  font-style:italic;
+  width: 50vw;
+  border: 1.5px solid;
+}
+
+.text-danger {
+  color: rgb(132, 15, 15) !important;
 }

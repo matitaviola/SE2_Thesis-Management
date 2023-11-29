@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run coverage && npm run populate && node index.js",
+    "start": "npm run coverage && node index.js",
     "test": "jest",
-    "coverage": "jest --coverage",
+    "coverage": "jest --coverage --colors",
     "populate": "node ./DB/populate_script.js"
   },
   "keywords": [],
@@ -17,8 +17,13 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.10",
     "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "express-session": "^1.17.3",
     "jest": "^29.7.0",
     "moment": "^2.29.4",
+    "nodemailer": "^6.9.7",
+    "passport": "^0.6.0",
+    "passport-saml": "^3.2.4",
     "sqlite3": "^5.1.6"
   }
 }
