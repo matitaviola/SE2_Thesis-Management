@@ -53,7 +53,48 @@ describe('Mail Server', () => {
       from: 'groupsofteng6@gmail.com',
       to: 'john.doe@example.com',
       subject: 'Application Status',
-      text: expect.stringContaining('Dear John Doe,'),
+      text: expect.stringContaining('Your application for proposal Proposal 123 has been accepted'),
+    });
+  });
+
+  it('should send application reject email', async () => {
+    const studentId = 123;
+    const options = {
+      status: 'rejected',
+      proposal: 'Proposal 123',
+    };
+
+    studentDao.getStudentData = jest.fn().mockResolvedValue({
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+    });
+
+    nodemailer.createTransport.mockReturnValue({
+      sendMail: jest.fn().mockResolvedValue({}),
+    });
+
+    const result = await mailServer.sendMail(studentId, 'APPLICATION', options);
+
+    expect(result.success).toBe(true);
+    expect(result.message).toEqual('Email sent successfully.');
+
+    expect(nodemailer.createTransport).toHaveBeenCalledTimes(1);
+
+    expect(nodemailer.createTransport).toHaveBeenCalledWith({
+      service: 'gmail',
+      auth: {
+        user: 'groupsofteng6@gmail.com',
+        pass: 'afdmaktmymfaupmr',
+      },
+    });
+
+    expect(nodemailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
+
+    expect(nodemailer.createTransport().sendMail).toHaveBeenCalledWith({
+      from: 'groupsofteng6@gmail.com',
+      to: 'john.doe@example.com',
+      subject: 'Application Status',
+      text: expect.stringContaining('we are unable to accept your application for the proposal Proposal 123.'),
     });
   });
 
@@ -88,5 +129,19 @@ describe('Mail Server', () => {
     });
 
     expect(nodemailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not send email for scope other than APPLICATION', async () => {
+    const receiverId = 'testStudentId';
+    const scope = 'OTHER_SCOPE';
+    const options = {};
+
+    const result = await mailServer.sendMail(receiverId, scope, options);
+
+    expect(result.success).toBe(false);
+
+    expect(nodemailer.createTransport().sendMail).not.toHaveBeenCalled();
+
+    expect(require('../DB/students-dao').getStudentData).not.toHaveBeenCalled();
   });
 });
