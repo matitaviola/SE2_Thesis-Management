@@ -53,7 +53,6 @@ function TeacherProposalsTableComponent() {
 						<th>Expiration date</th>
 						<th>Level</th>
 						<th>CdS</th>
-						<th>Thesist</th>
             <th></th>
                     </tr>
                 </thead>
@@ -93,11 +92,6 @@ function ProposalRow(props) {
 			<td>{props.proposal.expiration}</td>
 			<td>{props.proposal.level}</td>
 			<td>{props.proposal.cds}</td>
-			<td>
-                {props.proposal.thesist
-                    ? props.proposal.thesist
-                    : "Not assigned"}
-            </td>
 			<td>
 				<Button onClick={handleViewClick}>
 					View
