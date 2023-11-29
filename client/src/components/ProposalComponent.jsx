@@ -1,14 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useState } from 'react';
+import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import API from '../API';
 import '../App.css';
+import { FileUploadComponent } from './FileUploadComponent';
 
 export function ProposalComponent() {
 	let navigate = useNavigate();
-	const routeChange = () =>{ 
-		let path = `/proposals`; 
+	const routeChange = () => {
+		let path = `/proposals`;
 		navigate(path);
-	  }
+	}
 
 	const location = useLocation();
 	const { proposal } = location.state;
@@ -40,11 +42,11 @@ export function ProposalComponent() {
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
 			<Row className='text-center mt-4'>
-				<Button  className="btn btn-danger" onClick={() => {
+				<Button className="btn btn-danger" onClick={() => {
 					API.deleteProposal(proposal.title);
 					routeChange();
 				}}>
-				DELETE PROPOSAL
+					DELETE PROPOSAL
 				</Button>
 			</Row>
 
@@ -53,14 +55,53 @@ export function ProposalComponent() {
 }
 export function StudentProposalComponent() {
 
+	const navigate = useNavigate();
 	const location = useLocation();
-	const { proposal } = location.state;
+	const { proposal, studentId } = location.state;
+	const [showUpdateModal, setShowUpdateModal] = useState(false);
+	const [selectedProposal, setSelectedProposal] = useState({ title: "", id: -1 });
+	const [file, setFile] = useState(null);
+
+
+	const handleShowUpdateModal = (proposal) => {
+		setSelectedProposal(proposal);
+		setShowUpdateModal(true);
+	};
+
+	const handleCloseUpdateModal = () => setShowUpdateModal(false);
+
+	const handleSendApplication = (proposal) => {
+		const isValidFileType = (file) => {
+			const allowedFileTypes = ['application/pdf'];
+			return allowedFileTypes.includes(file.type);
+		};
+
+		const isValidFileSize = (file) => {
+			const maxSizeInBytes = 5 * 1024 * 1024;
+			return file.size <= maxSizeInBytes;
+		};
+
+		if (file && !isValidFileSize(file)) {
+			alert("Max 10MB files accepted");
+			return;
+		}
+
+		if (file && !isValidFileType(file)) {
+			alert("Only PDF file are accepted");
+			return;
+		}
+
+		API.addApplication(file, proposal.id, studentId);
+		setShowUpdateModal(false);
+		navigate('/proposals');
+
+	};
 
 	return (
 		<Container>
 			<Row><h1 className='text-center mt-4'>{proposal.title}</h1></Row>
 			<Row>
-				<p className='text-end'><strong>Expiration date:</strong> {proposal.expiration.slice(0,10)}</p>
+				<p className='text-end'><strong>Expiration date:</strong> {proposal.expiration.slice(0, 10)}</p>
 			</Row>
 			<Row>
 				<p><strong>CdS:</strong> {proposal.cdsId}</p>
@@ -81,11 +122,35 @@ export function StudentProposalComponent() {
 			<Row style={{ marginTop: '20px' }}>
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
-			<Row className="justify-content-end">
-            <Col xs="auto" >
-                <Button className="apply-button">Apply</Button>
-            </Col>
-        </Row>
-	  </Container>
+			<Row>
+				{proposal.applicationExists ? (
+					<h2 className='text-center mt-4'>Application Sent!</h2>
+				) : (
+					<Button onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
+				)}
+			</Row>
+			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
+              <Modal.Header closeButton>
+                <Modal.Title>{selectedProposal.title}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+				<span>Upload CV</span>
+				<br />
+				<br />
+                <FileUploadComponent setFile={setFile}></FileUploadComponent>
+				<br />
+                <span>Are you sure to apply for {selectedProposal.title}?</span>
+                </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseUpdateModal}>
+                  Close
+                </Button>
+                <Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
+                  Send Application
+                </Button>
+              </Modal.Footer>
+            </Modal>
+		</Container>
+		
 	);
 }
