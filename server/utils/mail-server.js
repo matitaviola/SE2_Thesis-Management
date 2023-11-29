@@ -35,7 +35,6 @@ exports.sendMail = async (receiverId, scope, options) => {
       });
       return { success: true, message: 'Email sent successfully.' };
     } catch (error) {
-      console.log(error);
       return { success: false, message: error };
     }
   } else { return { success: false } };
