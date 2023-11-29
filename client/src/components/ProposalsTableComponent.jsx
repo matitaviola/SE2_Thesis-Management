@@ -5,9 +5,6 @@ import { useNavigate  } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
-import { FileUploadComponent } from "./FileUploadComponent.jsx";
-
-
 
 export default function ProposalsTableComponent() {
 
@@ -114,13 +111,9 @@ function ProposalRow(props) {
 
 function StudentProposalsTableComponent(props) {
 
-  const [file, setFile] = useState(null);
   const [proposals, setProposals] = useState([]);
-  const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState({});
   const [studentId, setStudentId] = useState(props.studentId);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedProposal, setSelectedProposal] = useState({title:"", id:-1});
 	const navigate = useNavigate();
   const loggedInUser = useContext(AuthContext);
 
@@ -129,13 +122,14 @@ function StudentProposalsTableComponent(props) {
     const fetchProposals = async () => {
       let proposalsResponse = await API.getStudentProposals(studentId, filter);
       setProposals(proposalsResponse);
+      
     }
     fetchProposals()
   }, [filter, studentId]);
 
-  const handleViewClick = (title) =>{
-    let proposal = proposals.find(p => p.title == title);
-		navigate(`/proposals/${title}`, { state: { proposal, studentId } });
+  const handleViewClick = (id) =>{
+    let proposal = proposals.find(p => p.id == id);
+		navigate(`/proposals/${id}`, { state: { proposal, studentId } });
   };
 
   return (
@@ -169,7 +163,7 @@ function StudentProposalsTableComponent(props) {
             {proposals.map(p => {
               //const applicationExists = applications.some(app => app.proposal === p.title && app.status === "Pending");
               {
-                return <tr key={p.title}>
+                return <tr key={p.id}>
                   <td>{p.title} </td>
                   <td>{p.supervisorName} {p.supervisorSurname}</td>
                   <td>{p.coSupervisor}</td>
@@ -180,7 +174,7 @@ function StudentProposalsTableComponent(props) {
                   <td>{p.expiration.slice(0,10)}</td>
                   <td>{p.level}</td>
                   <td>{p.cdsName}</td>
-                  <td><Button onClick={() => handleViewClick(p.title)}>View</Button></td>
+                  <td><Button onClick={() => handleViewClick(p.id)}>View</Button></td>
 
                 </tr>
               }

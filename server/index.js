@@ -164,13 +164,14 @@ async (req, res) => {
       }
 
       let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      //console.log(proposals);
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
+      //console.log(applications);
       proposals = proposals.map(p => {
-        if(applications.some(app => app.title === p.title && app.status === "Pending")){
-          return {...p, canSendApplication: true};
+        if(applications.some(app => app.id === p.id && app.status === "Pending")){
+          return {...p, applicationExists: true};
         }
-        return {...p, canSendApplication: false};
-
+        return {...p, applicationExists: false};
       })
 
       res.json(proposals);

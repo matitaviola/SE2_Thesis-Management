@@ -119,7 +119,7 @@ export function StudentProposalComponent() {
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
 			<Row>
-				{proposal.canSendApplication ? (
+				{proposal.applicationExists ? (
 					<span>Application sent</span>
 				) : (
 					<Button onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
