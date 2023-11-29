@@ -367,6 +367,39 @@ app.delete('/api/proposals/:proposalId',
   }
 );
 
+// archive an existing proposal
+//PATCH /api/proposals/:proposalId
+app.patch('/api/proposals/:proposalId',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('proposalId').isInt(),
+  ],
+  async (req, res) => {
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      const proposal = await propDao.getProposalById(req.params.proposalId);
+      if (proposal) {
+          // Archives the proposal
+          const archiveResult = await propDao.archiveProposalWithoutApplication(req.params.proposalId);
+
+          if (!archiveResult.success) {
+            throw new Error('An error occurred while archiving the proposal');
+          }
+        res.status(200).end();
+      } else {
+        res.status(400).json({ error: 'Proposal not found' });
+      }
+    } catch (err) {
+      res.status(500).json({ error: 'An error occurred while archiving the proposal' });
+    }
+  });
+
 //#endregion
 
 //#region Applications

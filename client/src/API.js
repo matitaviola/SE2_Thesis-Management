@@ -129,6 +129,22 @@ const deleteProposal = async (proposal) => {
   }
 }
 
+const archiveProposal = async (proposalId) => {
+
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {'Content-Type' : "application/json"},
+});
+
+if (!response.ok) {
+  console.log(response);
+    throw new Error(`HTTP error! status: ${response.status}`);
+}
+  
+return {ok:true};
+}
+
 //#endregion
 
 //#region Application
@@ -219,5 +235,5 @@ const getDegrees = async () => {
 
 //#endregion
 
-const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
+const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;

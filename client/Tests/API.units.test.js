@@ -989,3 +989,46 @@ describe('getSingleProposal API', () => {
     );
   });
 });
+
+describe('archiveProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+  
+  // Mock response data
+  const successResponse = {
+    ok: true,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 400,
+  };
+
+  const proposalId = '123';
+
+  it('should archive a proposal', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.archiveProposal(proposalId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/123`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
+    });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.archiveProposal(proposalId)).rejects.toThrow(
+      'HTTP error! status: 400'
+    );
+  });
+});

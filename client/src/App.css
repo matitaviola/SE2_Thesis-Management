@@ -130,6 +130,20 @@ body {
   float: right;
 }
 
+.archive-button{
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  transform: scale(1.1);
+  float: right;
+}
+
 .place-holder-style {
   font-style:italic;
   width: 50vw;

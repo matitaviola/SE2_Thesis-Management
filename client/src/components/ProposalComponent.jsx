@@ -4,6 +4,7 @@ import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import API from '../API';
 import '../App.css';
 import { FileUploadComponent } from './FileUploadComponent';
+import Swal from 'sweetalert2';
 
 export function ProposalComponent() {
 	let navigate = useNavigate();
@@ -41,14 +42,62 @@ export function ProposalComponent() {
 			<Row style={{ marginTop: '20px' }}>
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
-			<Row className='text-center mt-4'>
-				<Button className="btn btn-danger" onClick={() => {
-					API.deleteProposal(proposal.id);
-					routeChange();
-				}}>
-					DELETE PROPOSAL
-				</Button>
-			</Row>
+			<button
+                onClick={() => {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Once deleted, you will not be able to recover this proposal!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'No, cancel!',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonColor: "red",
+                        confirmButtonColor: "#007BFF",
+                        reverseButtons: false,
+                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
+                        imageWidth: 400,
+                        imageHeight: 300,
+                        imageAlt: "Custom image"*/
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            API.deleteProposal(proposal.id);
+							routeChange();
+                            Swal.fire('Deleted!', 'The proposal has been deleted.', 'success');
+                        }
+                    });
+                }}
+                className="decline-button"
+            >
+                Delete
+            </button>
+            <button
+                onClick={() => {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Once archived, you will be able to see this proposal in the archive!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'No, cancel!',
+                        confirmButtonText: 'Yes, archive it!',
+                        cancelButtonColor: "red",
+                        confirmButtonColor: "#007BFF",
+                        reverseButtons: false,
+                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
+                        imageWidth: 400,
+                        imageHeight: 300,
+                        imageAlt: "Custom image"*/
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            API.archiveProposal(proposal.id);
+							routeChange();
+                            Swal.fire('Archived!', 'The proposal has been archived.', 'success');
+                        }
+                    });
+                }}
+                className="archive-button"
+            >
+                Archive
+            </button>
 
 	  </Container>
 	);
