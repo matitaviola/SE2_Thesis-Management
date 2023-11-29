@@ -133,8 +133,12 @@ export function StudentProposalComponent() {
                 <Modal.Title>{selectedProposal.title}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
+				<span>Upload CV</span>
+				<br />
+				<br />
                 <FileUploadComponent setFile={setFile}></FileUploadComponent>
-                Are you sure to apply for {selectedProposal.title}?
+				<br />
+                <span>Are you sure to apply for {selectedProposal.title}?</span>
                 </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseUpdateModal}>

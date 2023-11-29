@@ -163,7 +163,7 @@ async (req, res) => {
         filter['degree'] = req.query.degree;
       }
 
-      const proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
 
       proposals = proposals.map(p => {
