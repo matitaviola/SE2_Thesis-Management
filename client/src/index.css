@@ -3,7 +3,6 @@
 }
 
 .grades-table-td{
-    
     padding-top: 0.3 !important;
     padding-bottom: 0.3 !important;
 }
@@ -14,4 +13,8 @@
 
 .text-center{
     text-align: center;
+}
+
+.proposal-table{
+    padding: 0;
 }

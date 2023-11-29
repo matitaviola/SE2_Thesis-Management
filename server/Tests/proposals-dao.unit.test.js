@@ -694,7 +694,7 @@ describe('getProposals Function Tests', () => {
     const filteringString = '3';
     const filter = { expiration: filteringString };
     const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ? `
-    const addedFilterSql = 'AND UPPER(P.expiration) LIKE UPPER("%" || ? || "%")'
+    const addedFilterSql = 'AND P.expiration <=  ?'
     const mockedRows = [proposalRaw[0]];
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql + addedFilterSql);
@@ -735,6 +735,35 @@ describe('getProposals Function Tests', () => {
     expect(result).toEqual([proposalsResult[0]]);
   });
 
+  it('should resolve with asc ordered proposals by title', async () => {
+    const studentId = 1;
+    const order = {field: 'title', direction: true};
+    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
+    const addedFilterSql = ' ORDER BY P.title';
+    const mockedRows = [...proposalRaw];
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql + addedFilterSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRows);
+    });
+    const result = await getAvailableProposals(studentId, {}, order);
+    expect(result[0]).toEqual(proposalsResult[0]);
+  });
+
+  it('should resolve with desc ordered proposals by title', async () => {
+    const studentId = 1;
+    const order = {field: 'title', direction: false};
+    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
+    const addedFilterSql = ' ORDER BY P.title DESC';
+    const mockedRows = [...proposalRaw.reverse()];
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql + addedFilterSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRows);
+    });
+    const result = await getAvailableProposals(studentId, {}, order);
+    expect(result[0]).toEqual(proposalsResult[1]);
+  });
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
     const studentId = 1;

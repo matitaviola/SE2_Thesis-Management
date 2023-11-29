@@ -225,7 +225,7 @@ exports.getAvailableProposals = (studentId, filter) => {
             dep.push(filter.notes);
         }
         if(filter.expiration){
-            sql = sql.concat(' AND UPPER(P.expiration) LIKE UPPER("%" || ? || "%")');
+            sql = sql.concat(' AND P.expiration <=  ?');
             dep.push(filter.expiration);
         }
         if(filter.level){
@@ -237,7 +237,27 @@ exports.getAvailableProposals = (studentId, filter) => {
             dep.push(filter.degree);
             dep.push(filter.degree);
         }
-
+        if(order && order.field){
+            const traslationMap = {
+                title : ' ORDER BY P.title',
+                supervisor: ' ORDER BY T.SURNAME',
+                coSupervisor: ' ORDER BY P.co_supervisor',
+                keywords: ' ORDER BY P.keywords', 
+                type: ' ORDER BY P.type',
+                groups: ' ORDER BY P.groups',
+                description: ' ORDER BY P.description',
+                reqKnowledge: ' ORDER BY P.req_knowledge',
+                notes: ' ORDER BY P.notes',
+                expiration: ' ORDER BY P.expiration', 
+                level: ' ORDER BY P.level', 
+                degree: ' ORDER BY D.TITLE_DEGREE'
+            }
+            sql = sql.concat(traslationMap[order.field]);
+            if(order.direction === false){
+                sql = sql.concat(' DESC');
+            }
+            console.log(sql)
+        }
         db.all(sql, dep, (err, rows) => {
             if (err)
                 reject(err);

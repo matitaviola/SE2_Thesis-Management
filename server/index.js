@@ -271,7 +271,16 @@ app.get('/api/proposals/students/:studentId',
         filter['degree'] = req.query.degree;
       }
 
-      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      let order = {};
+      if(req.query.ordField && typeof req.query.ordField === 'string'){
+        order.field = req.query.ordField;
+        order.direction = true;
+      }
+      if(req.query.dir && typeof req.query.dir === 'string'){
+        order.direction = req.query.dir=='true';
+      }
+
+      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter, order);
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
 
       proposals = proposals.map(p => {

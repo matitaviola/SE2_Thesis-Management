@@ -158,7 +158,6 @@ function StudentApplicationDetail(props){
     const [proposalData, setProposalData] = useState({id:-1});
     const { proposalId } = useParams();
     const studentId = props.studId;
-    const navigate = useNavigate();
 
     const location = useLocation();
     const { application } = location.state;

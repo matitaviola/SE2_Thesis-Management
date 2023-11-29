@@ -81,13 +81,16 @@ const getProposals = async (user) =>{
   }
 }
 
-const getStudentProposals = async (studentId, filter) =>{
+const getStudentProposals = async (studentId, filter, order) =>{
 
   let path = '?';
   Object.keys(filter).filter(k => filter[k]).forEach(k =>{
     path = path.concat(`${k}=${filter[k]}&`);
-  })
+  });
+  path = !order?path:`${path}ordField=${order.field}&dir=${order.direction}&`;
+
   path = path.slice(0, -1);
+
 
   let response = await fetch(SERVER_URL + `/api/proposals/students/${studentId}${path}`, { credentials: 'include',});
   let responseJson = await response.json();

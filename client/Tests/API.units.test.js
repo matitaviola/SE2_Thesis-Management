@@ -524,6 +524,10 @@ describe('searchProposal API', () => {
     ok: true,
     json: async () => proposals,
   };
+  const proposalResponseReversed = {
+    ok: true,
+    json: async () => [...proposals.reverse()],
+  };
   const proposalResponseFiltered = {
     ok: true,
     json: async () => [proposals[0]],
@@ -650,6 +654,24 @@ describe('searchProposal API', () => {
     const result = await API.getStudentProposals(studentId, filter);
     expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?degree=CS102`, reqData);
     expect(result).toEqual([proposals[0]]);
+  });
+
+  it('should get proposals ordered by title', async () => {
+    fetch.mockResolvedValueOnce(proposalResponse);
+    const order = {field: 'title', direction: true};
+
+    const result = await API.getStudentProposals(studentId, {}, order);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?ordField=title&dir=true`, reqData);
+    expect(result[0]).toEqual(proposals[0]);
+  });
+
+  it('should get proposals ordered desc by title', async () => {
+    fetch.mockResolvedValueOnce(proposalResponseReversed);
+    const order = {field: 'title', direction: false};
+
+    const result = await API.getStudentProposals(studentId, {}, order);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/students/${studentId}?ordField=title&dir=false`, reqData);
+    expect(result[0]).toEqual(proposals[0]);
   });
 
   it('should return empty array when no proposal are found', async () => {
