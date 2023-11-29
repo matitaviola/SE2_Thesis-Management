@@ -33,7 +33,6 @@ const getStudentData = async (proposalId, studentId) =>{
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`,{ credentials: 'include'});
   const studentDataJson = await response.json();
   if(response.ok) {
-    console.log(studentDataJson);
     return studentDataJson;
   }
   else{
@@ -55,10 +54,8 @@ const getStudents = async () => {
 
 //#region Proposal
 const getSingleProposal = async (proposalId) =>{
-  
   const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, { credentials: 'include'});
   const proposalsJson = await response.json();
-
   if(response.ok) {
     return(proposalsJson);
   }
