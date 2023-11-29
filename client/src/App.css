@@ -55,6 +55,17 @@ body {
   padding: 20px; /* Increase padding */
 }
 
+.table-row-danger{
+  background-color: rgb(237, 47, 47);
+}
+.table-row-success{
+  background-color: rgb(88, 195, 88);
+}
+.table-row-warning{
+  background-color: rgb(237, 107, 47);
+}
+
+
 .application-row {
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);

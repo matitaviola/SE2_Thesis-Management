@@ -78,7 +78,7 @@ export default function ApplicationTable(props) {
                     </Card>
                     :
                     <Card className='grades-table-card my-4'>
-                        <Table className='grades-table' striped responsive>
+                        <Table className='grades-table' responsive>
                             <thead>
                                 <tr>
                                     <th>Title</th>
@@ -91,16 +91,16 @@ export default function ApplicationTable(props) {
                                     let className;
                                     switch (application.status) {
                                         case 'Rejected':
-                                            className = 'table-danger';
+                                            className = 'table-row-danger';
                                             break;
                                         case 'Accepted':
-                                            className = 'table-success';
+                                            className = 'table-row-success';
                                             break;
                                         case 'Cancelled':
-                                            className = 'table-default';
+                                            className = 'table-row-default';
                                             break;
                                         default:
-                                            className = 'table-warning';
+                                            className = 'table-row-warning';
                                     }
                                     return (
                                         <tr key={index} className={className}>
