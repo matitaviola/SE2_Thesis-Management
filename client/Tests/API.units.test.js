@@ -867,3 +867,47 @@ describe('getDegrees API', () => {
     await expect(API.getDegrees()).rejects.toThrow('HTTP error! status: 400');
   });
 });
+
+describe('getStudents API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock response data
+  const successResponse = [
+    { id: 's200001', name: 'Alice', surname: 'Johnson' },
+    { id: 's200002', name: 'Bob', surname: 'Smith' },
+  ];
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 400,
+    json: async () => ('Error occurred'),
+  };
+
+  it('should fetch students successfully', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => successResponse,
+    });
+
+    const result = await API.getStudents();
+
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/students`, {
+      credentials: 'include',
+    });
+
+    expect(result).toEqual(successResponse);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getStudents()).rejects.toThrow('Error on getting the students: Error occurred');
+  });
+});

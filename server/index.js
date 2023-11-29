@@ -115,7 +115,6 @@ app.get('/api/application/:proposalId/:studentId',
       delete studentData.gender;
       delete studentData.nationality;
       delete studentData.enrollment;
-      
       res.json(studentData);
     } catch (err) {
       console.error(err);

@@ -17,20 +17,19 @@ function LoginForm(props) {
 }
 
 function LogoutButton(props) {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const loggedInUser = useContext(AuthContext);
 
-  return(
-    <Dropdown >
-    <Dropdown.Toggle variant="outline-light" id="dropdown-basic">
-      Logged in as {loggedInUser.id}
-    </Dropdown.Toggle>
+  return (
+    <Dropdown>
+      <Dropdown.Toggle variant="outline-light" id="dropdown-basic" className="big-out"> {/* Apply enbiggen class */}
+        Logged in as {loggedInUser.id}
+      </Dropdown.Toggle>
 
-    <Dropdown.Menu align="end">
-
-      <Dropdown.Item eventKey="4" onClick={()=>{props.logout(); navigate('/')}}>Log Out</Dropdown.Item>
-    </Dropdown.Menu>
-  </Dropdown>
+      <Dropdown.Menu align="end">
+        <Dropdown.Item eventKey="4" onClick={() => { props.logout(); navigate('/') }} className='enbiggen-dropdown-item'>Log Out</Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }
 

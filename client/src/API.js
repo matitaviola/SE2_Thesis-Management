@@ -31,6 +31,7 @@ const getStudentData = async (proposalId, studentId) =>{
   const response = await fetch(SERVER_URL + `/api/application/${proposalId}/${studentId}`,{ credentials: 'include'});
   const studentDataJson = await response.json();
   if(response.ok) {
+    console.log(studentDataJson);
     return studentDataJson;
   }
   else{
@@ -39,13 +40,7 @@ const getStudentData = async (proposalId, studentId) =>{
 }
 
 const getStudents = async () => {
-  const reqheader = {
-      'Content-Type': 'application/json',
-      'X-USER-ROLE': 'TEACHER'
-  };
-  const response = await fetch(SERVER_URL + '/api/students', {
-      headers: reqheader
-  });
+  const response = await fetch(SERVER_URL + '/api/students', { credentials: 'include'});
   const studentsJson = await response.json();
   if(response.ok) {
       return studentsJson;
@@ -54,8 +49,6 @@ const getStudents = async () => {
       throw new Error("Error on getting the students: " + studentsJson);
   }
 }
-
-
 //#endregion
 
 //#region Proposal
@@ -206,7 +199,5 @@ const getDegrees = async () => {
 
 //#endregion
 
-
-const API = {login, getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication};
+const API = {getUserInfo, logout, getProposals, createProposal, deleteProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
 export default API;
-

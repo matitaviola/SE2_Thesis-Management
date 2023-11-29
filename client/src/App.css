@@ -1,7 +1,29 @@
-.login-button{
-    margin-top: 1rem;
-    justify-content: center;
-  }
+/*Navbar*/
+.navbar {
+  height: 10vh;
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  font-size: 1.5rem; /* Adjust the font size as needed */
+}
+
+/*logout button*/
+.big-out {
+  font-size: 1.5rem; /* Adjust the font size as needed */
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+.big-out:focus,
+.big-out:active {
+  box-shadow: none;
+  background-color: rgb(252, 137, 43);
+}
+
+.enbiggen-dropdown-item {
+  font-size: 1.5rem; /* Adjust the font size for dropdown items as needed */
+}
 
 /*Proposals Table and Rows*/
 .proposal-table {
