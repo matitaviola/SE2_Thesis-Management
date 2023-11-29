@@ -284,7 +284,7 @@ app.get('/api/proposals/students/:studentId',
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
 
       proposals = proposals.map(p => {
-        if (applications.some(app => app.proposal == p.id && app.status === "Pending")) {
+        if (applications.some(app => (app.status === "Pending" || app.status === "Accepted"))){
           return { ...p, applicationExists: true };
         }
         return { ...p, applicationExists: false };

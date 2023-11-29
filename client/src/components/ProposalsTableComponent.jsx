@@ -43,6 +43,9 @@ function TeacherProposalsTableComponent() {
 	return (
 		<div className="proposal-table">
 			<p className="lead" style={{ fontSize: '30px' }}>Active Proposals Table</p>
+      <Link to="/proposals/new">
+        <button className="btn btn-primary" style={{ marginBottom: '10px' }}>Add New Proposal</button>
+      </Link>
 			<Table striped bordered hover>
                 <thead>
                     <tr className="proposal-thead">
@@ -62,9 +65,6 @@ function TeacherProposalsTableComponent() {
           ))}
         </tbody>
       </Table>
-      <Link to="/proposals/new">
-        <button className="btn btn-primary">Add New Proposal</button>
-      </Link>
     </div>
   );
 }

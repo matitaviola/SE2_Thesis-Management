@@ -172,11 +172,7 @@ export function StudentProposalComponent() {
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
 			<Row>
-				{proposal.applicationExists ? (
-					<h2 className='text-center mt-4'>Application Sent!</h2>
-				) : (
-					<Button onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
-				)}
+				<Button disabled={proposal.applicationExists} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
 			</Row>
 			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>

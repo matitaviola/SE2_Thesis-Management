@@ -180,7 +180,7 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
     });
 }
 
-exports.getAvailableProposals = (studentId, filter) => {
+exports.getAvailableProposals = (studentId, filter, order) => {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
@@ -256,7 +256,6 @@ exports.getAvailableProposals = (studentId, filter) => {
             if(order.direction === false){
                 sql = sql.concat(' DESC');
             }
-            console.log(sql)
         }
         db.all(sql, dep, (err, rows) => {
             if (err)
