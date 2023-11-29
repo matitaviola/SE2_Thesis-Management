@@ -1,6 +1,7 @@
 // Assume getApplications is defined in a file named 'api.js'
 import API from '../src/API';
 const SERVER_URL = 'http://localhost:3001';
+import axios from 'axios';
 
 describe('getProposals API', () => {
   beforeEach(() => {
@@ -795,19 +796,28 @@ describe('addApplication API', () => {
   it('should add an application successfully', async () => {
     const proposalId = 'proposal123';
     const studentId = 'student456';
+    const file = null;
+    const appendMock = jest.fn();
+    global.FormData = jest.fn(() => ({
+      append: appendMock,
+    }));
+    const reqheader = {
+      'Content-Type':'multipart/form-data',
+    };
 
-    fetch.mockResolvedValueOnce(successResponse);
+    axios.post = jest.fn().mockResolvedValueOnce(successResponse);
 
-    const result = await API.addApplication(proposalId, studentId);
+    const result = await API.addApplication(file, proposalId, studentId);
 
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/applications`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ proposalId, studentId }),
-    });
+    expect(axios.post).toHaveBeenCalledWith(
+      `${SERVER_URL}/api/applications`, 
+      expect.objectContaining({
+        append: appendMock,
+      }), 
+      {
+        headers: reqheader,
+        withCredentials: true
+      });
 
     expect(result).toEqual({ ok: true });
   });
@@ -815,10 +825,16 @@ describe('addApplication API', () => {
   it('should throw an error on failed request', async () => {
     const proposalId = 'proposal789';
     const studentId = 'student101';
+    const file = {};
+    const formData = new FormData();
 
-    fetch.mockResolvedValueOnce(errorResponse);
+    formData.append("proposalId", proposalId);
+    formData.append("studentId", studentId);
+    formData.append("file", file);
 
-    await expect(API.addApplication(proposalId, studentId)).rejects.toThrow(
+    axios.post = jest.fn().mockResolvedValueOnce(errorResponse);
+
+    await expect(API.addApplication(file, proposalId, studentId)).rejects.toThrow(
       'HTTP error! status: 400'
     );
   });

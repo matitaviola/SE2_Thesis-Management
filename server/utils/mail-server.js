@@ -25,17 +25,17 @@ exports.sendMail = async (receiverId, scope, options) => {
   let to, subject, text;
   if (scope === 'APPLICATION') {
     ({to, subject, text} = await applicationMailData(receiverId, options));
-  }
-  const transporter = nodemailer.createTransport(emailConfig);
-  try {
-    await transporter.sendMail({
-      from: 'groupsofteng6@gmail.com',
-      to,
-      subject,
-      text,
-    });
-    return { success: true, message: 'Email sent successfully.' };
-  } catch (error) {
-    return { success: false, message: error };
-  }
+    const transporter = nodemailer.createTransport(emailConfig);
+    try {
+      await transporter.sendMail({
+        from: 'groupsofteng6@gmail.com',
+        to,
+        subject,
+        text,
+      });
+      return { success: true, message: 'Email sent successfully.' };
+    } catch (error) {
+      return { success: false, message: error };
+    }
+  } else { return { success: false } };
 }
