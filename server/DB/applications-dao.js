@@ -39,7 +39,6 @@ exports.getApplicationsByStudent = (studentId) => {
                 resolve([]);
             }
             else {
-                console.log(rows)
                 const applications = rows.map( r => {
                     return { 
                         id: r.Id,

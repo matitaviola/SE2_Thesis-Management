@@ -163,12 +163,11 @@ async (req, res) => {
         filter['degree'] = req.query.degree;
       }
 
-      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
-      //console.log(proposals);
+      const proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
-      //console.log(applications);
+
       proposals = proposals.map(p => {
-        if(applications.some(app => app.id === p.id && app.status === "Pending")){
+        if(applications.some(app => app.proposal == p.id && app.status === "Pending")){
           return {...p, applicationExists: true};
         }
         return {...p, applicationExists: false};
@@ -280,8 +279,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     appDao.getLastId().then((id)=>{
-      console.log(id)
-      cb(null, `APP_${id}.${file.originalname.split('.').pop()}`);
+      cb(null, `APP_${id+1}.${file.originalname.split('.').pop()}`);
     });
   },
 });
@@ -315,7 +313,6 @@ async (req, res) => {
 
     if(pendingApps>0){
       if(file){
-        console.log(file.path)
         fs.unlinkSync(file.path);
       }
       console.log("Error length")
@@ -327,7 +324,6 @@ async (req, res) => {
     res.json(application);
   } catch (err){
     if(file){
-      console.log(file.path)
       fs.unlinkSync(file.path);
     }
     console.log(err);

@@ -54,6 +54,7 @@ export function ProposalComponent() {
 
 export function StudentProposalComponent() {
 
+	const navigate = useNavigate();
 	const location = useLocation();
 	const { proposal, studentId } = location.state;
 	const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -91,6 +92,8 @@ export function StudentProposalComponent() {
 
 		API.addApplication(file, proposal.id, studentId);
 		setShowUpdateModal(false);
+		navigate('/proposals');
+
 	};
 
 	return (
