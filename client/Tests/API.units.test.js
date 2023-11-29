@@ -797,10 +797,10 @@ describe('addApplication API', () => {
     const proposalId = 'proposal123';
     const studentId = 'student456';
     const file = null;
-    const formData = new FormData();
-    formData.append("proposalId", proposalId);
-    formData.append("studentId", studentId);
-    formData.append("file", file);
+    const appendMock = jest.fn();
+    global.FormData = jest.fn(() => ({
+      append: appendMock,
+    }));
     const reqheader = {
       'Content-Type':'multipart/form-data',
     };
@@ -809,10 +809,15 @@ describe('addApplication API', () => {
 
     const result = await API.addApplication(file, proposalId, studentId);
 
-    expect(axios.post).toHaveBeenCalledWith(`${SERVER_URL}/api/applications`, formData, {
-      headers: reqheader,
-      withCredentials: true
-    });
+    expect(axios.post).toHaveBeenCalledWith(
+      `${SERVER_URL}/api/applications`, 
+      expect.objectContaining({
+        append: appendMock,
+      }), 
+      {
+        headers: reqheader,
+        withCredentials: true
+      });
 
     expect(result).toEqual({ ok: true });
   });
