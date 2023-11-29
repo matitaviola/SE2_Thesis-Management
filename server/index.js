@@ -148,9 +148,9 @@ app.get('/api/students',
 //#endregion
 
 //#region Proposals
-
-//gets proposals for a professor
-//GET /api/proposals/teacher/:professorId
+//gets a single proposal
+app.get('/api/proposals/:proposalId')
+//GET /api/proposals/:proposalId
 app.get('/api/proposals/:proposalId',
   isLoggedIn,
   [
@@ -166,13 +166,21 @@ app.get('/api/proposals/:proposalId',
     try {
       //gets all the professor's active proposals
       const proposal = await propDao.getProposalById(req.params.proposalId);
-      res.json(proposal);
+      if(proposal){
+        return res.status(200).json(proposal);
+      }
+      const archivedProposal = await propDao.getArchivedProposalById(req.params.proposalId);
+      if(archivedProposal){
+        return res.status(200).json(archivedProposal);
+      }
+      throw new Error('Missing Proposal');
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: err });
     }
 });
 
+//gets all active proposals for a professor
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId',
   isLoggedIn,
@@ -289,7 +297,6 @@ app.post('/api/proposals',
     check('title').not().isEmpty(),
     check('keywords').not().isEmpty(),
     check('type').not().isEmpty(),
-    check('groups').not().isEmpty(),
     check('description').not().isEmpty(),
     check('expiration').custom((value) => {
       if (moment(value, 'YYYY-MM-DD').startOf('day').isBefore(moment().startOf('day'))) {

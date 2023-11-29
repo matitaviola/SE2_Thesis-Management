@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import API from '../API';
 import { AuthContext } from '../App';
 import { Container, Row, Col, Table, Card } from 'react-bootstrap';
@@ -155,7 +155,7 @@ function TeacherApplicationDetail(props){
 }
 function StudentApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
-    const [proposalData, setProposalData] = useState(null);
+    const [proposalData, setProposalData] = useState({id:-1});
     const { proposalId } = useParams();
     const studentId = props.studId;
     const navigate = useNavigate();
@@ -181,7 +181,6 @@ function StudentApplicationDetail(props){
             try {
                 const retrievedProposalData = await API.getSingleProposal(proposalId);
                 setProposalData(retrievedProposalData);
-                console.log(retrievedProposalData);
             } catch (err) {
                 //should use toast instead
                 console.error(err);
@@ -196,7 +195,16 @@ function StudentApplicationDetail(props){
 
     return (
         <Container>
-            <h1 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>{application.proposal}</i></h1>
+            <h1 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>
+            <Link
+                to={{
+                    pathname: `/proposals/${proposalData.id}`,
+                }}
+                state = {{proposal:proposalData}}
+            >
+                "{application.proposal}"
+            </Link></i>
+            </h1>
             <p>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.Groups}</i> group</p>
             <p>Expires on <b>{proposalData.Expiration}</b></p>
             <Card className='grades-table-card my-4'>

@@ -331,13 +331,29 @@ exports.deleteProposal = (proposalId) => {
 
 exports.getProposalById = (proposalId) => {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM PROPOSAL WHERE ID=?";
+      const sql = "SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D WHERE P.ID=?";
       db.get(sql, [proposalId], (err, row) => {
         if (err) reject(err);
         else if (row === undefined || row.length === 0) {
           resolve();
         } else {
-          resolve(row);
+          resolve(new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE)
+          );
+        }
+      });
+    });
+};
+
+exports.getArchivedProposalById = (proposalId) => {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT *, AP.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM ARCHIVED_PROPOSAL AP, TEACHER T, DEGREE D WHERE AP.ID=?";
+      db.get(sql, [proposalId], (err, row) => {
+        if (err) reject(err);
+        else if (row === undefined || row.length === 0) {
+          resolve();
+        } else {
+          resolve(new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE)
+          );
         }
       });
     });
