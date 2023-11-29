@@ -5,14 +5,16 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
-const {isLoggedIn, checkTeacherRole, checkStudentRole} = require('./Middlewares/authorization-middleware');
+const { isLoggedIn, checkTeacherRole, checkStudentRole } = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
-const bodyParser = require ('body-parser');
+const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const moment = require('moment');
 const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
+const multer = require('multer');
+const fs = require('fs');
 
 const passport = require('./utils/saml-config');
 const session = require('express-session');
@@ -47,7 +49,7 @@ app.use(passport.session());
 app.use(passport.authenticate('session'));
 
 // This function is used to format express-validator errors as strings
-const errorFormatter = ({ location, msg, path, value, nestedErrors}) => {
+const errorFormatter = ({ location, msg, path, value, nestedErrors }) => {
   return `${location}[${path}]: ${msg}`;
 };
 // Start the server
@@ -61,11 +63,11 @@ app.get('/login', passport.authenticate('saml', { failureRedirect: '/login', fai
 app.post('/login/callback',
   bodyParser.urlencoded({ extended: false }),
   passport.authenticate('saml', { failureRedirect: '/login', failureFlash: true }),
-  function(req, res, next) {
+  function (req, res, next) {
     //this is a passport-saml function used to save the session data
-    req.logIn(req.user, function(err) {
+    req.logIn(req.user, function (err) {
       if (err) return next(err);
-      return res.redirect(FRONTEND+"proposals");
+      return res.redirect(FRONTEND + "proposals");
     });
   }
 );
@@ -73,20 +75,21 @@ app.post('/login/callback',
 //logout
 app.get('/logout', (req, res) => {
   req.isAuthenticated() ?
-  //this is a passport-saml function used to clean the session data
-  req.logOut(function (err) {
-     if (err) return res.status(500).json({ message: 'Internal Server Error' });; 
-     return res.status(200).json({message: 'Successfully logged out'});
-   }) :
-   res.status(401).json({ message: 'Unauthorized' });
+    //this is a passport-saml function used to clean the session data
+    req.logOut(function (err) {
+      if (err) return res.status(500).json({ message: 'Internal Server Error' });;
+      return res.status(200).json({ message: 'Successfully logged out' });
+    }) :
+    res.status(401).json({ message: 'Unauthorized' });
 });
 
 //session
 app.get('/api/session', (req, res) => {
-  if(req.isAuthenticated()) {
-    res.status(200).json(req.user);}
+  if (req.isAuthenticated()) {
+    res.status(200).json(req.user);
+  }
   else
-    res.status(401).json({error: 'Not authenticated'});
+    res.status(401).json({ error: 'Not authenticated' });
 })
 
 //#region Student
@@ -108,9 +111,9 @@ app.get('/api/application/:proposalId/:studentId',
 
     try {
       const studentData = await studDao.getStudentData(req.params.studentId);
-      if(studentData === undefined)
-        throw(new Error("Student not found"));
-      studentData.career  = await studDao.getCarreerByStudent(req.params.studentId);
+      if (studentData === undefined)
+        throw (new Error("Student not found"));
+      studentData.career = await studDao.getCarreerByStudent(req.params.studentId);
       //we remove private/useless data:
       delete studentData.gender;
       delete studentData.nationality;
@@ -119,25 +122,25 @@ app.get('/api/application/:proposalId/:studentId',
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
-  }
-});
+    }
+  });
 
 // Added for ApplicationTableComponent
 app.get('/api/students', async (req, res) => {
   try {
-      const students = await studDao.getStudents();
-      if(students === undefined)
-          throw(new Error("No students found"));
-      //we remove private/useless data:
-      students.forEach(student => {
-          delete student.gender;
-          delete student.nationality;
-          delete student.enrollment;
-      });
-      res.json(students);
+    const students = await studDao.getStudents();
+    if (students === undefined)
+      throw (new Error("No students found"));
+    //we remove private/useless data:
+    students.forEach(student => {
+      delete student.gender;
+      delete student.nationality;
+      delete student.enrollment;
+    });
+    res.json(students);
   } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'An error occurred while retrieving students data' });
+    console.error(err);
+    res.status(500).json({ error: 'An error occurred while retrieving students data' });
   }
 });
 //#endregion
@@ -146,7 +149,7 @@ app.get('/api/students', async (req, res) => {
 
 //gets proposals for a professor
 //GET /api/proposals/teacher/:professorId
-app.get('/api/proposals/teacher/:professorId', 
+app.get('/api/proposals/teacher/:professorId',
   isLoggedIn,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
@@ -159,18 +162,18 @@ app.get('/api/proposals/teacher/:professorId',
     }
 
     try {
-        //gets all the professor's active proposals
-        const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
-        res.json(proposals);
-    } catch (err){
+      //gets all the professor's active proposals
+      const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
+      res.json(proposals);
+    } catch (err) {
       console.log(err);
-      res.status(500).json({error:err});
-  }
-});
+      res.status(500).json({ error: err });
+    }
+  });
 
 //gets all proposals available for a student
 //GET /api/proposals
-app.get('/api/proposals/students/:studentId', 
+app.get('/api/proposals/students/:studentId',
   isLoggedIn,
   [
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
@@ -182,69 +185,78 @@ app.get('/api/proposals/students/:studentId',
       return res.status(422).json({ error: errors.array().join(", ") });
     }
     try {
-        //implementing basic flitering by keyword
+      //implementing basic flitering by keyword
 
-        //validation 
+      //validation 
 
-        let filter = {};
-        if(req.query.title && typeof req.query.title === 'string'){
-            filter['title'] = req.query.title;
-        }
-        if(req.query.supervisor && typeof req.query.supervisor === 'string'){
-            filter['supervisor'] = req.query.supervisor;
-        }
+      let filter = {};
+      if (req.query.title && typeof req.query.title === 'string') {
+        filter['title'] = req.query.title;
+      }
+      if (req.query.supervisor && typeof req.query.supervisor === 'string') {
+        filter['supervisor'] = req.query.supervisor;
+      }
 
-        /*        
-        if(req.query.supervisorName && typeof req.query.supervisorName === 'string'){
-          filter['supervisorName'] = req.query.supervisorName;
-        }
-        if(req.query.supervisorSurname && typeof req.query.supervisorSurname === 'string'){
-          filter['supervisorSurname'] = req.query.supervisorSurname;
-        }
-        */
-        if(req.query.coSupervisor && typeof req.query.coSupervisor === 'string'){
-            filter['coSupervisor'] = req.query.coSupervisor;
-        }
-        if(req.query.keywords && typeof req.query.keywords === 'string'){
-          filter['keywords'] = req.query.keywords;
-        }
-        if(req.query.groups && typeof req.query.groups === 'string'){
-          filter['groups'] = req.query.groups;
-        }
-        if(req.query.type && typeof req.query.type === 'string'){
-          filter['type'] = req.query.type;
-        }
-        if(req.query.description && typeof req.query.description === 'string'){
-          filter['description'] = req.query.description;
-        }
-        if(req.query.reqKnowledge && typeof req.query.reqKnowledge === 'string'){
-          filter['reqKnowledge'] = req.query.reqKnowledge;
-        }
-        if(req.query.notes && typeof req.query.notes === 'string'){
-          filter['notes'] = req.query.notes;
-        }
-        if(req.query.expiration && typeof req.query.expiration === 'string' && dayjs(req.query.expiration).isValid()){
-          filter['expiration'] = req.query.expiration;
-        }
-        if(req.query.level && typeof req.query.level === 'string'){
-          filter['level'] = req.query.level;
-        }
-        if(req.query.degree && typeof req.query.degree === 'string'){
-          filter['degree'] = req.query.degree;
-        }
+      /*        
+      if(req.query.supervisorName && typeof req.query.supervisorName === 'string'){
+        filter['supervisorName'] = req.query.supervisorName;
+      }
+      if(req.query.supervisorSurname && typeof req.query.supervisorSurname === 'string'){
+        filter['supervisorSurname'] = req.query.supervisorSurname;
+      }
+      */
+      if (req.query.coSupervisor && typeof req.query.coSupervisor === 'string') {
+        filter['coSupervisor'] = req.query.coSupervisor;
+      }
+      if (req.query.keywords && typeof req.query.keywords === 'string') {
+        filter['keywords'] = req.query.keywords;
+      }
+      if (req.query.groups && typeof req.query.groups === 'string') {
+        filter['groups'] = req.query.groups;
+      }
+      if (req.query.type && typeof req.query.type === 'string') {
+        filter['type'] = req.query.type;
+      }
+      if (req.query.description && typeof req.query.description === 'string') {
+        filter['description'] = req.query.description;
+      }
+      if (req.query.reqKnowledge && typeof req.query.reqKnowledge === 'string') {
+        filter['reqKnowledge'] = req.query.reqKnowledge;
+      }
+      if (req.query.notes && typeof req.query.notes === 'string') {
+        filter['notes'] = req.query.notes;
+      }
+      if (req.query.expiration && typeof req.query.expiration === 'string' && dayjs(req.query.expiration).isValid()) {
+        filter['expiration'] = req.query.expiration;
+      }
+      if (req.query.level && typeof req.query.level === 'string') {
+        filter['level'] = req.query.level;
+      }
+      if (req.query.degree && typeof req.query.degree === 'string') {
+        filter['degree'] = req.query.degree;
+      }
 
-        const proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
-        res.json(proposals);
-    } catch (err){
+      let proposals = await propDao.getAvailableProposals(req.params.studentId, filter);
+      const applications = await appDao.getApplicationsByStudent(req.params.studentId);
+
+      proposals = proposals.map(p => {
+        if (applications.some(app => app.proposal == p.id && app.status === "Pending")) {
+          return { ...p, applicationExists: true };
+        }
+        return { ...p, applicationExists: false };
+      })
+
+      res.json(proposals);
+    } catch (err) {
       console.log(err);
       res.status(500).end();
-  }
-});
+    }
+  });
 
 //creates a new proposal
 //POST /api/proposals
-app.post('/api/proposals', 
-isLoggedIn,
+app.post('/api/proposals',
+  isLoggedIn,
   [
     check('title').not().isEmpty(),
     check('keywords').not().isEmpty(),
@@ -285,14 +297,14 @@ isLoggedIn,
       const proposal = await propDao.addProposal(req.body);
       res.json(proposal);
     } catch (error) {
-        return res.status(500).json({ error: (error.message? error.message: error) })
+      return res.status(500).json({ error: (error.message ? error.message : error) })
     }
   }
 );
 
 //deletes an existing proposal
 //DELETE /api/proposals/:proposalId
-app.delete('/api/proposals/:proposalId', 
+app.delete('/api/proposals/:proposalId',
   isLoggedIn,
   [
     check('proposalId').isInt()
@@ -305,16 +317,16 @@ app.delete('/api/proposals/:proposalId',
     }
 
     try {
-        const result = await propDao.deleteProposal(req.params.proposalId);
+      const result = await propDao.deleteProposal(req.params.proposalId);
 
-        if (!result.success) {
-            res.status(404).json({ error: 'Proposal not found' });
-        } else {
-            res.status(200).end();
-        }
+      if (!result.success) {
+        res.status(404).json({ error: 'Proposal not found' });
+      } else {
+        res.status(200).end();
+      }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'An error occurred while deleting the proposal' });
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while deleting the proposal' });
     }
   }
 );
@@ -325,7 +337,7 @@ app.delete('/api/proposals/:proposalId',
 
 //gets all applications of a professor 
 //GET /api/applications/teacher/:professorId
-app.get('/api/applications/teacher/:professorId', 
+app.get('/api/applications/teacher/:professorId',
   isLoggedIn,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
@@ -338,22 +350,22 @@ app.get('/api/applications/teacher/:professorId',
     }
 
     try {
-        //gets all the professor's proposals
-        let applications = [];
-        const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
-        //gets all the applications for the proposals if we found any
-        if(proposals.length>0){
-          applications = await Promise.all(
-            proposals.map(p => appDao.getActiveApplicationsByProposal(p))
-          );
-        }
-        //return json w/o empty results of all the proposals
-        res.json(applications.filter(value => Object.keys(value).length !== 0).flat());
-    } catch (err){
+      //gets all the professor's proposals
+      let applications = [];
+      const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
+      //gets all the applications for the proposals if we found any
+      if (proposals.length > 0) {
+        applications = await Promise.all(
+          proposals.map(p => appDao.getActiveApplicationsByProposal(p))
+        );
+      }
+      //return json w/o empty results of all the proposals
+      res.json(applications.filter(value => Object.keys(value).length !== 0).flat());
+    } catch (err) {
       console.log(err);
-      res.status(500).json({ error: `An error occurred while retrieving the applications for the professor ${req.params.professorId}`});
+      res.status(500).json({ error: `An error occurred while retrieving the applications for the professor ${req.params.professorId}` });
     }
-});
+  });
 
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId',
@@ -369,40 +381,75 @@ app.get('/api/applications/student/:studentId',
     }
 
     try {
-        //gets all the student's proposals
-        const applications = await appDao.getApplicationsByStudent(req.params.studentId);
-        res.json(applications);
-    } catch (err){
+      //gets all the student's proposals
+      const applications = await appDao.getApplicationsByStudent(req.params.studentId);
+      res.json(applications);
+    } catch (err) {
       console.log(err);
       res.status(500).end();
+    }
+  });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+
+    cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
+  },
+  filename: (req, file, cb) => {
+    appDao.getLastId().then((id) => {
+      cb(null, `APP_${id + 1}.${file.originalname.split('.').pop()}`);
+    });
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10000000 }, //10mb
+  fileFilter: function (req, file, cb) {
+    const allowedFileTypes = ['application/pdf'];
+    if (!allowedFileTypes.includes(file.mimetype)) {
+      req.fileValidationError = 'File type not accepted';
+      console.error(req.fileValidationError)
+      return cb(null, false, new Error('File type not accepted'));
+    }
+    cb(null, true);
   }
 });
 
+
 //POST /api/application/
-app.post('/api/applications',
-  isLoggedIn,
+app.post('/api/applications', isLoggedIn,
   [
     check('proposalId').not().isEmpty().isInt(),
     check('studentId').not().isEmpty().matches(/s[0-9]{6}/),
-  ],
+  ], upload.single('file'),
   async (req, res) => {
+    const file = req.file;
     try {
-      const pendingApps = await appDao.getApplicationsByStudent(req.body.studentId).then((rows) => rows.filter(r => r.status=="Pending"||r.status=="Accepted").length);
 
-      if(pendingApps>0){
-        console.log("Error: this studnet already has a pending request")
-        return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
+      if (!file || !file.originalname) {
+        return res.status(400).send('Invalid File');
       }
 
-      const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
+      const pendingApps = await appDao.getApplicationsByStudent(req.body.studentId).then((rows) => rows.filter(r => r.status == "Pending" || r.status == "Accepted").length);
+
+      if (pendingApps > 0) {
+        if (file) {
+          fs.unlinkSync(file.path);
+        }
+        console.log("Error length")
+        return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
+      } const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
 
       res.json(application);
-    } catch (err){
+    } catch (err) {
+      if (file) {
+        fs.unlinkSync(file.path);
+      }
       console.log(err);
       return res.status(500).json({ error: 'An error occurred while creating the application' });
     }
-  }
-);
+  });
 
 //PATCH /api/application/:proposalId/:studentId
 app.patch('/api/application/:proposalId/:studentId',
@@ -413,16 +460,16 @@ app.patch('/api/application/:proposalId/:studentId',
     check('status').isIn(['Accepted', 'Rejected', 'Cancelled', 'Pending'])
   ],
   async (req, res) => {
-  //validation rejected 
-  const errors = validationResult(req).formatWith(errorFormatter); // format error message
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ error: errors.array().join(", ") });
-  }
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
 
-  try { 
+    try {
       const proposal = await propDao.getProposalById(req.params.proposalId);
       if (proposal) {
-        if (req.body.status === "Accepted"){
+        if (req.body.status === "Accepted") {
           // Archives the proposal
           const archiveResult = await propDao.archiveProposal(req.params.proposalId, req.params.studentId);
 
@@ -443,23 +490,23 @@ app.patch('/api/application/:proposalId/:studentId',
       } else {
         res.status(400).json({ error: 'Proposal not found' });
       }
-  } catch (err) {
+    } catch (err) {
       res.status(500).json({ error: 'An error occurred while updating application status' });
-  }
-});
+    }
+  });
 
 //#endregion
 
 //#region Degrees
 //GET localhost:3001/api/degrees
-app.get('/api/degrees', 
+app.get('/api/degrees',
   async (req, res) => {
     try {
-        const degrees = await degreeDao.getAll();
-        res.json(degrees);
-    } catch (err){
+      const degrees = await degreeDao.getAll();
+      res.json(degrees);
+    } catch (err) {
       res.status(500).end();
-  }
-});
+    }
+  });
 //#endregion
 

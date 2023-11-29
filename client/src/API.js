@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const SERVER_URL = 'http://localhost:3001';
 
 //#region Login
@@ -99,8 +101,9 @@ const createProposal = async (proposal) => {
   });
   if(!response.ok) {
     const errMessage = await response.json();
-    throw new Error("Error on creating the proposal: " + errMessage.error);
-  } else return {ok:true};
+    throw new Error(errMessage.error);
+  }
+  return {ok:true};
 }
 
 const deleteProposal = async (proposal) => {
@@ -166,12 +169,22 @@ const updateApplicationStatus = async (proposalId, studentId, statusSet) => {
   return {ok:true};
 };
 
-const addApplication = async (proposalId, studentId) => {
-  const response = await fetch(SERVER_URL + `/api/applications`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {'Content-Type' : "application/json"},
-    body: JSON.stringify({ proposalId, studentId }),
+const addApplication = async (file, proposalId, studentId) => {
+  const reqheader = {
+    'Content-Type':'multipart/form-data',
+    'X-USER-ROLE': 'STUDENT'
+  };
+  
+  const formData = new FormData();
+
+  //preserve the order of appending, otherwise muler won't be able to parse correctly the data
+  formData.append("proposalId", proposalId);
+  formData.append("studentId", studentId);
+  formData.append("file", file);
+  console.log(formData)
+  const response = await axios.post(SERVER_URL + `/api/applications`, formData, {
+    headers: reqheader,
+    withCredentials: true
   });
 
   if (!response.ok) {
