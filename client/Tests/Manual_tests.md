@@ -5,8 +5,7 @@ Please note that each of the following test is written to be executed on a fresh
 
 - Should create proposal successfully
 ```
-- Login as usr:david@example.com psw:d100003
-- Click on the "Proposals" tab
+- Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher (proposals 3, 6, 9, 13, 16)
 - Click on "Add New Proposal" button
 - Enter all the fields as specified in the form:
@@ -18,8 +17,7 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Should not create proposal
 ```
-- Login as usr:david@example.com psw:d100003
-- Click on the "Proposals" tab
+- Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher
 - Click on "Add New Proposal" button
 - Enter all the fields:
@@ -33,52 +31,48 @@ Please note that each of the following test is written to be executed on a fresh
 
 - Should see 4 proposals and their data
 ```
-- Login as usr:carlos@example.com psw:s200002
-- Click on the "Proposals" tab
-- Should see 5 proposals for this teacher:
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Should see 2 proposals for this teacher:
     - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
-    - [Proposal 10 | Michael Johnson | Co-Supervisor E | environment, sustainability, climate | Type F | Group U | Knowledge about environmental research | 2022-07-14 | MSc | Biology ]
     - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
-    - [Proposal 20 | Emma Smith | Co-Supervisor E | medicine, health, research | Type F | Group U | Knowledge about environmental research | 2024-07-14 | MSc | Biology ]
-
 ```
 - Should display the data of a proposal:
 ```
-- Login as usr:john@example.com psw:s200000
-- Click on the "Proposals" tab
-- Go to the first row (the one  with "Proposal 3" in the Title column) and click on the last column ("View")
+- Login as usr:john@studenti.polito.com psw:s200000
+- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 3
-    Expiration date: 2022-11-20
+    Proposal 1
+    Expiration date: 2023-12-30
     CdS: CS101
-    Level: MSc
-    Type C
-    Group Z
+    Level: BSc
+    Type A
+    Group X
     Co-supervisor: Not assigned
-    Description: Description for Proposal 3
-    Requested knowledge: Knowledge about software engineering
-    Notes: Additional info
-    Keywords: design, architecture, development
+    Description: Description for Proposal 1
+    Requested knowledge: Knowledge about software programming
+    Notes: Some notes
+    Keywords: programming, algorithms, null
+- Should be visible "Application Sent!"
 ```
 
 ## Story #3 - Apply for Proposal
 - Should create 1 application
 ```
-- Login as usr:carlos@example.com psw:s200002
-- Go to "Proposals" tab
-- Click on the "Apply" button referring to [Proposal 6], a.k.a. the first row
-- Should be visible a modal to confirm or cancel the submission of the application for [Proposal 6]
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Click on "View" in the row of [Proposal 6]
+- Click on the "Apply" button
+- Should be visible a modal to upload a cv and confirm or cancel the submission of the application for [Proposal 6]
 - Click on the "Send Application" button
 - The modal should be closed
 - Should see the proposals table with "Application sent" written instead of the "Apply" button on the row of [Proposal 6]
 ```
 - Should not create 1 application
 ```
-- Login as usr:carlos@example.com psw:s200002
-- Go to "Proposals" tab
-- Click on the "Apply" button referring to [Proposal 16], a.k.a. the second row
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Click on "View" in the row of [Proposal 16]
+- Click on the "Apply" button
 - Should be visible a modal to confirm or cancel the submission of the application for [Proposal 16]
-- Click on the "Close" button/on the X at top right of the modal/outside the modal
+- Click on the "Close" button or on the X at top right of the modal/outside the modal
 - The modal should be closed
 - Should see the proposals table without any changes
 ```
@@ -87,7 +81,7 @@ Please note that each of the following test is written to be executed on a fresh
 ## Story #4 - Browse Applications
 - Should show 4 applications
 ```
-- Login as usr:david@example.com psw:d100003
+- Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see 4 applications, which are the "Pending" applications for the active proposal of the teacher: 
     - ["Proposal 3" application by student s200001]
@@ -97,7 +91,7 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Should show 0 applications
 ```
-- Login as usr:jihoon@example.com psw:d200008
+- Login as emily@docenti.polito.com psw:d200002
 - Go to "Applications" tab
 - Should see 0 applications
 ```
@@ -155,8 +149,7 @@ Please note that each of the following test is written to be executed on a fresh
 ## Story #7 - Browse Proposals:
 - Should see 5 proposals and their data
 ```
-- Login as usr:david@example.com psw:d100003
-- Click on the "Proposals" tab
+- Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher:
     - [Proposal 3 | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101 | Not assigned]
     - [Proposal 6 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
@@ -214,7 +207,6 @@ CdS/Programmes
 - Should delete a proposal and its data:
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
-- Click on the "Proposals" tab
 - Should see 2 proposals for this teacher:
     - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101 | Not assigned]
     - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101 | Not assigned]
