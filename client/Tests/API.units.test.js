@@ -806,8 +806,7 @@ describe('addApplication API', () => {
 
   // Mock response data
   const successResponse = {
-    ok: true,
-    status:200
+    data: {success: true},
   };
 
   // Mock fetch error response
