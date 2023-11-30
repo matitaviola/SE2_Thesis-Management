@@ -47,7 +47,7 @@ function TeacherProposalsTableComponent(props) {
       <Link to="/proposals/new">
         <button className="btn btn-primary" style={{ marginBottom: '10px' }}>Add New Proposal</button>
       </Link>
-			<Table striped border={1} hover>
+			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
                         <th>Title</th>
