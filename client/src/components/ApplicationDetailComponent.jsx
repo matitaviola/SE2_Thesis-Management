@@ -154,7 +154,7 @@ function TeacherApplicationDetail(props){
 }
 function StudentApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
-    const [proposalData, setProposalData] = useState({id:-1});
+    const [proposalData, setProposalData] = useState({id:-1, expiration:"YYYY-MM-DD"});
     const { proposalId } = useParams();
     const studentId = props.studId;
 
