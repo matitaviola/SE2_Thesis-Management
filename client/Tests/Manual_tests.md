@@ -33,8 +33,8 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:carlos@studenti.polito.com psw:s200002
 - Should see 2 proposals for this teacher:
-    - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
-    - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Group U | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
+    - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
+    - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
 ```
 - Should display the data of a proposal:
 ```
@@ -42,17 +42,18 @@ Please note that each of the following test is written to be executed on a fresh
 - Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
     Proposal 1
-    Expiration date: 2023-12-30
-    CdS: CS101
+    expires on: 2023-12-30
+    Supervisor: Michael Johnson
+    Co-supervisor: None
+    CdS: CS101 - Computer Science
     Level: BSc
-    Type A
-    Group X
-    Co-supervisor: Not assigned
-    Description: Description for Proposal 1
-    Requested knowledge: Knowledge about software programming
-    Notes: Some notes
+    Type: Type A
+    Groups: Group X
     Keywords: programming, algorithms, null
-- Should be visible "Application Sent!"
+    Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
+    Requested knowledge: None
+    Notes: Some notes
+- Should be visible an "Apply" button
 ```
 
 ## Story #3 - Apply for Proposal
@@ -64,7 +65,8 @@ Please note that each of the following test is written to be executed on a fresh
 - Should be visible a modal to upload a cv and confirm or cancel the submission of the application for [Proposal 6]
 - Click on the "Send Application" button
 - The modal should be closed
-- Should see the proposals table with "Application sent" written instead of the "Apply" button on the row of [Proposal 6]
+- Should see the proposals table
+- Clicking again on "View" in the row of [Proposal 6], should be visible the disabled "Apply" button
 ```
 - Should not create 1 application
 ```
@@ -83,11 +85,13 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
-- Should see 4 applications, which are the "Pending" applications for the active proposal of the teacher: 
-    - ["Proposal 3" application by student s200001]
-    - ["Proposal 3" application by student s200002]
-    - ["Proposal 13" application by student s200011]
-    - ["Proposal 13" application by student s200013]
+- Should see 5 applications, which are the "Pending" applications for the active proposal of the teacher: 
+    - [Proposal 3, Alice Smith, s200001]
+    - [Proposal 3, Ling Wang, s200003]
+    - [Proposal 3, Mattia Oliva, s308786]
+    - [Proposal 13, Sophia Miller, s200011]
+    - [Proposal 13, Isabella Gonzalez, s200013]
+- Should be visible an "Evaluate" button in the row of each application
 ```
 - Should show 0 applications
 ```
@@ -102,13 +106,14 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
-- Click on [s200013]
+- Click on the "Evaluate" button in the row of s200013's application
 - Should be visible the student's data [Isabella Gonzalez s200013] and the career, with 1 exam
-- Click on the "Reject" button
+- Click on the "Decline" button
 - Confirm the choice pressing "Yes, decline it!"
+- Should be visibile a modal confirming that the operation was successful
 - Should be automatically returned to the applications list page
 - Should not see the rejected application anymore
-- Should see 3 applications
+- Should see 4 applications
 - An email is sent to the student to notify him/her about the rejection
 ```
 - Should update 2 applications by accepting
@@ -116,10 +121,11 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
-- Click on [s200001]
+- Click on the "Evaluate" button in the row of s200001's application
 - Should be visible the student's data [Alice Smith s200001] and the career, with 1 exam
 - Click on the "Accept" button
 - Confirm the choice pressing "Yes, accept it!"
+- Should be visibile a modal confirming that the operation was successful
 - Should be automatically returned to the applications list page
 - Should see 1 application, also the other application for the same proposal should not be visible
 - An email is sent to the student to notify him/her about the acceptance
@@ -131,15 +137,15 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:john@studenti.polito.com psw:s200000
 - Go to "Applications" tab
 - Should see two applications:
-    - [Title: "Proposal 1", Status: Pending], with background color of the row light-yellow
-    - [Title:"Proposal 7", Status: Cancelled], with background color of the row white
+    - [Title: "Proposal 1", Status: Pending]
+    - [Title:"Proposal 7", Status: Cancelled]
 ```
 - Should show 1 application with rejected status
 ```
 - Login as usr:raj@studenti.polito.com psw:s200004
 - Go to "Applications" tab
 - Should see one application:
-    - ["Proposal 4" Status: Rejected], with the background color of the row red
+    - ["Proposal 4" Status: Rejected]
 ```
 - Should show 0 applications 
 ```
@@ -153,18 +159,18 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher:
-    - [Proposal 3 | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101 | Not assigned]
-    - [Proposal 6 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
-    - [Proposal 9 | Not assigned | linguistics, language, communication | Knowledge about linguistic studies | 2024-07-22 | BSc | ENG202 | Not assigned]	
-    - [Proposal 13 | Not assigned | software development, architecture | Knowledge about software engineering | 2022-11-20 | MSc | CS101 | Not assigned]
-    - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303 | Not assigned]
+    - [Proposal 3 | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101]
+    - [Proposal 6 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
+    - [Proposal 9 | Not assigned | linguistics, language, communication | Knowledge about linguistic studies | 2024-07-22 | BSc | ENG202]	
+    - [Proposal 13 | Not assigned | software development, architecture | Knowledge about software engineering | 2022-11-20 | MSc | CS101]
+    - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
 
 ```
 
 ## Story #8 - Update Proposals:
 - should see proposals and edit their datas
 ```
-- Login as usr:david@example.com psw:d100003
+- Login as usr:david@docenti.polito.com psw:d100003
 - Click on the "Proposals" tab
 - Go to first row and click edit on [proposal 3]
 - should be seen proposal details as below:
@@ -210,25 +216,27 @@ CdS/Programmes
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
 - Should see 2 proposals for this teacher:
-    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101 | Not assigned]
-    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101 | Not assigned]
+    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
+    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
 - Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
     Proposal 1
-    Expiration date: 2023-12-31
-    CdS: CS101
+    expires on: 2023-12-30
+    Supervisor: Michael Johnson
+    Co-supervisor: None
+    CdS: CS101 - Computer Science
     Level: BSc
-    Type A
-    Group X
-    Thesist: Not assigned
-    Co-supervisor: Not assigned
-    Description: Description for Proposal 1
-    Requested knowledge: Knowledge about programming
-    Notes: Some notes
+    Type: Type A
+    Groups: Group X
     Keywords: programming, algorithms, null
-- Should be visible an red button called "Delete Proposal"
-- Click on "Delete Proposal" button
+    Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
+    Requested knowledge: None
+    Notes: Some notes
+- Should be visible a red button called "Delete"
+- Click on "Delete" button
 - Should be visible a modal to confirm or cancel the submission of the archiving for [Proposal 1]
+- Click on "Yes, delete it!" button
+- Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals list and show the previous list without Proposal 1
 ```
 
@@ -237,24 +245,26 @@ CdS/Programmes
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
 - Should see 2 proposals for this teacher:
-    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101 | Not assigned]
-    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101 | Not assigned]
+    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
+    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
 - Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
     Proposal 1
-    Expiration date: 2023-12-31
-    CdS: CS101
+    expires on: 2023-12-30
+    Supervisor: Michael Johnson
+    Co-supervisor: None
+    CdS: CS101 - Computer Science
     Level: BSc
-    Type A
-    Group X
-    Thesist: Not assigned
-    Co-supervisor: Not assigned
-    Description: Description for Proposal 1
-    Requested knowledge: Knowledge about programming
-    Notes: Some notes
+    Type: Type A
+    Groups: Group X
     Keywords: programming, algorithms, null
+    Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
+    Requested knowledge: None
+    Notes: Some notes
 - Should be visible a yellow button called "Archive"
 - Click on "Archive" button
 - Should be visible a modal to confirm or cancel the submission of the archiving for [Proposal 1]
+- Click on "Yes, archive it!" button
+- Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals list and show the previous list without Proposal 1
 ```
