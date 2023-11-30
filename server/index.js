@@ -524,7 +524,7 @@ app.post('/api/applications',
         return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
       } const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
 
-      res.json(application);
+      return res.status(200).json(application);
     } catch (err) {
       if (file) {
         fs.unlinkSync(file.path);

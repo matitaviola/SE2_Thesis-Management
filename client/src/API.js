@@ -212,7 +212,7 @@ const addApplication = async (file, proposalId, studentId) => {
     withCredentials: true,
   });
 
-  if (!response.ok) {
+  if (!(response.status==200)) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
     

@@ -807,6 +807,7 @@ describe('addApplication API', () => {
   // Mock response data
   const successResponse = {
     ok: true,
+    status:200
   };
 
   // Mock fetch error response
@@ -841,7 +842,7 @@ describe('addApplication API', () => {
         withCredentials: true
       });
 
-    expect(result).toEqual({ ok: true });
+    expect(result).toEqual({ ok: true});
   });
 
   it('should throw an error on failed request', async () => {
