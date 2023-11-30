@@ -138,12 +138,13 @@ const archiveProposal = async (proposalId) => {
     method: 'PATCH',
     credentials: 'include',
     headers: {'Content-Type' : "application/json"},
-});
+  });
 
-if (!response.ok) {
-  console.log(response);
-    throw new Error(`HTTP error! status: ${response.status}`);
-}
+  if (!response.ok) {
+    console.log(response);
+      throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return {ok:true};
 }
 
 //#endregion
