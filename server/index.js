@@ -510,10 +510,6 @@ app.post('/api/applications',
     const file = req.file;
     try {
 
-      if (!file || !file.originalname) {
-        return res.status(400).send('Invalid File');
-      }
-
       const pendingApps = await appDao.getApplicationsByStudent(req.body.studentId).then((rows) => rows.filter(r => r.status == "Pending" || r.status == "Accepted").length);
 
       if (pendingApps > 0) {
