@@ -126,7 +126,7 @@ function StudentProposalsTableComponent(props) {
 
   const handleViewClick = (proposal) => {
     //let proposal = proposals.find(p => p.id == id);
-    navigate(`/proposals/${id}`, { state: { proposal, studentId } });
+    navigate(`/proposals/${id}`, { state: { proposal, studentId, comingFromApp:false } });
   };
 
   return (

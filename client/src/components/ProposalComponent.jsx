@@ -6,7 +6,7 @@ import '../App.css';
 import { FileUploadComponent } from './FileUploadComponent';
 import Swal from 'sweetalert2';
 
-export function ProposalComponent() {
+export function ProposalComponent(props) {
 	let navigate = useNavigate();
 	const routeChange = () => {
 		let path = `/proposals`;
@@ -102,11 +102,11 @@ export function ProposalComponent() {
 	  </Container>
 	);
 }
-export function StudentProposalComponent() {
+export function StudentProposalComponent(props) {
 
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { proposal, studentId } = location.state;
+	const { proposal, studentId, comingFromApp } = location.state;
 	const [showUpdateModal, setShowUpdateModal] = useState(false);
 	const [selectedProposal, setSelectedProposal] = useState({ title: "", id: -1 });
 	const [file, setFile] = useState(null);
@@ -174,7 +174,7 @@ export function StudentProposalComponent() {
 				<p><strong>Keywords:</strong> {proposal.keywords}</p>
 			</Row>
 			<Row>
-				<Button disabled={proposal.applicationExists} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
+				<Button disabled={proposal.applicationExists || comingFromApp} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
 			</Row>
 			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>
@@ -192,9 +192,9 @@ export function StudentProposalComponent() {
                 <Button variant="secondary" onClick={handleCloseUpdateModal}>
                   Close
                 </Button>
-                <Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
+                {<Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
                   Send Application
-                </Button>
+                </Button>}
               </Modal.Footer>
             </Modal>
 		</Container>

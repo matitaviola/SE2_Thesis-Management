@@ -216,7 +216,8 @@ const insertData = () => {
                     ['s200016', 'Kang', 'Ji-Hoon', 'Male', 'Korean', 'jihoon@studenti.polito.com', 'CS101', 2023],
                     ['s200017', 'Santos', 'Ana', 'Female', 'Brazilian', 'ana@studenti.polito.com', 'DEGREE606', 2020],
                     ['s200018', 'Olsson', 'Gustav', 'Male', 'Swedish', 'gustav@studenti.polito.com', 'BIO303', 2022],
-                    ['s200019', 'Chavez', 'Diego', 'Male', 'Mexican', 'diego@studenti.polito.com', 'CS101', 2021]
+                    ['s200019', 'Chavez', 'Diego', 'Male', 'Mexican', 'diego@studenti.polito.com', 'CS101', 2021],
+                    ['s308786', 'Oliva', 'Mattia', 'Male', 'Coazzese', 's308786@studenti.polito.it', 'CS101', 2021]
                     // Add more data as needed
                 ];
 
@@ -421,7 +422,9 @@ const insertData = () => {
                     ['s200017', 17, null, 'Proposal 17', 'Pending'],
                     ['s200018', 18, null, 'Proposal 18', 'Pending'],
                     ['s200009', null, 7, 'Proposal 7', 'Accepted'],
-                    ['s200008', null, 10, 'Proposal 10', 'Accepted']
+                    ['s200008', null, 10, 'Proposal 10', 'Accepted'],
+                    ['s308786', 1, null, 'Proposal 1', 'Pending'],
+                    ['s308786', 3, null, 'Proposal 3', 'Pending'],
                     // Add more data as needed
                 ];
 

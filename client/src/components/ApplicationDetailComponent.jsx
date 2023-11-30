@@ -197,7 +197,7 @@ function StudentApplicationDetail(props){
                 to={{
                     pathname: `/proposals/${proposalData.id}`,
                 }}
-                state = {{proposal:proposalData}}
+                state = {{proposal:proposalData, studentId:studentId, comingFromApp:true}}
             >
                 "{application.proposal}"
             </Link></i>
