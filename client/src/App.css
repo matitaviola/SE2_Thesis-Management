@@ -4,20 +4,21 @@ body {
 
 /*Navbar*/
 .navbar {
-  height: 12vh;
+  height: 8%;
   font-size: x-large;
+  box-shadow: 5px 6px 8px #888888;
 }
 
 .navbar-brand,
 .navbar-nav .nav-link {
-  font-size: 1.5rem; /* Adjust the font size as needed */
+  font-size: 2rem; /* Adjust the font size as needed */
 }
 
 /*logout button*/
-.enbiggen-dropdown-button {
+.enbiggen-logout-button {
   font-size: 1.5rem; /* Adjust the font size for dropdown items as needed */
 }
-.enbiggen-dropdown-button:hover {
+.enbiggen-logout-button:hover {
   background-color: rgb(236, 90, 90); /* Adjust the font size for dropdown items as needed */
 }
 

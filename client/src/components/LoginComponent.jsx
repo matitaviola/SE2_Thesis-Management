@@ -21,18 +21,7 @@ function LogoutButton(props) {
   const loggedInUser = useContext(AuthContext);
 
   return (
-    /*
-    <Dropdown>
-      <Dropdown.Toggle variant="outline-light" id="dropdown-basic" className="big-out">
-        Logged in as {loggedInUser.id}
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu align="end">
-        <Dropdown.Item eventKey="4" onClick={() => { props.logout(); navigate('/') }} className='enbiggen-dropdown-item'>Log Out, </Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
-    */
-   <Button onClick={() => { props.logout(); navigate('/') }} className='enbiggen-dropdown-item'>Log out, {loggedInUser.id}</Button>
+   <Button onClick={() => { props.logout(); navigate('/') }} className='enbiggen-logout-button'>Log out, {loggedInUser.id}</Button>
   );
 }
 
