@@ -39,7 +39,6 @@ useEffect(() => {
       setLoggedIn(false);
       //we go back to login now
       const navigate = useNavigate();
-      console.log("imma navigate");
       navigate('/login');
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);

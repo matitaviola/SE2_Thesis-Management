@@ -14,20 +14,11 @@ body {
 }
 
 /*logout button*/
-.big-out {
-  font-size: 1.5rem; /* Adjust the font size as needed */
-  border: none;
-  cursor: pointer;
-  outline: none;
-}
-.big-out:focus,
-.big-out:active {
-  box-shadow: none;
-  background-color: rgb(252, 137, 43);
-}
-
-.enbiggen-dropdown-item {
+.enbiggen-dropdown-button {
   font-size: 1.5rem; /* Adjust the font size for dropdown items as needed */
+}
+.enbiggen-dropdown-button:hover {
+  background-color: rgb(236, 90, 90); /* Adjust the font size for dropdown items as needed */
 }
 
 /*Proposals Table and Rows*/
