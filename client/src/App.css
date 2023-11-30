@@ -55,16 +55,36 @@ body {
   padding: 20px; /* Increase padding */
 }
 
-.table-row-danger{
-  background-color: rgb(237, 47, 47);
+.table-danger{
+  --bs-table-bg: rgb(236, 90, 90);
 }
-.table-row-success{
-  background-color: rgb(88, 195, 88);
+.table-danger td {
+  color: white;
 }
-.table-row-warning{
-  background-color: rgb(237, 107, 47);
+.table-danger td button *{
+  color: white;
 }
-
+.table-success{
+  --bs-table-bg: rgb(88, 195, 88);
+}
+.table-success td {
+  color: white;
+}
+.table-success td button *{
+  color: white;
+}
+.table-warning{
+  --bs-table-bg: rgb(237, 164, 47);
+}
+.table-warning td{
+  color: white;
+}
+.table-warning td button *{
+  color: white;
+}
+.table-default td button *{
+  color: white;
+}
 
 .application-row {
   border-radius: 8px;

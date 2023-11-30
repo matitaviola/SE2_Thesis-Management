@@ -77,13 +77,14 @@ export default function ApplicationTable(props) {
                         </Table>
                     </Card>
                     :
-                    <Card className='grades-table-card my-4'>
-                        <Table className='grades-table' responsive>
+                    <Card className='my-4'>
+                        <Table responsive>
                             <thead>
                                 <tr>
                                     <th>Title</th>
                                     {/*<th>StudentID</th>*/}
-                                    <th>Status</th>
+                                    <th style={{ textAlign: 'center'}}>Status</th>
+                                    <th style={{ textAlign: 'center'}}>Application Details</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -91,25 +92,27 @@ export default function ApplicationTable(props) {
                                     let className;
                                     switch (application.status) {
                                         case 'Rejected':
-                                            className = 'table-row-danger';
+                                            className = 'table-danger';
                                             break;
                                         case 'Accepted':
-                                            className = 'table-row-success';
+                                            className = 'table-success';
                                             break;
                                         case 'Cancelled':
-                                            className = 'table-row-default';
+                                            className = 'table-default';
                                             break;
                                         default:
-                                            className = 'table-row-warning';
+                                            className = 'table-warning';
                                     }
                                     return (
                                         <tr key={index} className={className}>
-                                            <td><Link to={`/applications/${application.proposal_id}`}
+                                            <td style={{ textAlign: 'left', paddingTop: '14px' }}>{application.proposal}</td>
+                                            <td style={{ textAlign: 'center', paddingTop: '14px' }}>{application.status}</td>
+                                            <td style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Button>
+                                            <Link to={`/applications/${application.proposal_id}`}
                                                 state={{ application: application }}
-                                                style={{ textDecoration: 'none' }} >{application.proposal}
-                                            </Link></td>
-                                            {/*<td>{application.studentId}</td>*/}
-                                            <td>{application.status}</td>
+                                                style={{ textDecoration: 'none' }} >REVIEW APPLICATION
+                                            </Link>
+                                            </Button></td>
                                         </tr>
                                     )
                                 })}

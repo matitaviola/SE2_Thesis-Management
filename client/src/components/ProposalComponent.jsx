@@ -17,54 +17,47 @@ export function ProposalComponent(props) {
 
 	return (
 		<Container>
-			<Row><h1 className='text-center mt-4'>{proposal.title}</h1></Row>
+			<Row>
+			<h1 className='text-center mt-4'>{proposal.title}</h1>
+			<h4 className='text-center'><i>expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></i></h4>
+			</Row>
 			<Container className='proposal-container'>
 				<Row>
 					<Col className='proposal-show-field'>
-						<p className='text-start'><strong>Expiration date:</strong> {proposal.expiration}</p>
+						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.co_supervisor ? proposal.co_supervisor:<i> None</i>}</p>
+						<p><strong>Thesist:</strong>{proposal.thesist ? proposal.thesist:<i> Not yet assigned</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
 					<p><strong>CdS:</strong> {proposal.cds}</p>
-					</Col>
-					<Col className='proposal-show-field'>
 					<p><strong>Level:</strong> {proposal.level}</p>
 					</Col>
 					<Col className='proposal-show-field'>
 					<p><strong>Type:</strong> {proposal.type}</p>
-					</Col>
-				</Row>
-				<Row style={{width:'auto'}}>
-					<Col className='proposal-show-field'>
-						<p><strong>Thesist:</strong> {proposal.thesist ? proposal.thesist : "Not assigned"}</p>
-					</Col>
-					<Col className='proposal-show-field'>
-						<p><strong>Co-supervisor:</strong> {proposal.co_supervisor ? proposal.co_supervisor : "Not assigned"}</p>
-					</Col>
-					<Col className='proposal-show-field'>
 					<p><strong>Groups:</strong> {proposal.group}</p>
 					</Col>
 				</Row>
-				<Row>
-				<Col className='proposal-show-field'>
-      					<p><strong>Keywords:</strong> {proposal.keywords}</p>
+				<Row>		
+					<p style={{marginBottom:'0px'}}><strong>Keywords:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+						<p>{proposal.keywords}</p>
   					</Col>
 				</Row>
 				<Row>
-				<p><strong>Description:</strong></p>
-					<Col className='proposal-show-field' style={{marginTop:'10px', marginBottom:'15px'}}>
-					
-					<p>{proposal.description}</p>
+					<p style={{marginBottom:'0px'}}><strong>Description:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+					<p> {proposal.description}</p>
 				</Col>
 				</Row>
 				<Row>
-				<Col className='proposal-show-field'>
-					<p><strong>Requested knowledge:</strong></p>
-					<p> {proposal.knowledge}</p>
+					<p style={{marginBottom:'0px'}}><strong>Requested knowledge:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+					<p> {proposal.knowledge? proposal.knowledge : <i> None</i>}</p>
 					</Col>
 				</Row>
 				<Row>
-				<Col className='proposal-show-field'>
-					<p><strong>Notes:</strong></p>
+				<p style={{marginBottom:'0px'}}><strong>Notes:</strong></p>
+				<Col className='proposal-show-field' style={{marginTop:'2px'}}>
 					<p> {proposal.notes}</p>
 				</Col>
 				</Row>
@@ -178,46 +171,47 @@ export function StudentProposalComponent(props) {
 
 	return (
 		<Container>
+			<Row>
+			<h1 className='text-center mt-4'>{proposal.title}</h1>
+			<h4 className='text-center'><i>expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></i></h4>
+			</Row>
 			<Container className='proposal-container'>
 				<Row>
 					<Col className='proposal-show-field'>
-						<p className='text-start'><strong>Expiration date:</strong> {proposal.expiration}</p>
+						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.co_supervisor ? proposal.co_supervisor:<i> None</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
-					<p><strong>CdS:</strong> {proposal.cds}</p>
+					<p><strong>CdS:</strong> {proposal.cdsId} -  {proposal.cdsName}</p>
 					<p><strong>Level:</strong> {proposal.level}</p>
 					</Col>
 					<Col className='proposal-show-field'>
 					<p><strong>Type:</strong> {proposal.type}</p>
-					<p><strong>Groups:</strong> {proposal.group}</p>
+					<p><strong>Groups:</strong> {proposal.groups}</p>
 					</Col>
 				</Row>
-				<Row style={{width:'auto'}}>
-					{
-						proposal.co_supervisor ?
-						<Col className='proposal-show-field'>
-							<p><strong>Co-supervisor:</strong> proposal.co_supervisor</p>
-						</Col>
-						:
-						<></>
-					}
-					<Col className='proposal-show-field'>
-      					<p><strong>Keywords:</strong> {proposal.keywords}</p>
+				<Row>		
+					<p style={{marginBottom:'0px'}}><strong>Keywords:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+						<p>{proposal.keywords}</p>
   					</Col>
 				</Row>
 				<Row>
-					<Col className='proposal-show-field'>
-					<p><strong>Description:</strong> {proposal.description}</p>
+					<p style={{marginBottom:'0px'}}><strong>Description:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+					<p> {proposal.description}</p>
 				</Col>
 				</Row>
 				<Row>
-				<Col className='proposal-show-field'>
-					<p><strong>Requested knowledge:</strong> {proposal.knowledge}</p>
+					<p style={{marginBottom:'0px'}}><strong>Requested knowledge:</strong></p>
+					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+					<p> {proposal.knowledge? proposal.knowledge : <i> None</i>}</p>
 					</Col>
 				</Row>
 				<Row>
-				<Col className='proposal-show-field'>
-					<p><strong>Notes:</strong> {proposal.notes}</p>
+				<p style={{marginBottom:'0px'}}><strong>Notes:</strong></p>
+				<Col className='proposal-show-field' style={{marginTop:'2px'}}>
+					<p> {proposal.notes}</p>
 				</Col>
 				</Row>
 			</Container>
