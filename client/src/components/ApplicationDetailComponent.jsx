@@ -12,9 +12,9 @@ import Swal from 'sweetalert2';
 function ApplicationDetailComponent(props) {
     const loggedInUser = useContext(AuthContext);
     if (loggedInUser.role=='TEACHER'){
-        return(<TeacherApplicationDetail></TeacherApplicationDetail>)
+        return(<TeacherApplicationDetail setErrorMessage={props.setErrorMessage}></TeacherApplicationDetail>)
     }
-    return(<StudentApplicationDetail studId={loggedInUser.id}></StudentApplicationDetail>)
+    return(<StudentApplicationDetail studId={loggedInUser.id} setErrorMessage={props.setErrorMessage}></StudentApplicationDetail>)
 }
 function TeacherApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
@@ -30,8 +30,7 @@ function TeacherApplicationDetail(props){
                 const retrievedStudentData = await API.getStudentData(proposalId, studentId);
                 setStudentData(retrievedStudentData);
             } catch (err) {
-                //should use toast instead
-                console.error(err);
+                props.setErrorMessage(`${err}`);
             }
         };
         getStudentData();
@@ -58,7 +57,7 @@ function TeacherApplicationDetail(props){
                 navigate('/applications');
             }
         } catch (err) {
-            console.error(err);
+            props.setErrorMessage(`${err}`);
         }
     };
 
@@ -168,8 +167,7 @@ function StudentApplicationDetail(props){
                 const retrievedStudentData = await API.getStudentData(proposalId, studentId);
                 setStudentData(retrievedStudentData);
             } catch (err) {
-                //should use toast instead
-                console.error(err);
+                props.setErrorMessage(`${err}`);
             }
         };
         getStudentData();
@@ -182,7 +180,7 @@ function StudentApplicationDetail(props){
                 setProposalData(retrievedProposalData);
             } catch (err) {
                 //should use toast instead
-                console.error(err);
+                props.setErrorMessage(`${err}`);
             }
         };
         getProposalData();

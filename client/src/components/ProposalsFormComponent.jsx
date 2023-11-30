@@ -44,8 +44,8 @@ export default function ProposalsFormComponent(props) {
       try {
         const response = await API.getDegrees();
         setDegrees(response);
-      } catch (error) {
-        console.error('Error fetching degrees:', error);
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
       }
     };
 

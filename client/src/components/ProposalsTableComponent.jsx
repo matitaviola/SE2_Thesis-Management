@@ -6,17 +6,17 @@ import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
 
-export default function ProposalsTableComponent() {
+export default function ProposalsTableComponent(props) {
 
 
 
   const loggedInUser = useContext(AuthContext);
 
   if (loggedInUser && loggedInUser.role == 'STUDENT') {
-    return (<StudentProposalsTableComponent studentId={loggedInUser.id} />);
+    return (<StudentProposalsTableComponent studentId={loggedInUser.id} setErrorMessage={props.setErrorMessage}/>);
   }
   if (loggedInUser && loggedInUser.role == 'TEACHER') {
-    return (<TeacherProposalsTableComponent />);
+    return (<TeacherProposalsTableComponent setErrorMessage={props.setErrorMessage}/>);
   }
   return (
     <NotFound></NotFound>
@@ -24,7 +24,7 @@ export default function ProposalsTableComponent() {
 
 }
 
-function TeacherProposalsTableComponent() {
+function TeacherProposalsTableComponent(props) {
 	const [proposals, setProposals] = useState([]);
 	const loggedInUser = useContext(AuthContext);
 
@@ -35,7 +35,7 @@ function TeacherProposalsTableComponent() {
         const retrievedProposals2 = await API.getProposals(loggedInUser);
 				setProposals(retrievedProposals2);
 			} catch (err) {
-				console.log("Proposals getting an error: " + err);
+				props.setErrorMessage(`${err}`);
 			}
 		};
 		getProposals();
@@ -102,8 +102,6 @@ function ProposalRow(props) {
     );
 }
 
-
-
 function StudentProposalsTableComponent(props) {
 
   const [proposals, setProposals] = useState([]);
@@ -116,9 +114,12 @@ function StudentProposalsTableComponent(props) {
 
   useEffect(() => {
     const fetchProposals = async () => {
-      let proposalsResponse = await API.getStudentProposals(studentId, filter, order);
-      setProposals(proposalsResponse);
-
+      try{
+        let proposalsResponse = await API.getStudentProposals(studentId, filter, order);
+        setProposals(proposalsResponse);
+      }catch(err){
+        props.setErrorMessage(`${err}`);
+      }
     }
     fetchProposals()
   }, [filter, studentId, order]);
@@ -204,12 +205,12 @@ function SearchBarComponent(props) {
 
             </Col>
             <Col>
-              <button type="button" class="btn btn-danger" onClick={() => {
+              <button type="button" className="btn btn-danger" onClick={() => {
                 let filter = { ...props.filter };
                 filter[k] = undefined;
                 props.setFilter(filter)
               }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-lg" viewBox="0 0 16 16">
                   <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
                 </svg>
               </button></Col>
@@ -257,16 +258,16 @@ function SortButton(props) {
 
   if(!order || order.field != keyword){
     return(
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-down-up mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path fillRule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5"/></svg>
     )
   }
   if(order && order.field == keyword && order.direction ){
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-down mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-sort-down mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path d="M3.5 2.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 11.293zm3.5 1a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/></svg>
     )
   }
   return (
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-sort-up mx-1 ml-0" viewBox="0 0 16 16" onClick={onClick}><path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/></svg>
   )
 }
 

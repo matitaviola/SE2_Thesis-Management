@@ -139,11 +139,13 @@ export function StudentProposalComponent() {
 			alert("Only PDF file are accepted");
 			return;
 		}
-
-		API.addApplication(file, proposal.id, studentId);
-		setShowUpdateModal(false);
-		navigate('/proposals');
-
+		try{
+			API.addApplication(file, proposal.id, studentId);
+			setShowUpdateModal(false);
+			navigate('/proposals');
+		}catch(err){
+			props.setErrorMessage(`${err}`);
+		}
 	};
 
 	return (

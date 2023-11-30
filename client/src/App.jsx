@@ -64,28 +64,28 @@ useEffect(() => {
 
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent />} />
+              element={<ProposalsTableComponent setErrorMessage={setErrorMessage}/>} />
               <Route path='proposals/:proposalsId'
-              element={<StudentProposalComponent />} />
+              element={<StudentProposalComponent  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications'
-              element={<ApplicationsTable />} />
+              element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications/:proposalId'
-              element={<ApplicationDetailComponent />} />
+              element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications/null'
-              element={<CancelledProposalMessage />} />
+              element={<CancelledProposalMessage  setErrorMessage={setErrorMessage}/>} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent />} />
+              element={<ProposalsTableComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/:proposalsId'
-              element={<ProposalComponent />} />
+              element={<ProposalComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/new'
               element={<ProposalsFormComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='applications'
-              element={<ApplicationsTable />}/>
+              element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>}/>
           <Route path='application/:proposalId/:studentId'
-              element={<ApplicationDetailComponent/>} />
+              element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />

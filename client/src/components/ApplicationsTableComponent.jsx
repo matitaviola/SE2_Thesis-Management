@@ -16,7 +16,7 @@ export default function ApplicationTable(props) {
                 setApplications(retrievedApplications);
             } catch (err) {
                 //should use toast instead
-                console.error(err);
+                props.setErrorMessage(`${err}`);
             }
         };
         getApplications();
@@ -29,7 +29,7 @@ export default function ApplicationTable(props) {
                 const response = await API.getStudents();
                 setStudentData(response);
             } catch (err) {
-                console.error(err);
+                props.setErrorMessage(`${err}`);
             }
         };
         fetchStudentData();
