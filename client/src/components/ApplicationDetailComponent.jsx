@@ -105,7 +105,7 @@ function TeacherApplicationDetail(props){
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, decline it!',
                         cancelButtonColor: "red",
-                        confirmButtonColor: "#007BFF",
+                        confirmButtonColor: "#449d44",
                         reverseButtons: false,
                         /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
@@ -122,7 +122,7 @@ function TeacherApplicationDetail(props){
             >
                 Decline
             </button>
-            <button
+            <button 
                 onClick={() => {
                     Swal.fire({
                         title: 'Are you sure?',
@@ -132,7 +132,7 @@ function TeacherApplicationDetail(props){
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, accept it!',
                         cancelButtonColor: "red",
-                        confirmButtonColor: "#007BFF",
+                        confirmButtonColor: "#449d44",
                         reverseButtons: false,
                         /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
