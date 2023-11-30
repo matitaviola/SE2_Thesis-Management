@@ -27,8 +27,8 @@ export function ProposalComponent() {
 				<p><strong>Level:</strong> {proposal.level}</p>
 			</Row>
 			<Row>
-				<p>{proposal.type}</p>
-				<p>{proposal.group}</p>
+				<p><strong>Type:</strong> {proposal.type}</p>
+				<p><strong>Groups:</strong> {proposal.group}</p>
 			</Row>
 			<Row>
 				<p><strong>Thesist:</strong> {proposal.thesist ? proposal.thesist : "Not assigned"}</p>
