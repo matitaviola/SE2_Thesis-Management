@@ -202,8 +202,8 @@ function StudentApplicationDetail(props){
                 "{application.proposal}"
             </Link></i>
             </h1>
-            <p>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.Groups}</i> group</p>
-            <p>Expires on <b>{proposalData.Expiration}</b></p>
+            <p>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.groups}</i> group</p>
+            <p>Expires on <b>{proposalData.expiration.substring(0,10)}</b></p>
             <Card className='grades-table-card my-4'>
                 <h2>Your CV</h2>
                 <Table className='grades-table' striped responsive>
