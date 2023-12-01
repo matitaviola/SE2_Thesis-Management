@@ -124,7 +124,7 @@ sections:
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
 - Which ones you were not able to achieve? Why?
-  All of them: we estimated taking into account design and repository management, we dedicated time 
+  We were able to achieve all of them: we estimated taking into account design and repository management, we dedicated time 
   to create coherent front end design and we committed just 4 stories (instead of the first 9).
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
@@ -135,4 +135,4 @@ sections:
   - Do not start stories if they are supposed not to be finished (to avoid technical debt)
 
 - One thing you are proud of as a Team!!
-  We manage to deliver deliver an overall good demo despite one team member left.
+  We manage to deliver deliver an overall good demo despite one team member leaving.
