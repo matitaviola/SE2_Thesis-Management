@@ -73,7 +73,7 @@ export function ProposalComponent(props) {
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, delete it!',
                         cancelButtonColor: "red",
-                        confirmButtonColor: "#007BFF",
+                        confirmButtonColor: "#449d44",
                         reverseButtons: false,
                         /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
@@ -101,7 +101,7 @@ export function ProposalComponent(props) {
                         cancelButtonText: 'No, cancel!',
                         confirmButtonText: 'Yes, archive it!',
                         cancelButtonColor: "red",
-                        confirmButtonColor: "#007BFF",
+                        confirmButtonColor: "#449d44",
                         reverseButtons: false,
                         /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
                         imageWidth: 400,
@@ -215,8 +215,8 @@ export function StudentProposalComponent(props) {
 				</Col>
 				</Row>
 			</Container>
-			<Row>
-				<Button disabled={proposal.applicationExists || comingFromApp} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
+			<Row className='my-3'>
+				<Button variant="secondary" disabled={proposal.applicationExists || comingFromApp} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
 			</Row>
 			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>
@@ -231,12 +231,12 @@ export function StudentProposalComponent(props) {
                 <span>Are you sure to apply for {selectedProposal.title}?</span>
                 </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseUpdateModal}>
-                  Close
-                </Button>
-                {<Button variant="primary" onClick={() => handleSendApplication(selectedProposal)}>
+                {<Button variant="success" style={{ color: 'white'}} onClick={() => handleSendApplication(selectedProposal)}>
                   Send Application
                 </Button>}
+				<Button variant="danger" onClick={handleCloseUpdateModal}>
+                  Close
+                </Button>
               </Modal.Footer>
             </Modal>
 		</Container>

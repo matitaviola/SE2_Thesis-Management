@@ -123,7 +123,7 @@ export default function ProposalsFormComponent(props) {
                 ))}
               </Form.Select>
             </Form.Group>
-            <Button variant="primary" type="submit" className="mt-2">
+            <Button variant="success" type="submit" className="mt-2">
               Save
             </Button>
           </Form>

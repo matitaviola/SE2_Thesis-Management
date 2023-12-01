@@ -45,7 +45,7 @@ function TeacherProposalsTableComponent(props) {
 		<div className="proposal-table">
 			<h1>Active Proposals Table</h1>
       <Link to="/proposals/new">
-        <button className="btn btn-primary" style={{ marginBottom: '10px' }}>Add New Proposal</button>
+        <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
       </Link>
 			<Table striped border={1} responsive hover>
                 <thead>
@@ -266,9 +266,9 @@ function DropdownSelectionFilter(props){
 
   return(   
      <Dropdown className="d-flex justify-content-end mx-3 mb-2">
-    <Dropdown.Toggle variant="success" id="dropdown-basic" className="border">
+    <Dropdown.Toggle variant="null" id="dropdown-basic" className="border">
     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" className="mx-2 ml-0"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
-      Select filter to add
+      Add filter
     </Dropdown.Toggle>
 
     <Dropdown.Menu>

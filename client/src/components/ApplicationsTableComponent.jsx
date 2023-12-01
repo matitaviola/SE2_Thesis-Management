@@ -62,7 +62,7 @@ export default function ApplicationTable(props) {
                                                 <td>{student ? student.name + ' ' + student.surname : 'N/A'}</td>
                                                 <td>{application.studentId}</td>
                                                 <td>
-                                                    <Button variant="primary" className='evaluate-button'>
+                                                    <Button variant="secondary" className='evaluate-button'>
                                                     <Link to={`/application/${application.proposal_id}/${application.studentId}`}
                                                         state={{ application }}
                                                         style={{ textDecoration: 'none', color: 'inherit' }}>
