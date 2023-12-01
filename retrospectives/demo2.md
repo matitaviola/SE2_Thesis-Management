@@ -40,7 +40,7 @@ sections:
 |---------------------------------------------------------------------------|
 |#11 Update Proposal   |    3          |   1    |     5      |      -       |
 |---------------------------------------------------------------------------|
-NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but while doing it
+NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but only while doing it
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 

@@ -49,7 +49,7 @@ sections:
 |-----------------------------------------------------------------------|
 |#10 Delete Proposals  |     3     |   1    |     3      |      2h      |
 |-----------------------------------------------------------------------|
-NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but while doing it
+NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but only while doing it
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
