@@ -27,62 +27,29 @@ sections:
 
 ### Detailed statistics
 
-| Story                | # Tasks                   | Points | Hours est. | Hours actual |
-|----------------------|---------------------------|--------|------------|--------------|
-|#0 Uncategorized Tasks| - Plan the sprint         |        |     -      |      18      |
-|                      | - BE - Database Setup     |        |     2      |      2       |
-|                      | - FE - Frontend Setup     |        |     2      |      2       |
-|                      | - BE - Implement string   |        |     2      |      30m     |
-|                      |   based authorization     |        |            |              |
-|                      | - FE - Implement string   |        |     2      |      2       |
-|                      |   based authorization     |        |            |              |
-|                      | - (Re)learning            |        |     12     |      9       |
-|                      |   technologies            |        |            |              |
-|                      | - Prepare for the         |        |     12     |      12      |
-|                      |   presentation            |        |            |              |
-|                      | - Technical meetings      |        |     2      |      1h 15m  |
-|---------------------------------------------------------------------------------------| 
-|#1 Insert Proposal    | - FE - Creatin Form       |   3    |     2      |      2h 30m  |
-|                      | - BE - Form APIs          |        |     2      |      2       |
-|                      | - Testing                 |        |     2      |      1       |
-|---------------------------------------------------------------------------------------|  
-|#2 Search Proposal    | - FE - Graphical Part     |   3    |     2      |      2h 30m  |
-|                      | - APIs                    |        |     1      |      1       |
-|                      | - Testing                 |        |     1      |      1       |
-|---------------------------------------------------------------------------------------| 
-|#3 Apply for proposal | - FE - Show               |   3    |     1      |      1h 30m  |
-|                      | - APIs                    |        |     2      |      1h 30m  |
-|                      | - Testing                 |        |     2      |      2       |
-|---------------------------------------------------------------------------------------|
-|#4 Browse Applications| - FE -Show List of        |   1    |     1      |      2       |
-|                      |Applications               |        |            |              |
-|                      | - APIs                    |        |     1      |      1h 10m  | 
-|                      | - Testing                 |        |     1      |      50m     |
-|---------------------------------------------------------------------------------------| 
-|#5 Accept Application | - FE - Show Application's |   1    |     1      |      3       |
-|                      |  data and button          |        |            |              |
-|                      | - APIs                    |        |     1      |      2       |
-|                      | - Testing                 |        |     1      |      50m     |
-|---------------------------------------------------------------------------------------| 
-|#6 Browse Applications| - FE - Show student       |   1    |     1      |      30m     |
-| decisions            |  applications             |        |            |              |
-|                      | - APIs                    |        |     1      |      1       |
-|                      | - Testing                 |        |     1      |      50m     |
-|---------------------------------------------------------------------------------------| 
-|#7 Browse Proposals   | - FE - Proposals list     |   1    |     1      |      1h 30m  |
-|                      |  for the professor        |        |            |              |
-|                      | - APIs                    |        |     1      |      1       |
-|                      | - Testing                 |        |     1      |      30m     |
-|---------------------------------------------------------------------------------------| 
-|#8 Update Proposals   | - FE - Create Form        |   2    |     1      |      1(NF)   |
-|                      | - APIs                    |        |     2      |      2(NF)   |
-|                      | - Testing                 |        |     2      |      2(NF)   |
-|---------------------------------------------------------------------------------------|
-|#10 Delete Proposals  | - FE - "Delete" button    |   1    |     1      |      45m     |
-|                      | - APIs                    |        |     1      |      45m     |
-|                      | - Testing                 |        |     1      |      30m     |
-|---------------------------------------------------------------------------------------|
-   
+| Story                | # Tasks   | Points | Hours est. | Hours actual |
+|----------------------|---------- |--------|------------|--------------|
+|#0 Uncategorized Tasks|     8     |        |     52*    |    46h 45m   |
+|-----------------------------------------------------------------------| 
+|#1 Insert Proposal    |     3     |   3    |     6      |     5h 30m   |
+|-----------------------------------------------------------------------|  
+|#2 Search Proposal    |     3     |   3    |     4      |     4h 30m   |
+|-----------------------------------------------------------------------| 
+|#3 Apply for proposal |     3     |   3    |     5      |      5h      |
+|-----------------------------------------------------------------------|
+|#4 Browse Applications|     3     |   1    |     3      |      4h      |
+|-----------------------------------------------------------------------| 
+|#5 Accept Application |     3     |   1    |     3      |     5h 50m   |
+|-----------------------------------------------------------------------| 
+|#6 Browse Applications|     3     |   1    |     3      |     2h 20m   |
+|-----------------------------------------------------------------------| 
+|#7 Browse Proposals   |     3     |   1    |     3      |      3h      |
+|-----------------------------------------------------------------------| 
+|#8 Update Proposals   |     3     |   2    |     5      |      5h(NF)  |
+|-----------------------------------------------------------------------|
+|#10 Delete Proposals  |     3     |   1    |     3      |      2h      |
+|-----------------------------------------------------------------------|
+NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but while doing it
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
@@ -127,6 +94,7 @@ sections:
  
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
+  This was the first sprint for the project
 - Which ones you were not able to achieve? Why?
   It was the first sprint for this project.
 

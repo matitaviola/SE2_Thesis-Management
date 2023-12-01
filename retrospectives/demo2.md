@@ -12,8 +12,8 @@ sections:
 
 ### Macro statistics
 
-- Number of stories committed vs. done: 4 committed vs. 1 done
-- Total points committed vs. done: 10 committed vs. 1 done
+- Number of stories committed vs. done: 4 committed vs. 2 done
+- Total points committed vs. done: 10 committed vs. 6 done
 - Nr of hours planned vs. spent (as a team): 96 hours planned vs. 85 hours and 30 minutes done
 
 **Remember**a story is done ONLY if it fits the Definition of Done:
@@ -27,58 +27,20 @@ sections:
 
 ### Detailed statistics
 
-| Story                | # Tasks                   | Points | Hours est. | Hours actual |
-|----------------------|---------------------------|--------|------------|--------------|
-|#0 Uncategorized Tasks| - Scrum Meeting 1-5       |        |  7h 30m    |   7h 15m     |
-|                      | - Demo Preparation        |        |  4h 30m    |      3h      |
-|                      | - Generic Support Time    |        |  2h 30m    |      2h      |
-|                      | - FE/BE Add file upload   |        |     3      |      4       |
-|                      |   to send application     |        |            |              |
-|                      | - FE/BE - Proposal insert |        |     3      |      3       |
-|                      |   form constraints        |        |            |              |
-|                      | - Git Maeve               |        |     3      |      2       |
-|                      | - FE - Manual Testing     |        |     2      |      1       |
-|                      | - SAML 2.0 Auth           |        |     3      |      7       |
-|                      |   Implementation          |        |            |              |
-|                      | - Issue - Apply button    |        |     45m    |    45m       |
-|                      |   in Thesis Detail page   |        |            |              |
-|                      | - Technical & FE Design   |        |     6      |     5        |
-|                      |   Meeting                 |        |            |              |
-|                      | - Issue - Confirmation    |        |     45m    |     45m      |
-|                      |   before accept/reject    |        |            |              |
-|                      |   application             |        |            |              |
-|                      | - FE Revamp - Application |        |     3      |     3        |
-|                      |   Lists and Infos         |        |            |              |
-|                      | - Sprint Planning         |        |            |     18       |
-|                      | - BE - Add missing filter |        |   1h 30m   |     1h 30m   |
-|                      |   fields for proposals    |        |            |              |
-|                      | - FE Revamp - Proposals   |        |     3h     |     3h       |
-|                      |   Table and Infos         |        |            |              |
-|                      | - BE - API inputs         |        |   3h 30m   |     2h 30m   |
-|                      |   validation to avoid     |        |            |              |
-|                      |   injection               |        |            |              |
-|                      | - DB redo to conform FAQs |        |   1h 30m   |     1h 45m   |
-|                      | - Testing - DB            |        |     1h     |     1h 10m   |
-|                      | - Docker implementation   |        |   3h 30m   |     2h 50m   |
-|                      | - FE Revamp - Home Page   |        |   1h 30m   |     1h 30m   |
-|                      | - FE Revamp - Error pop-up|        |   1h 30m   |     1h 30m   |
-|                      | - Testing - Code Review   |        |   6h       |     6h       |
-|---------------------------------------------------------------------------------------| 
-|#9 Notify Application | - API                     |   5    |   1h 30m   |   1h 30m     |
-|  Decision            | - Testing                 |        |   1h 30m   |      2       |
-|---------------------------------------------------------------------------------------|  
-|#12 Archive Proposal  | - FE                      |   1    |     1      |      1       |
-|                      | - APIs                    |        |     1      |      1       |
-|                      | - Testing                 |        |     1      |    1h 30m    |
-|---------------------------------------------------------------------------------------| 
-|#8 Update Proposal    | - FE - Create Form        |   1    |     2      |              |
-|                      | - APIs                    |        |     1      |              |
-|                      | - Testing                 |        |     2      |              |
-|---------------------------------------------------------------------------------------|
-|#11 Update Proposal   | - FE - Create Form        |   1    |     2      |              |
-|                      | - APIs                    |        |     1      |              |
-|                      | - Testing                 |        |     2      |              |
-|---------------------------------------------------------------------------------------|
+| Story                | # Tasks       | Points | Hours est. | Hours actual |
+|----------------------|---------------|--------|------------|--------------|
+|#0 Uncategorized Tasks|    26         |        |     80h*   |   78h 30m    |
+|---------------------------------------------------------------------------| 
+|#9 Notify Application |    2          |   5    |     3      |   3h 30m     |
+|  Decision            |               |        |            |              |
+|---------------------------------------------------------------------------|  
+|#12 Archive Proposal  |    3          |   1    |     3      |   3h 30m     |
+|---------------------------------------------------------------------------| 
+|#8 Update Proposal    |    3          |   1    |     5      |      -       |
+|---------------------------------------------------------------------------|
+|#11 Update Proposal   |    3          |   1    |     5      |      -       |
+|---------------------------------------------------------------------------|
+NOTE: this includes the sprint planning itself, that could not be extimated beforehand, but while doing it
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
 
@@ -123,9 +85,11 @@ sections:
   - Frequent scrum meeting helped us stay updated on the other members work
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
-- Which ones you were not able to achieve? Why?
   We were able to achieve all of them: we estimated taking into account design and repository management, we dedicated time 
   to create coherent front end design and we committed just 4 stories (instead of the first 9).
+- Which ones you were not able to achieve? Why?
+  As said before, we were able to achieve all of them. If anything, we can still improve for what concerns graphics on the Front-End
+ 
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
 
