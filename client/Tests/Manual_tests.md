@@ -268,3 +268,25 @@ CdS/Programmes
 - Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals list and show the previous list without Proposal 1
 ```
+## Story #13 - Access applicant CV:
+- Should access applicant CV through the applications table:
+
+```
+- Create an application following the story #3 first test
+- Login as usr:david@docenti.polito.com psw:d100003
+- Click on the "Applications" tab
+- Open the Carlos Gracia's application detail to Proposal 6 with the "Evaluate" button
+- Click "Open Resumee"
+- The pdf file uploaded should be visible
+```
+- "Open Resumee" button should not be visible if the applicant has not uploaded any resumee
+
+```
+- Login as usr:michael@docenti.polito.com psw:d100001
+- Click on the "Applications" tab
+- Open the John Doe's application detail to Proposal 1 with the "Evaluate" button
+- The "Open Resumee" button should not be visible
+```
+
+
+

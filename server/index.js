@@ -5,7 +5,7 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
-const { isLoggedIn, checkTeacherRole, checkStudentRole } = require('./Middlewares/authorization-middleware');
+const { isLoggedIn, checkTeacherRole, checkStudentRole, checkUserId } = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -440,7 +440,14 @@ app.get('/api/applications/teacher/:professorId',
         );
       }
       //return json w/o empty results of all the proposals
-      res.json(applications.filter(value => Object.keys(value).length !== 0).flat());
+      res.json(applications.filter(value => Object.keys(value).length !== 0).flat().map(a => {
+        const path = `uploads/APP_${a.id}.pdf`;
+    
+        if (!fs.existsSync(path)) {
+          return {...a, resumeeExists: false};
+        }
+        return {...a, resumeeExists: true}
+      }));
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: `An error occurred while retrieving the applications for the professor ${req.params.professorId}` });
@@ -575,6 +582,42 @@ app.patch('/api/application/:proposalId/:studentId',
     }
   });
 
+app.get('/api/files/resumees/:applicationId',   
+isLoggedIn, checkTeacherRole,
+[
+  check('applicationId').isInt()
+], async (req, res) => {
+
+  const errors = validationResult(req).formatWith(errorFormatter); // format error message
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ error: errors.array().join(", ") });
+  }
+
+  try {
+    const application = await appDao.isApplication(req.user.id, req.params.applicationId);
+
+    if(!application){
+      res.status(400).json({ error: 'Application not found' });
+      return;
+    }
+    const path = `uploads/APP_${application}.pdf`;
+    
+    if (!fs.existsSync(path)) {
+      res.status(400).json({ error: 'Application not found' });
+      return;
+    }
+
+    res.contentType("application/pdf");
+    fs.createReadStream(path).pipe(res);
+
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred while downloading file' });
+  }
+
+
+});
+
+
 //#endregion
 
 //#region Degrees
@@ -590,4 +633,6 @@ app.get('/api/degrees',
     }
   });
 //#endregion
+
+
 

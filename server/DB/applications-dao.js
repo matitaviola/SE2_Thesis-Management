@@ -14,7 +14,7 @@ exports.getActiveApplicationsByProposal = (proposal) => {
             else {
                 const applications = rows.map( r => {
                     return { 
-                        id: r.id,
+                        id: r.Id,
                         studentId:r.Student_ID,
                         proposal: r.Proposal_ID,
                         title: proposal.title,
@@ -109,3 +109,24 @@ exports.getLastId = () => {
         });
     });
 }
+
+exports.isApplication = (teacherId, applicationId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT A.id from APPLICATION A, PROPOSAL P where A.id = ? AND P.id = A.Proposal_ID AND P.Supervisor= ?';
+        db.get(sql, [applicationId, teacherId], function (err, row) {
+            if (err) {
+                console.log(err)
+                reject(err);
+            } else {
+                if(row){
+                    resolve(row.Id)
+                }
+                else{
+                    resolve(null); 
+                }
+            }
+        });
+    });
+}
+
+

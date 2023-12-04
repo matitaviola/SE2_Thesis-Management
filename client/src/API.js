@@ -166,7 +166,7 @@ const getApplications = async (user) =>{
 
   if(response.ok) {
     return applicationsJson.map(app => {
-      return {"id":app.id, "studentId": app.studentId, "proposal_id":app.proposal, "proposal": app.title, "status":app.status
+      return {"id":app.id, "studentId": app.studentId, "proposal_id":app.proposal, "proposal": app.title, "status":app.status, "resumeeExists": app.resumeeExists
       //we'll need to add here the other fields of the application, when we'll know them
       };
     });
@@ -234,8 +234,26 @@ const getDegrees = async () => {
   return degreesJson;
 } 
 
+const getResumee = async (applicationId) => {
+  const response = await fetch(SERVER_URL + `/api/files/resumees/${applicationId}`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const blob = await response.blob();
+
+  // even though vscode and the documentation say that createObjectUrl is async,
+  // the console.log displays a promise, and if await is removed, jest test will fail
+  const url = await URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
 
 //#endregion
 
-const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees};
+const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees, getResumee};
 export default API;
