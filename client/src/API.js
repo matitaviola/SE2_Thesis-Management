@@ -11,7 +11,6 @@ const getUserInfo = async () => {
   if (response.ok) {
     return user;
   } else {
-    console.log(user);
     throw new Error('Session error! status: 401');  // an object with the error coming from the server
   }
 }
@@ -105,7 +104,6 @@ const getStudentProposals = async (studentId, filter, order) =>{
 }
 
 const createProposal = async (proposal) => {
-  console.log(proposal);
 
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
@@ -142,7 +140,6 @@ const archiveProposal = async (proposalId) => {
   });
 
   if (!response.ok) {
-    console.log(response);
       throw new Error(`HTTP error! status: ${response.status}`);
   }
   return {ok:true};
