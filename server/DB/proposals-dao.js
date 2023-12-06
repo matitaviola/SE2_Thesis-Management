@@ -2,39 +2,88 @@
 const { Proposal } = require('../models/proposal');
 const { db } = require('./db');
 
-exports.getActiveProposalsByProfessor = (professorId) => {
-    return new Promise((resolve, reject) => {
-        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
-        db.all(sql, [professorId], (err, rows) => {
-            if (err)
-                reject(err);
-            else if (rows === undefined || rows.length === 0) {
-                resolve([]); //if no applications yet for that 
-            }
-            else {
-                const proposals = rows.map( r => {
-                    return {
-                        id: r.Id, 
-                        title:r.Title,
-                        supervisor:professorId,
-                        coSupervisor:r.Co_supervisor,
-                        keywords:r.Keywords,
-                        type:r.Type,
-                        groups:r.Groups,
-                        description:r.Description,
-                        reqKnowledge:r.Req_knowledge,
-                        notes:r.Notes,
-                        expiration:r.Expiration,
-                        level:r.Level,
-                        cds:r.CdS
-                    //Inserted all the fields
+//utility
+const getCoSupervisorNames = async (coSupervisor) => {
+    const coSuper = coSupervisor.split(" ");
+    let coSuperNames = "";
+
+    // Create an array to store promises
+    const promises = coSuper.map(cs => {
+        return new Promise(async (resolve, reject) => {
+            if (/d[0-9]{6}/.test(cs)) {
+                const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
+                db.get(coSupSql, [cs], (err, row) => {
+                    if (err) {
+                        reject(err);
                     }
+                    coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
+                    resolve();
                 });
-                resolve(proposals);
+            } else {
+                resolve();
             }
         });
     });
-}
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+
+    if (coSuperNames.length > 1) {
+        coSuperNames = coSuperNames.substring(0, coSuperNames.length - 1);
+    }
+
+    return coSuperNames;
+};
+
+//exports
+exports.getActiveProposalsByProfessor = async (professorId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+            const rows = await new Promise((dbResolve, dbReject) => {
+                db.all(sql, [professorId], (err, rows) => {
+                    if (err) {
+                        dbReject(err);
+                    } else {
+                        dbResolve(rows);
+                    }
+                });
+            });
+
+            if (rows === undefined || rows.length === 0) {
+                resolve([]); // if no applications yet for that 
+            } else {
+                const proposals = await Promise.all(rows.map(async r => {
+                    if (r.Co_supervisor) {
+                        r.Co_supervisor = await getCoSupervisorNames(r.Co_supervisor);
+                    }
+                    // if there was nothing to find                  
+                    return {
+                        id: r.Id,
+                        title: r.Title,
+                        supervisor: professorId,
+                        coSupervisor: r.Co_supervisor,
+                        keywords: r.Keywords,
+                        type: r.Type,
+                        groups: r.Groups,
+                        description: r.Description,
+                        reqKnowledge: r.Req_knowledge,
+                        notes: r.Notes,
+                        expiration: r.Expiration,
+                        level: r.Level,
+                        cds: r.CdS
+                        // Inserted all the fields
+                    };
+                }));
+
+                resolve(proposals);
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
 
 exports.archiveProposal = (proposalId, studentId) => {
     return new Promise((resolve, reject) => {
