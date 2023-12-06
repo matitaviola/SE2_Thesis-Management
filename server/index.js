@@ -148,8 +148,6 @@ app.get('/api/students',
 //#endregion
 
 //#region Proposals
-//gets a single proposal
-app.get('/api/proposals/:proposalId')
 //GET /api/proposals/:proposalId
 app.get('/api/proposals/:proposalId',
   isLoggedIn,
