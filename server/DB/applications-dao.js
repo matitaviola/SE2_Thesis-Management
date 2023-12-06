@@ -115,7 +115,6 @@ exports.isApplication = (teacherId, applicationId) => {
         const sql = 'SELECT A.id from APPLICATION A, PROPOSAL P where A.id = ? AND P.id = A.Proposal_ID AND P.Supervisor= ?';
         db.get(sql, [applicationId, teacherId], function (err, row) {
             if (err) {
-                console.log(err)
                 reject(err);
             } else {
                 if(row){

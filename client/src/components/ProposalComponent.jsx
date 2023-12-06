@@ -25,7 +25,7 @@ export function ProposalComponent(props) {
 				<Row>
 					<Col className='proposal-show-field'>
 						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
-						<p><strong>Co-supervisor:</strong>{proposal.co_supervisor ? proposal.co_supervisor:<i> None</i>}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisor:<i> None</i>}</p>
 						<p><strong>Thesist:</strong>{proposal.thesist ? proposal.thesist:<i> Not yet assigned</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
@@ -52,7 +52,7 @@ export function ProposalComponent(props) {
 				<Row>
 					<p style={{marginBottom:'0px'}}><strong>Requested knowledge:</strong></p>
 					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
-					<p> {proposal.knowledge? proposal.knowledge : <i> None</i>}</p>
+					<p> {proposal.reqKnowledge? proposal.reqKnowledge : <i> None</i>}</p>
 					</Col>
 				</Row>
 				<Row>
@@ -63,6 +63,30 @@ export function ProposalComponent(props) {
 				</Row>
 			</Container>
 
+			<button 
+                onClick={() => {
+                    Swal.fire({
+                        title: 'Copy Proposal?',
+                        text: 'By copying it, more students will be able to conduct this thesis',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'No, cancel!',
+                        confirmButtonText: 'Yes, copy it!',
+                        cancelButtonColor: "red",
+                        confirmButtonColor: "#449d44",
+                        reverseButtons: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            API.createProposal(proposal);
+							routeChange();
+                            Swal.fire('Copy completed!', 'The proposal has been successfully duplicated.', 'success');
+                        }
+                    });
+                }}
+                className="copy-button"
+            >
+                Copy
+            </button>
 			<button
                 onClick={() => {
                     Swal.fire({
@@ -179,7 +203,7 @@ export function StudentProposalComponent(props) {
 				<Row>
 					<Col className='proposal-show-field'>
 						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
-						<p><strong>Co-supervisor:</strong>{proposal.co_supervisor ? proposal.co_supervisor:<i> None</i>}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisor:<i> None</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
 					<p><strong>CdS:</strong> {proposal.cdsId} -  {proposal.cdsName}</p>
@@ -205,7 +229,7 @@ export function StudentProposalComponent(props) {
 				<Row>
 					<p style={{marginBottom:'0px'}}><strong>Requested knowledge:</strong></p>
 					<Col className='proposal-show-field' style={{marginTop:'2px'}}>
-					<p> {proposal.knowledge? proposal.knowledge : <i> None</i>}</p>
+					<p> {proposal.reqKnowledge? proposal.reqKnowledge : <i> None</i>}</p>
 					</Col>
 				</Row>
 				<Row>

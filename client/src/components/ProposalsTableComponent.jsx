@@ -84,12 +84,12 @@ function ProposalRow(props) {
         <tr>
             <td>{props.proposal.title}</td>
             <td>
-                {props.proposal.cosupervisor
-                    ? props.proposal.cosupervisor
+                {props.proposal.coSupervisor
+                    ? props.proposal.coSupervisor
                     : "Not assigned"}
             </td>
             <td>{props.proposal.keywords}</td>
-			<td>{props.proposal.knowledge}</td>
+			<td>{props.proposal.reqKnowledge}</td>
 			<td>{props.proposal.expiration}</td>
 			<td>{props.proposal.level}</td>
 			<td>{props.proposal.cds}</td>
