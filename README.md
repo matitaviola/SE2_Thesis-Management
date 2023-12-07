@@ -64,6 +64,9 @@ npm run coverage
 - usr:carlos@studenti.polito.com psw:s200002
 - usr:ling@studenti.polito.com psw:s200003
 - usr:raj@studenti.polito.com psw:s200004
+#### Mail test students:
+- usr:mta_studenti.polito@libero.it psw:s000001
+- usr:mtr_studenti.polito@libero.it psw:s000002
 
 ### Teachers
 - usr:michael@docenti.polito.com psw:d100001
