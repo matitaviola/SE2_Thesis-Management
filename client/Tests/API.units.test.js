@@ -1085,6 +1085,8 @@ describe('get resumee API', () => {
     fetch.mockResolvedValueOnce(successResponse);
     URL.createObjectURL.mockResolvedValueOnce(url);
     const openSpy =  jest.spyOn(window, "open");
+    //used to remove the error appearing as 'window.open not implemented'
+    openSpy.mockImplementationOnce(() => {});
 
     await API.getResumee(applicationId);
     expect(fetch).toHaveBeenCalledWith(SERVER_URL + `/api/files/resumees/${applicationId}`, {
