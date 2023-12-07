@@ -3,12 +3,11 @@ const { Proposal } = require('../models/proposal');
 const { db } = require('./db');
 
 //utility
-const getCoSupervisorNames = async (coSupervisor) => {
+exports.getCoSupervisorNames = async (coSupervisor) => {
     const coSuper = coSupervisor.split(" ");
     let coSuperNames = "";
-
-    // Create an array to store promises
-    const promises = coSuper.map(cs => {
+    // Wait for all promises to resolve
+    await Promise.all(coSuper.map(cs => {
         return new Promise(async (resolve, reject) => {
             if (/d[0-9]{6}/.test(cs)) {
                 const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
@@ -16,23 +15,22 @@ const getCoSupervisorNames = async (coSupervisor) => {
                     if (err) {
                         reject(err);
                     }
-                    coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
-                    resolve();
+                    if(row){
+                        coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
+                        resolve();
+                    }
+                    reject('Teacher Id not found')
                 });
             } else {
                 resolve();
             }
         });
-    });
-
-    // Wait for all promises to resolve
-    await Promise.all(promises);
-
+    }));
     if (coSuperNames.length > 1) {
         coSuperNames = coSuperNames.substring(0, coSuperNames.length - 1);
     }
 
-    return coSuperNames;
+    return coSuperNames.trim();
 };
 
 //exports
@@ -53,16 +51,14 @@ exports.getActiveProposalsByProfessor = async (professorId) => {
             if (rows === undefined || rows.length === 0) {
                 resolve([]); // if no applications yet for that 
             } else {
-                const proposals = await Promise.all(rows.map(async r => {
-                    if (r.Co_supervisor) {
-                        r.Co_supervisor = await getCoSupervisorNames(r.Co_supervisor);
-                    }
-                    // if there was nothing to find                  
+                const proposals = await Promise.all(rows.map(async r => {               
                     return {
                         id: r.Id,
                         title: r.Title,
                         supervisor: professorId,
                         coSupervisor: r.Co_supervisor,
+                        //now we get the names
+                        coSupervisorNames: r.Co_supervisor? await this.getCoSupervisorNames(r.Co_supervisor) : "",
                         keywords: r.Keywords,
                         type: r.Type,
                         groups: r.Groups,
@@ -230,10 +226,11 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
     });
 }
 
-exports.getAvailableProposals = (studentId, filter, order) => {
-    return new Promise((resolve, reject) => {
+exports.getAvailableProposals = async (studentId, filter, order) => {
+    try{
         let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
+        //#region Filters
         if(filter.title){
             sql = sql.concat(' AND UPPER(P.title) LIKE UPPER("%" || ? || "%")');
             dep.push(filter.title);
@@ -245,10 +242,6 @@ exports.getAvailableProposals = (studentId, filter, order) => {
             dep.push(filter.supervisor);
             dep.push(filter.supervisor);
 
-        }
-        if(filter.coSupervisor){
-            sql = sql.concat(' AND UPPER(P.co_supervisor) LIKE UPPER("%" || ? || "%")');
-            dep.push(filter.coSupervisor);
         }
         if(filter.keywords){
             sql = sql.concat(' AND UPPER(P.keywords) LIKE UPPER("%" || ? || "%")');
@@ -287,6 +280,14 @@ exports.getAvailableProposals = (studentId, filter, order) => {
             dep.push(filter.degree);
             dep.push(filter.degree);
         }
+        /*    
+        //supervisor needs rework to use the names, atm it is doen after the query
+        if(filter.coSupervisor){
+            sql = sql.concat(' AND UPPER(P.co_supervisor) LIKE UPPER("%" || ? || "%")');
+            dep.push(filter.coSupervisor);
+        }
+        */
+        //#endregion
         if(order && order.field){
             const traslationMap = {
                 title : ' ORDER BY P.title',
@@ -307,20 +308,33 @@ exports.getAvailableProposals = (studentId, filter, order) => {
                 sql = sql.concat(' DESC');
             }
         }
-        db.all(sql, dep, (err, rows) => {
-            if (err)
-                reject(err);
-            else if (rows === undefined || rows.length === 0) {
-                resolve([]); //if no proposals yet for that 
-            }
-            else {
-                const proposals = rows.map(r => {
-                    return new Proposal(r.pID, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE)
-                });
-                resolve(proposals);
-            }
+
+        const rows = await new Promise((resolve, reject) => {
+            db.all(sql, dep, (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
         });
-    });
+        if (rows === undefined || rows.length === 0) {
+            return [];
+        }
+        let proposals = await Promise.all(rows.map(async r => {
+            const prop = new Proposal(r.pID, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE);
+            prop.coSupervisorNames = r.Co_supervisor ? await this.getCoSupervisorNames(r.Co_supervisor) : "";
+            prop.coSupervisorNames = prop.coSupervisorNames? prop.coSupervisorNames : "";
+            return prop;
+        }));
+        //supervisor filter is done
+        if(filter.coSupervisor){
+            proposals = proposals.filter(pr => (pr.coSupervisorNames && pr.coSupervisorNames.toUpperCase().includes(filter.coSupervisor.toUpperCase())));
+        }
+        return proposals;
+    }catch(err){
+        throw err;
+    };
 }
 
 exports.addProposal = (body) => {

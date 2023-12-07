@@ -25,7 +25,7 @@ export function ProposalComponent(props) {
 				<Row>
 					<Col className='proposal-show-field'>
 						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
-						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisor:<i> None</i>}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisorNames:<i> None</i>}</p>
 						<p><strong>Thesist:</strong>{proposal.thesist ? proposal.thesist:<i> Not yet assigned</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
@@ -203,7 +203,7 @@ export function StudentProposalComponent(props) {
 				<Row>
 					<Col className='proposal-show-field'>
 						<p><strong>Supervisor:</strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
-						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisor:<i> None</i>}</p>
+						<p><strong>Co-supervisor:</strong>{proposal.coSupervisor ? proposal.coSupervisorNames:<i> None</i>}</p>
 					</Col>
 					<Col className='proposal-show-field'>
 					<p><strong>CdS:</strong> {proposal.cdsId} -  {proposal.cdsName}</p>

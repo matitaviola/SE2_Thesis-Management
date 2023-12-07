@@ -85,7 +85,7 @@ function ProposalRow(props) {
             <td>{props.proposal.title}</td>
             <td>
                 {props.proposal.coSupervisor
-                    ? props.proposal.coSupervisor
+                    ? props.proposal.coSupervisorNames
                     : "Not assigned"}
             </td>
             <td>{props.proposal.keywords}</td>
@@ -115,6 +115,7 @@ function StudentProposalsTableComponent(props) {
   useEffect(() => {
     const fetchProposals = async () => {
       try{
+        console.log(filter)
         let proposalsResponse = await API.getStudentProposals(studentId, filter, order);
         setProposals(proposalsResponse);
       }catch(err){
@@ -140,7 +141,7 @@ function StudentProposalsTableComponent(props) {
             <tr>
               <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='title'></SortButton>Title</th>
               <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='supervisor'></SortButton>Supervisor </th>
-              <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='coSupervisor'></SortButton>Co-Supervisor </th>
+              <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='coSupervisor'></SortButton>Co-Supervisors </th>
               <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='keywords'></SortButton>Keywords </th>
               <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='type'></SortButton>Type </th>
               <th className="text-nowrap"><SortButton setOrder={setOrder} order={order} keyword='reqKnowledge'></SortButton>Required Knowledge </th>
@@ -156,7 +157,7 @@ function StudentProposalsTableComponent(props) {
                 return <tr key={p.id}>
                   <td className="grades-table-td">{p.title}</td>
                   <td className="grades-table-td">{p.supervisorName} {p.supervisorSurname}</td>
-                  <td className="grades-table-td">{p.coSupervisor}</td>
+                  <td className="grades-table-td">{p.coSupervisorNames}</td>
                   <td className="grades-table-td">{p.keywords}</td>
                   <td className="grades-table-td">{p.type}</td>
                   <td className="grades-table-td">{p.reqKnowledge}</td>
@@ -257,6 +258,7 @@ function DropdownSelectionFilter(props){
 
   const onClick = (keyword) => {
     let filter = { ...props.filter };
+    console.log(keyword, filter)
     if (filter[keyword] !== undefined) {
       return;
     }
