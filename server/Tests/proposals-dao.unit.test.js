@@ -106,8 +106,8 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
         id:4,
         title:"P4",
         supervisor:professorId,
-        coSupervisor:"d111111",
-        coSupervisorNames:coSup,
+        coSupervisor: null,
+        coSupervisorNames:"",
         keywords:"some keyword",
         type:"yours",
         groups:"GroupC",
@@ -137,7 +137,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
     {
       Id:4,
       Title:"P4",
-      Co_supervisor:"d111111",
+      Co_supervisor:null,
       Keywords:"some keyword",
       Type:"yours",
       Groups:"GroupC",
@@ -508,12 +508,13 @@ describe('archiveProposal Function Tests', () => {
   
 });
 
-/*
+
 describe('getProposals Function Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
   const studentId = 's200000';
+
   const proposalsResult = [Proposal( 
     3,
     "Proposal 3",
@@ -550,7 +551,9 @@ describe('getProposals Function Tests', () => {
     "CS101",
     "Computer Science"
   )];
-
+  proposalsResult[0].coSupervisorNames ="Co Supervisore";
+  proposalsResult[1].coSupervisorNames ="Co Supervisore";
+  
   const proposalRaw = [{
     pID: 3,
     Title: 'Proposal 3',
@@ -676,24 +679,6 @@ describe('getProposals Function Tests', () => {
     expect(result).toEqual([proposalsResult[0]]);
   });
 
-  it('should resolve with filtered proposals by coSupervisor', async () => {
-    const studentId = 1;
-    const filteringString = 'C';
-    const filter = { coSupervisor: filteringString };
-    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
-    const addedFilterSql = ' AND UPPER(P.co_supervisor) LIKE UPPER("%" || ? || "%")'
-    const mockedRows = [proposalRaw[0]];
-    db.all.mockImplementation((sql, params, callback) => {
-      expect(sql).toBe(expectedSql + addedFilterSql);
-      expect(params).toEqual([studentId, filteringString]);
-      callback(null, mockedRows);
-    });
-
-    const result = await getAvailableProposals(studentId, filter);
-    expect(result).toEqual([proposalsResult[0]]);
-  });
-
-
   it('should resolve with filtered proposals by keywords', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -744,7 +729,6 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
-
 
   it('should resolve with filtered proposals by description', async () => {
     const studentId = 1;
@@ -811,6 +795,7 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
+
   it('should resolve with filtered proposals by level', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -826,6 +811,7 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
+
   it('should resolve with filtered proposals by degree', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -885,8 +871,135 @@ describe('getProposals Function Tests', () => {
 
     await expect(getAvailableProposals(studentId, {})).rejects.toEqual(expectedError);
   });
+
+  it('should resolve with filtered proposals by coSupervisor', async () => {
+    const studentId = 1;
+
+    const proposalsResultFinal = [Proposal( 
+      3,
+      "Proposal 3",
+      "d100003",
+      "Michael",
+      "Johnson",
+      "d100002",
+      "design, architecture, development",
+      "Type C",
+      "Group Z",
+      "Description for Proposal 3",
+      "Knowledge about software engineering",
+      "Additional info",
+      '2022-11-19',
+      "BSc",
+      "CS102",
+      "Computer Science"
+    ),
+    Proposal(
+      4,
+      "Proposal 4",
+      "d100001",
+      "Michael",
+      "Johnson",
+      null,
+      "networks, security, protocols",
+      "Type D",
+      "Group W",
+      "Description for Proposal 4",
+      "Knowledge about cybersecurity",
+      "Important notes",
+      '2023-06-29',
+      "MSc",
+      "CS101",
+      "Computer Science"
+    )];
+    proposalsResultFinal[0].coSupervisorNames ="Co Supervisore A";
+    proposalsResult[1].coSupervisorNames ="Co Supervisore B";
+    
+    const proposalRawFinal = [{
+      pID: 3,
+      Title: 'Proposal 3',
+      Supervisor: 'd100003',
+      Co_supervisor: 'd100002',
+      Keywords: 'design, architecture, development',
+      Type: 'Type C',
+      Groups: 'Group Z',
+      Description: 'Description for Proposal 3',
+      Req_knowledge: 'Knowledge about software engineering',
+      Notes: 'Additional info',
+      Expiration: '2022-11-19',
+      Level: 'BSc',
+      CdS: 'CS102',
+      Status: 'Active',
+      Thesist: null,
+      ID: 's200000',
+      SURNAME: 'Doe',
+      NAME: 'John',
+      EMAIL: 'john@example.com',
+      COD_GROUP: 'GroupC',
+      COD_DEPARTMENT: 'DEP303',
+      COD_DEGREE: 'CS101',
+      TITLE_DEGREE: 'Computer Science',
+      GENDER: 'Male',
+      NATIONALITY: 'American',
+      CODE_DEGREE: 'CS102',
+      ENROLLMENT_YEAR: 2021,
+      tName: 'Michael',
+      tSurname: 'Johnson'
+    },
+    {
+      pID:4,
+      Title: 'Proposal 4',
+      Supervisor: 'd100001',
+      Co_supervisor: null,
+      Keywords: 'networks, security, protocols',
+      Type: 'Type D',
+      Groups: 'Group W',
+      Description: 'Description for Proposal 4',
+      Req_knowledge: 'Knowledge about cybersecurity',
+      Notes: 'Important notes',
+      Expiration: '2023-06-29',
+      Level: 'MSc',
+      CdS: 'CS101',
+      Status: 'Active',
+      Thesist: null,
+      ID: 's200000',
+      SURNAME: 'Doe',
+      NAME: 'John',
+      EMAIL: 'john@example.com',
+      COD_GROUP: 'GroupA',
+      COD_DEPARTMENT: 'DEP101',
+      COD_DEGREE: 'CS102',
+      TITLE_DEGREE: 'Computer Science',
+      GENDER: 'Male',
+      NATIONALITY: 'American',
+      CODE_DEGREE: 'CS101',
+      ENROLLMENT_YEAR: 2021,
+      tName: 'Michael',
+      tSurname: 'Johnson'
+    }];
+
+
+    const filteringString = 'A';
+    const filter = { coSupervisor: filteringString };
+    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
+    const mockedRows = proposalRawFinal;
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRows);
+    });
+
+    // Mock the getCoSupervisorNames function to resolve with coSup
+    const getCoSupervisorNamesMock = jest.spyOn(require('../DB/proposals-dao'), 'getCoSupervisorNames');
+    getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore A');
+    getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore B');
+
+
+    const result = await getAvailableProposals(studentId, filter);
+    expect(result).toEqual([proposalsResultFinal[0]]);
+  });
+
 });
-*/
+
 
 describe('insertProposals Function Tests', () => {
   afterEach(() => {
