@@ -16,10 +16,13 @@ body {
 
 /*logout button*/
 .enbiggen-logout-button {
-  font-size: 1.5rem; /* Adjust the font size for dropdown items as needed */
+  background-color: rgb(244, 163, 116);
+  border-color: black;
+  font-size: 1.6rem;
 }
 .enbiggen-logout-button:hover {
-  background-color: rgb(236, 90, 90); /* Adjust the font size for dropdown items as needed */
+  background-color: white;
+  border-color: black;
 }
 
 /*Proposals Table and Rows*/

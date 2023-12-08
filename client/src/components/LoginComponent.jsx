@@ -1,27 +1,29 @@
-import { useState, useContext, useEffect } from 'react';
-import {Form, Button, Container, Row, Col } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../App';
 
-function LoginForm(props) {
+function LoginForm() {
   const loggedInUser = useContext(AuthContext);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    // Check if props.user exists, and if not, redirect to Auth0 login
     if (!loggedInUser) {
-      window.location.href = 'http://localhost:3001/login'; // Replace with your external login page URL
+      window.location.href = 'http://localhost:3001/login';
     }
-  }, [props.user, navigate]);
+  }, [loggedInUser]);
 }
 
 function LogoutButton(props) {
   const navigate = useNavigate();
-  const loggedInUser = useContext(AuthContext);
+
+  const handleLogoutClick = async () => {
+    await props.logout();
+    navigate('/login');
+  };
 
   return (
-   <Button onClick={() => { props.logout(); navigate('/') }} className='enbiggen-logout-button'>Log out, {loggedInUser.id}</Button>
+    <Button variant="light" onClick={handleLogoutClick} className='enbiggen-logout-button'>
+      Logout
+    </Button>
   );
 }
 
