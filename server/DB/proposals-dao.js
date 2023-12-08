@@ -6,26 +6,23 @@ const { db } = require('./db');
 exports.getCoSupervisorNames = async (coSupervisor) => {
     const coSuper = coSupervisor.split(" ");
     let coSuperNames = "";
-    // Wait for all promises to resolve
-    await Promise.all(coSuper.map(cs => {
-        return new Promise(async (resolve, reject) => {
-            if (/d[0-9]{6}/.test(cs)) {
-                const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
-                db.get(coSupSql, [cs], (err, row) => {
-                    if (err) {
-                        reject();
-                    }
-                    if(row){
-                        coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
-                        resolve();
-                    }
+
+    await Promise.all(coSuper.map(cs => new Promise(async (resolve, reject) => {
+        if (/d[0-9]{6}/.test(cs)) {
+            const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
+            db.get(coSupSql, [cs], (err, row) => {
+                if (err || !row) {
                     reject()
-                });
-            } else {
-                resolve();
-            }
-        });
-    }));
+                } else {
+                    coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
+                    resolve();
+                }
+            });
+        } else {
+            resolve();
+        }
+    })));
+
     if (coSuperNames.length > 1) {
         coSuperNames = coSuperNames.substring(0, coSuperNames.length - 1);
     }
