@@ -19,7 +19,7 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
                         coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
                         resolve();
                     }
-                    reject('Teacher Id not found')
+                    reject()
                 });
             } else {
                 resolve();
