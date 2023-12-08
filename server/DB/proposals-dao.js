@@ -7,21 +7,26 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
     const coSuper = coSupervisor.split(" ");
     let coSuperNames = "";
 
-    await Promise.all(coSuper.map(cs => new Promise(async (resolve, reject) => {
+    await Promise.all(coSuper.map(async (cs) => {
         if (/d[0-9]{6}/.test(cs)) {
             const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
-            db.get(coSupSql, [cs], (err, row) => {
-                if (err || !row) {
-                    reject()
-                } else {
-                    coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
-                    resolve();
-                }
-            });
-        } else {
-            resolve();
+            try {
+                const row = await new Promise((resolve, reject) => {
+                    db.get(coSupSql, [cs], (err, row) => {
+                        if (err || !row) {
+                            reject(err);
+                        } else {
+                            resolve(row);
+                        }
+                    });
+                });
+
+                coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
+            } catch (error) {
+                throw error;
+            }
         }
-    })));
+    }));
 
     if (coSuperNames.length > 1) {
         coSuperNames = coSuperNames.substring(0, coSuperNames.length - 1);

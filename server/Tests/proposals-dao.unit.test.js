@@ -56,7 +56,7 @@ describe('getCoSupervisorNames Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       callback('Database error', null)
     });
-    await expect(getCoSupervisorNames('d123456')).rejects.toEqual(undefined);
+    await expect(getCoSupervisorNames('d123456')).rejects.toEqual('Database error');
     expect(db.get).toHaveBeenCalledTimes(1);
   });
 
