@@ -13,7 +13,7 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
                 const coSupSql = 'SELECT SURNAME, NAME FROM TEACHER  WHERE ID=?';
                 db.get(coSupSql, [cs], (err, row) => {
                     if (err) {
-                        reject(err);
+                        reject();
                     }
                     if(row){
                         coSuperNames = coSuperNames + " " + row.NAME + " " + row.SURNAME + ",";
@@ -35,51 +35,48 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
 
 //exports
 exports.getActiveProposalsByProfessor = async (professorId) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
-            const rows = await new Promise((dbResolve, dbReject) => {
-                db.all(sql, [professorId], (err, rows) => {
-                    if (err) {
-                        dbReject(err);
-                    } else {
-                        dbResolve(rows);
-                    }
-                });
+    try {
+        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+        const rows = await new Promise((dbResolve, dbReject) => {
+            db.all(sql, [professorId], (err, rows) => {
+                if (err) {
+                    dbReject(err);
+                } else {
+                    dbResolve(rows);
+                }
             });
+        });
 
-            if (rows === undefined || rows.length === 0) {
-                resolve([]); // if no applications yet for that 
-            } else {
-                const proposals = await Promise.all(rows.map(async r => {               
-                    return {
-                        id: r.Id,
-                        title: r.Title,
-                        supervisor: professorId,
-                        coSupervisor: r.Co_supervisor,
-                        //now we get the names
-                        coSupervisorNames: r.Co_supervisor? await this.getCoSupervisorNames(r.Co_supervisor) : "",
-                        keywords: r.Keywords,
-                        type: r.Type,
-                        groups: r.Groups,
-                        description: r.Description,
-                        reqKnowledge: r.Req_knowledge,
-                        notes: r.Notes,
-                        expiration: r.Expiration,
-                        level: r.Level,
-                        cds: r.CdS
-                        // Inserted all the fields
-                    };
-                }));
+        if (rows === undefined || rows.length === 0) {
+            return []; // if no applications yet for that 
+        } else {
+            const proposals = await Promise.all(rows.map(async r => {
+                return {
+                    id: r.Id,
+                    title: r.Title,
+                    supervisor: professorId,
+                    coSupervisor: r.Co_supervisor,
+                    //now we get the names
+                    coSupervisorNames: r.Co_supervisor ? await this.getCoSupervisorNames(r.Co_supervisor) : "",
+                    keywords: r.Keywords,
+                    type: r.Type,
+                    groups: r.Groups,
+                    description: r.Description,
+                    reqKnowledge: r.Req_knowledge,
+                    notes: r.Notes,
+                    expiration: r.Expiration,
+                    level: r.Level,
+                    cds: r.CdS
+                    // Inserted all the fields
+                };
+            }));
 
-                resolve(proposals);
-            }
-        } catch (error) {
-            reject(error);
+            return proposals;
         }
-    });
+    } catch (error) {
+        throw error;
+    }
 };
-
 
 exports.archiveProposal = (proposalId, studentId) => {
     return new Promise((resolve, reject) => {
