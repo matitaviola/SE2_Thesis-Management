@@ -211,7 +211,7 @@ CdS/Programmes
     Keywords: design, architecture, development
 ```
 
-## Story #10 - Delete Proposals:
+## Story #10 - Delete Proposal:
 - Should delete a proposal and its data:
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
@@ -234,10 +234,39 @@ CdS/Programmes
     Notes: Some notes
 - Should be visible a red button called "Delete"
 - Click on "Delete" button
-- Should be visible a modal to confirm or cancel the submission of the archiving for [Proposal 1]
+- Should be visible a modal to confirm or cancel the submission of the delete for [Proposal 1]
 - Click on "Yes, delete it!" button
 - Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals list and show the previous list without Proposal 1
+```
+
+## Story #11 - Copy Proposal:
+- Should copy a proposal and its data:
+```
+- Login as usr:michael@docenti.polito.com psw:d100001
+- Should see 2 proposals for this teacher:
+    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
+    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
+- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+- Should be visible the Proposal's data:
+    Proposal 1
+    expires on: 2023-12-31
+    Supervisor: Michael Johnson
+    Co-supervisor: Co-Supervisor A
+    CdS: CS101
+    Level: BSc
+    Type: Type A
+    Groups:
+    Keywords: programming, algorithms, null
+    Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
+    Requested knowledge: Knowledge about programming
+    Notes: Some notes
+- Should be visible a green button called "Copy"
+- Click on "Copy" button
+- Should be visible a modal to confirm or cancel the submission of the copy for [Proposal 1]
+- Click on "Yes, copy it!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the proposals list and show the previous list with an additional Proposal 1
 ```
 
 ## Story #12 - Archive Proposal:
