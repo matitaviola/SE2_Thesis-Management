@@ -21,7 +21,7 @@ function LogoutButton(props) {
   };
 
   return (
-    <Button variant="light" onClick={handleLogoutClick} className='enbiggen-logout-button'>
+    <Button variant="light" onClick={handleLogoutClick} className='enbiggen-logout-button text-center'>
       Logout
     </Button>
   );
