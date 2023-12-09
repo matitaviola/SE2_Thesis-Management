@@ -245,28 +245,27 @@ CdS/Programmes
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
 - Should see 2 proposals for this teacher:
-    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
-    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
-- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+    - [Exploring Advanced Programming Paradigms | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
+    - [Safeguarding the Digital Future: Cybersecurity Focus | Not assigned | networks, security, protocols | Knowledge about cybersecurity | 2023-06-30 | MSc | CS101]
+- Go to the first row (the one  with "Exploring Advanced Programming Paradigms" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 1
+    Exploring Advanced Programming Paradigms
     expires on: 2023-12-31
-    Supervisor: Michael Johnson
-    Co-supervisor: Co-Supervisor A
+    Co-supervisor: None
     CdS: CS101
     Level: BSc
-    Type: Type A
-    Groups:
+    Type: Company
+    Groups: GroupA
     Keywords: programming, algorithms, null
     Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
     Requested knowledge: Knowledge about programming
     Notes: Some notes
-- Should be visible a green button called "Copy"
-- Click on "Copy" button
-- Should be visible a modal to confirm or cancel the submission of the copy for [Proposal 1]
+- Should be visible a green button called "COPY"
+- Click on "COPY" button
+- Should be visible a modal to confirm or cancel the submission of the copy for [Embark on an exciting journey into programming and algorithms]
 - Click on "Yes, copy it!" button
 - Should be visibile a modal confirming that the operation was successful
-- The application should return to the proposals list and show the previous list with an additional Proposal 1
+- The application should return to the proposals list and show the previous list with an additional [Embark on an exciting journey into programming and algorithms]
 ```
 
 ## Story #12 - Archive Proposal:
