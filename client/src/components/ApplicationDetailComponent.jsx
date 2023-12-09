@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import API from '../API';
 import { AuthContext } from '../App';
-import { Container, Row, Col, Table, Card } from 'react-bootstrap';
+import { Container, Row, Col, Table, Card, Button } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { toast } from 'react-toastify';
@@ -61,6 +61,16 @@ function TeacherApplicationDetail(props){
         }
     };
 
+    const handleGetResumee = async () =>{
+        try{
+            await API.getResumee(application.id);
+        }
+        catch(err){
+            console.log("Resumee not found!");
+        }
+    }
+
+
     if (!studentData) {
         return <div>Loading...</div>;
     }
@@ -68,6 +78,15 @@ function TeacherApplicationDetail(props){
     return (
         <Container>
             <h2 className='mt-5'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for <i>{application.proposal}</i></h2>
+            {application.resumeeExists?
+            <Row>
+                <Col>
+                <Button className='my-2 btn-secondary' onClick={handleGetResumee}>Open Resumee</Button>
+                </Col>
+            </Row>
+            :<></>
+            }
+            
             <Card className='grades-table-card my-4'>
                 <Table className='grades-table' striped responsive>
                     <thead>

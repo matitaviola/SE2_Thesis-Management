@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, deleteProposal, getProposalById, getArchivedProposalById } = require('../DB/proposals-dao');
+const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, deleteProposal, getProposalById, getArchivedProposalById } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 const { Proposal } = require('../models/proposal');
@@ -17,6 +17,49 @@ jest.mock('../DB/db', () => {
     serialize: jest.fn()
   };
   return { db: mockedDB };
+});
+
+describe('getCoSupervisorNames Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return empty string when coSupervisor is empty', async () => {
+    const result = await getCoSupervisorNames('');
+    expect(result).toBe('');
+    expect(db.get).not.toHaveBeenCalled();
+  });
+
+  it('should return empty string when coSupervisor has no matching IDs', async () => {
+    db.get.mockImplementation((sql, params, callback) => {
+      callback(null,null)
+    });
+
+    const result = await getCoSupervisorNames('abc def');
+    expect(result).toBe('');
+    expect(db.get).not.toHaveBeenCalled();
+  });
+
+  it('should return concatenated names when coSupervisor has matching IDs', async () => {
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null,{ NAME: 'John', SURNAME: 'Doe' })
+    });
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { NAME: 'Pina', SURNAME: 'Marina' })
+    });
+    const result = await getCoSupervisorNames('d123456 d654321');
+    expect(result).toBe('John Doe, Pina Marina');
+    expect(db.get).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle errors during database queries', async () => {
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback('Database error', null)
+    });
+    await expect(getCoSupervisorNames('d123456')).rejects.toEqual('Database error');
+    expect(db.get).toHaveBeenCalledTimes(1);
+  });
+
 });
 
 describe('getActiveProposalsByProfessor Function Tests', () => {
@@ -39,14 +82,72 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
   });
 
   it('should resolve with an array of proposals when they are found for a professor', async () => {
-    const professorId = 2;
+    const professorId = 'd100003';
+    const coSup = 'Co Supervisore'
     const expectedSql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
-    const mockedRows = [
-      { title: 'Proposal 1' },
-      { title: 'Proposal 2' }
-      //Add more sample proposal data as needed
+    const proposalsResult = [
+      {
+        id:3,
+        title:"P3",
+        supervisor:professorId,
+        coSupervisor:"d111111",
+        coSupervisorNames:coSup,
+        keywords:"no keywords",
+        type:"mine",
+        groups:"GroupA GroupB",
+        description:"Lorem ipsum",
+        reqKnowledge:"none",
+        notes:null,
+        expiration:dayjs('2019-10-20'),
+        level:'BMs',
+        cds:'CS101'
+      },
+      {
+        id:4,
+        title:"P4",
+        supervisor:professorId,
+        coSupervisor: null,
+        coSupervisorNames:"",
+        keywords:"some keyword",
+        type:"yours",
+        groups:"GroupC",
+        description:"Lorem ipsum",
+        reqKnowledge:"none",
+        notes:null,
+        expiration:dayjs('2022-10-20'),
+        level:'CMs',
+        cds:'BIO101'
+      }
     ];
-    const expectedProposals = mockedRows.map(r => ({ title: r.Title }));
+  
+    const mockedRows= [{
+      Id:3,
+      Title:"P3",
+      Co_supervisor:"d111111",
+      Keywords:"no keywords",
+      Type:"mine",
+      Groups:"GroupA GroupB",
+      Description:"Lorem ipsum",
+      Req_knowledge:"none",
+      Notes:null,
+      Expiration:dayjs('2019-10-20'),
+      Level:'BMs',
+      CdS:'CS101'
+    },
+    {
+      Id:4,
+      Title:"P4",
+      Co_supervisor:null,
+      Keywords:"some keyword",
+      Type:"yours",
+      Groups:"GroupC",
+      Description:"Lorem ipsum",
+      Req_knowledge:"none",
+      Notes:null,
+      Expiration:dayjs('2022-10-20'),
+      Level:'CMs',
+      CdS:'BIO101'
+    }];
 
     db.all.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
@@ -54,8 +155,12 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
       callback(null, mockedRows);
     });
 
+    // Mock the getCoSupervisorNames function to resolve with coSup
+    const getCoSupervisorNamesMock = jest.spyOn(require('../DB/proposals-dao'), 'getCoSupervisorNames');
+    getCoSupervisorNamesMock.mockResolvedValue(coSup);
+
     const result = await getActiveProposalsByProfessor(professorId);
-    expect(result).toEqual(expectedProposals);
+    expect(result).toEqual(proposalsResult);
   });
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
@@ -71,6 +176,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
     await expect(getActiveProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
   });
 });
+
 
 describe('archiveProposal Function Tests', () => {
   afterEach(() => {
@@ -203,8 +309,8 @@ describe('archiveProposal Function Tests', () => {
     const studentId = 2;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
     const expectedApplicationSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID = ? AND Student_ID = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
-    const mockedApplicationRow = { /* mock application data */ };
+    const mockedProposalRow = { };
+    const mockedApplicationRow = { };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls
@@ -246,8 +352,8 @@ describe('archiveProposal Function Tests', () => {
     const studentId = 2;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
     const expectedApplicationSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID = ? AND Student_ID = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
-    const mockedApplicationRow = { /* mock application data */ };
+    const mockedProposalRow = {  };
+    const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls
@@ -294,8 +400,8 @@ describe('archiveProposal Function Tests', () => {
     const studentId = 2;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
     const expectedApplicationSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID = ? AND Student_ID = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
-    const mockedApplicationRow = { /* mock application data */ };
+    const mockedProposalRow = { };
+    const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls
@@ -347,8 +453,8 @@ describe('archiveProposal Function Tests', () => {
     const studentId = 2;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
     const expectedApplicationSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID = ? AND Student_ID = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
-    const mockedApplicationRow = { /* mock application data */ };
+    const mockedProposalRow = { };
+    const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls
@@ -402,11 +508,13 @@ describe('archiveProposal Function Tests', () => {
   
 });
 
+
 describe('getProposals Function Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
   const studentId = 's200000';
+
   const proposalsResult = [Proposal( 
     3,
     "Proposal 3",
@@ -443,7 +551,9 @@ describe('getProposals Function Tests', () => {
     "CS101",
     "Computer Science"
   )];
-
+  proposalsResult[0].coSupervisorNames ="Co Supervisore";
+  proposalsResult[1].coSupervisorNames ="Co Supervisore";
+  
   const proposalRaw = [{
     pID: 3,
     Title: 'Proposal 3',
@@ -569,24 +679,6 @@ describe('getProposals Function Tests', () => {
     expect(result).toEqual([proposalsResult[0]]);
   });
 
-  it('should resolve with filtered proposals by coSupervisor', async () => {
-    const studentId = 1;
-    const filteringString = 'C';
-    const filter = { coSupervisor: filteringString };
-    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
-    const addedFilterSql = ' AND UPPER(P.co_supervisor) LIKE UPPER("%" || ? || "%")'
-    const mockedRows = [proposalRaw[0]];
-    db.all.mockImplementation((sql, params, callback) => {
-      expect(sql).toBe(expectedSql + addedFilterSql);
-      expect(params).toEqual([studentId, filteringString]);
-      callback(null, mockedRows);
-    });
-
-    const result = await getAvailableProposals(studentId, filter);
-    expect(result).toEqual([proposalsResult[0]]);
-  });
-
-
   it('should resolve with filtered proposals by keywords', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -637,7 +729,6 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
-
 
   it('should resolve with filtered proposals by description', async () => {
     const studentId = 1;
@@ -704,6 +795,7 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
+
   it('should resolve with filtered proposals by level', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -719,6 +811,7 @@ describe('getProposals Function Tests', () => {
     const result = await getAvailableProposals(studentId, filter);
     expect(result).toEqual([proposalsResult[0]]);
   });
+
   it('should resolve with filtered proposals by degree', async () => {
     const studentId = 1;
     const filteringString = '3';
@@ -778,7 +871,135 @@ describe('getProposals Function Tests', () => {
 
     await expect(getAvailableProposals(studentId, {})).rejects.toEqual(expectedError);
   });
+
+  it('should resolve with filtered proposals by coSupervisor', async () => {
+    const studentId = 1;
+
+    const proposalsResultFinal = [Proposal( 
+      3,
+      "Proposal 3",
+      "d100003",
+      "Michael",
+      "Johnson",
+      "d100002",
+      "design, architecture, development",
+      "Type C",
+      "Group Z",
+      "Description for Proposal 3",
+      "Knowledge about software engineering",
+      "Additional info",
+      '2022-11-19',
+      "BSc",
+      "CS102",
+      "Computer Science"
+    ),
+    Proposal(
+      4,
+      "Proposal 4",
+      "d100001",
+      "Michael",
+      "Johnson",
+      null,
+      "networks, security, protocols",
+      "Type D",
+      "Group W",
+      "Description for Proposal 4",
+      "Knowledge about cybersecurity",
+      "Important notes",
+      '2023-06-29',
+      "MSc",
+      "CS101",
+      "Computer Science"
+    )];
+    proposalsResultFinal[0].coSupervisorNames ="Co Supervisore A";
+    proposalsResult[1].coSupervisorNames ="Co Supervisore B";
+    
+    const proposalRawFinal = [{
+      pID: 3,
+      Title: 'Proposal 3',
+      Supervisor: 'd100003',
+      Co_supervisor: 'd100002',
+      Keywords: 'design, architecture, development',
+      Type: 'Type C',
+      Groups: 'Group Z',
+      Description: 'Description for Proposal 3',
+      Req_knowledge: 'Knowledge about software engineering',
+      Notes: 'Additional info',
+      Expiration: '2022-11-19',
+      Level: 'BSc',
+      CdS: 'CS102',
+      Status: 'Active',
+      Thesist: null,
+      ID: 's200000',
+      SURNAME: 'Doe',
+      NAME: 'John',
+      EMAIL: 'john@example.com',
+      COD_GROUP: 'GroupC',
+      COD_DEPARTMENT: 'DEP303',
+      COD_DEGREE: 'CS101',
+      TITLE_DEGREE: 'Computer Science',
+      GENDER: 'Male',
+      NATIONALITY: 'American',
+      CODE_DEGREE: 'CS102',
+      ENROLLMENT_YEAR: 2021,
+      tName: 'Michael',
+      tSurname: 'Johnson'
+    },
+    {
+      pID:4,
+      Title: 'Proposal 4',
+      Supervisor: 'd100001',
+      Co_supervisor: null,
+      Keywords: 'networks, security, protocols',
+      Type: 'Type D',
+      Groups: 'Group W',
+      Description: 'Description for Proposal 4',
+      Req_knowledge: 'Knowledge about cybersecurity',
+      Notes: 'Important notes',
+      Expiration: '2023-06-29',
+      Level: 'MSc',
+      CdS: 'CS101',
+      Status: 'Active',
+      Thesist: null,
+      ID: 's200000',
+      SURNAME: 'Doe',
+      NAME: 'John',
+      EMAIL: 'john@example.com',
+      COD_GROUP: 'GroupA',
+      COD_DEPARTMENT: 'DEP101',
+      COD_DEGREE: 'CS102',
+      TITLE_DEGREE: 'Computer Science',
+      GENDER: 'Male',
+      NATIONALITY: 'American',
+      CODE_DEGREE: 'CS101',
+      ENROLLMENT_YEAR: 2021,
+      tName: 'Michael',
+      tSurname: 'Johnson'
+    }];
+
+
+    const filteringString = 'A';
+    const filter = { coSupervisor: filteringString };
+    const expectedSql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?`
+    const mockedRows = proposalRawFinal;
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRows);
+    });
+
+    // Mock the getCoSupervisorNames function to resolve with coSup
+    const getCoSupervisorNamesMock = jest.spyOn(require('../DB/proposals-dao'), 'getCoSupervisorNames');
+    getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore A');
+    getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore B');
+
+
+    const result = await getAvailableProposals(studentId, filter);
+    expect(result).toEqual([proposalsResultFinal[0]]);
+  });
+
 });
+
 
 describe('insertProposals Function Tests', () => {
   afterEach(() => {
@@ -1062,6 +1283,7 @@ describe('getProposalById', () => {
 });
 
 // --------
+
 describe('archiveProposalWithoutApplication Function Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -1129,7 +1351,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
   it('should reject with an error if an error occurs during database transaction - insert', async () => {
     const proposalId = 1;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
+    const mockedProposalRow = { };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls
@@ -1163,7 +1385,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
   it('should reject with an error if an error occurs during database transaction - delete', async () => {
     const proposalId = 1;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
-    const mockedProposalRow = { /* mock proposal data */ };
+    const mockedProposalRow = { };
     const expectedError = 'Database error occurred';
   
     // Mock the database get calls

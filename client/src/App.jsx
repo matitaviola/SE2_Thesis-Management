@@ -19,7 +19,6 @@ import CancelledProposalMessage from './components/CancelledProposalComponent.js
 export const AuthContext = createContext(null);
 
 function App() {
-
   const [loggedIn, setLoggedIn] = useState(false);
   //const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
@@ -37,9 +36,6 @@ useEffect(() => {
     try {
       await API.logout();
       setLoggedIn(false);
-      //we go back to login now
-      const navigate = useNavigate();
-      navigate('/login');
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);
     }

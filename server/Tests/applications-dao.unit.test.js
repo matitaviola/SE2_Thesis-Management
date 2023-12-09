@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, createApplication, getLastId } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, createApplication, getLastId, isApplication } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -34,12 +34,12 @@ describe('getActiveApplicationsByProposal', () => {
     const proposal = { id:2, title: 'Proposal 2' };
     const expectedSql = 'SELECT * FROM APPLICATION WHERE Proposal_ID=? AND Status="Pending"';
     const mockedRows = [
-      { id:1, Student_ID: 1, Proposal_ID:2, Status: 'Pending' },
-      { id:2, Student_ID: 2, Proposal_ID:2, Status: 'Pending' }
+      { Id:1, Student_ID: 1, Proposal_ID:2, Status: 'Pending' },
+      { Id:2, Student_ID: 2, Proposal_ID:2, Status: 'Pending' }
       // Add more sample application data as needed
     ];
     const expectedApplications = mockedRows.map(r => ({
-      id: r.id,
+      id: r.Id,
       studentId: r.Student_ID,
       proposal: r.Proposal_ID,
       title: proposal.title,
@@ -312,5 +312,53 @@ describe('getLastId', () => {
     });
 
     await expect(getLastId()).rejects.toEqual(expectedError);
+  });
+});
+
+describe('isApplication', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const applicationId = 123;
+  const teacherId = 'd000000';
+
+  it("should return the application id if the teacher's application exists", async () => {
+    const expectedSql = 'SELECT A.id from APPLICATION A, PROPOSAL P where A.id = ? AND P.id = A.Proposal_ID AND P.Supervisor= ?';
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId, teacherId]);
+      callback(null, { Id: applicationId });
+    });
+
+    const result = await isApplication(teacherId, applicationId);
+    expect(result).toEqual(applicationId);
+  });
+
+  it("should resolve with null when no teacher's application exists", async () => {
+    const expectedSql = 'SELECT A.id from APPLICATION A, PROPOSAL P where A.id = ? AND P.id = A.Proposal_ID AND P.Supervisor= ?';
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId, teacherId]);
+      callback(null, null);
+    });
+
+    const result = await isApplication(teacherId, applicationId);
+    expect(result).toBeNull();
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const expectedSql = 'SELECT A.id from APPLICATION A, PROPOSAL P where A.id = ? AND P.id = A.Proposal_ID AND P.Supervisor= ?';
+    const expectedError = 'Database error occurred';
+    
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId, teacherId]);
+      callback(expectedError, null);
+    });
+
+    await expect(isApplication(teacherId, applicationId)).rejects.toEqual(expectedError);
   });
 });

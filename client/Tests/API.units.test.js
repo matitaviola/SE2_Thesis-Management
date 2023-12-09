@@ -1054,3 +1054,56 @@ describe('archiveProposal API', () => {
     );
   });
 });
+
+describe('get resumee API', () => {
+
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+    URL.createObjectURL = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+  
+  // Mock response data
+  const successResponse = {
+    ok: true,
+    blob : async () => { return new Blob(["testing"], { type: "application/pdf" });}
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    status: 500,
+  };
+
+  const url = 'example.com'
+  const applicationId = '123';
+
+  it('should respond with ok if successful response', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+    URL.createObjectURL.mockResolvedValueOnce(url);
+    const openSpy =  jest.spyOn(window, "open");
+    //used to remove the error appearing as 'window.open not implemented'
+    openSpy.mockImplementationOnce(() => {});
+
+    await API.getResumee(applicationId);
+    expect(fetch).toHaveBeenCalledWith(SERVER_URL + `/api/files/resumees/${applicationId}`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    expect(openSpy).toHaveBeenCalledTimes(1);
+    expect(openSpy).toHaveBeenCalledWith(url, "_blank");
+
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getResumee(applicationId)).rejects.toThrow(
+      'HTTP error! status: 500'
+    );
+  });
+});

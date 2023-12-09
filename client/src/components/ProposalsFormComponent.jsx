@@ -12,7 +12,7 @@ export default function ProposalsFormComponent(props) {
   const [proposal, setProposal] = useState({
     title: "",
     supervisor: "",
-    co_supervisor: "",
+    coSupervisor: "",
     notes: "",
     cds: "",
     description: "",
@@ -20,7 +20,7 @@ export default function ProposalsFormComponent(props) {
     level: "",
     keywords: "",
     type: "",
-    req_knowledge: "",
+    reqKnowledge: "",
   });
 
   const handleChange = (event) => {
@@ -53,7 +53,7 @@ export default function ProposalsFormComponent(props) {
   }, []);
 
   const renderFormGroup = (label, name, type = "text", placeholder = "", icon) => {
-    const isRequiredField = name !== 'co_supervisor' && name !== 'notes' && name !== 'req_knowledge';
+    const isRequiredField = name !== 'coSupervisor' && name !== 'notes' && name !== 'reqKnowledge';
     const today = new Date().toISOString().split('T')[0];
     return (
       <Form.Group controlId={`form${name}`} className="mb-3">
@@ -85,11 +85,11 @@ export default function ProposalsFormComponent(props) {
         <Col md={6}>
           <Form onSubmit={handleSubmit}>
             {renderFormGroup("Title", "title", "text", "", <AiOutlineFileText />)}
-            {renderFormGroup("Co-Supervisor", "co_supervisor", "text", "", <AiOutlineUser />)}
+            {renderFormGroup("Co-Supervisor", "coSupervisor", "text", "", <AiOutlineUser />)}
             {renderFormGroup("Keywords", "keywords", "text", "", <AiOutlineBulb />)}
             {renderFormGroup("Type", "type", "text", "", <AiOutlineInfoCircle />)}
             {renderFormGroup("Description", "description", "textarea", "Enter description", <AiOutlineInfoCircle />)}
-            {renderFormGroup("Required Knowledge", "req_knowledge", "text", "", <AiOutlineBulb />)}
+            {renderFormGroup("Required Knowledge", "reqKnowledge", "text", "", <AiOutlineBulb />)}
             {renderFormGroup("Notes", "notes", "text", "", <AiOutlineInfoCircle />)}
             {renderFormGroup("Expiration", "expiration", "date", "", <AiOutlineCalendar />)}
             <Form.Group controlId="formLevel"  className="mb-3">
