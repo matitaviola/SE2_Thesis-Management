@@ -19,9 +19,9 @@ passport.use(new SamlStrategy(SAMLconfig,
     async (profile, done) => {
         try{
             const user = await loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn']); //uses the email
-            return done(null, user);
+            done(null, user);
         }catch(err){
-            return done(err,false);
+            done(err,false);
         }
 }));
 
