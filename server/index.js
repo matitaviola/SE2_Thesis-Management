@@ -477,7 +477,21 @@ app.get('/api/applications/student/:studentId',
     }
   });
 
-const storage = multer.diskStorage({
+  const upload = multer({
+    storage,
+    limits: { fileSize: 8000000 }, //8mb corrected from 10mb
+    fileFilter: function (req, file, cb) {
+      const allowedFileTypes = ['application/pdf'];
+      if (!allowedFileTypes.includes(file.mimetype)) {
+        req.fileValidationError = 'File type not accepted';
+        console.error(req.fileValidationError)
+        return cb(null, false, new Error('File type not accepted'));
+      }
+      cb(null, true);
+    }
+  });
+
+  const storage = multer.diskStorage({
   destination: (req, file, cb) => {
 
     cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
@@ -487,20 +501,6 @@ const storage = multer.diskStorage({
       cb(null, `APP_${id + 1}.${file.originalname.split('.').pop()}`);
     });
   },
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 8000000 }, //8mb corrected from 10mb
-  fileFilter: function (req, file, cb) {
-    const allowedFileTypes = ['application/pdf'];
-    if (!allowedFileTypes.includes(file.mimetype)) {
-      req.fileValidationError = 'File type not accepted';
-      console.error(req.fileValidationError)
-      return cb(null, false, new Error('File type not accepted'));
-    }
-    cb(null, true);
-  }
 });
 
 
