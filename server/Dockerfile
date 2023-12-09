@@ -7,9 +7,9 @@ WORKDIR /usr/src/app/server
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
-# Install dependencies + ignore scripts for security
+# Install dependencies + ignore scripts for security '--ignore-scripts '
 RUN npm install --ignore-scripts 
-
+RUN npm install sqlite3
 # Copy the local code to the container
 COPY . .
 
