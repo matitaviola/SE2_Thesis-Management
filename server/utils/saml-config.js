@@ -17,20 +17,15 @@ const SAMLconfig = {
 
 passport.use(new SamlStrategy(SAMLconfig, 
     (profile, done) => {
-        try {
-            loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'])
-                .then(user => {
-                    // Successful login, pass the user to the next middleware
-                    done(null, user);
-                })
-                .catch(err => {
-                    // Handle errors during login
-                    done(err, false);
-                });
-        } catch (err) {
-            // Handle synchronous errors (if any)
-            done(err, false);
-        }
+        loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'])
+            .then(user => {
+                // Successful login, pass the user to the next middleware
+                done(null, user);
+            })
+            .catch(err => {
+                // Handle errors during login
+                done(err, false);
+            });
     }
 ));
 
