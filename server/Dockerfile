@@ -7,8 +7,8 @@ WORKDIR /usr/src/app/server
 # Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies + ignore scripts for security
+RUN npm install --ignore-scripts 
 
 # Copy the local code to the container
 COPY . .

@@ -22,6 +22,7 @@ const session = require('express-session');
 const PORT = 3001;
 const FRONTEND = "http://localhost:5173/"
 const app = express();
+      app.disable("x-powered-by"); // Added for security reasons
 const corsOptions = {
   origin: "http://localhost:5173",
   optionsSuccessStatus: 200,
