@@ -477,6 +477,18 @@ app.get('/api/applications/student/:studentId',
     }
   });
 
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+  
+      cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
+    },
+    filename: (req, file, cb) => {
+      appDao.getLastId().then((id) => {
+        cb(null, `APP_${id + 1}.${file.originalname.split('.').pop()}`);
+      });
+    },
+  });
+
   const upload = multer({
     storage,
     limits: { fileSize: 8000000 }, //8mb corrected from 10mb
@@ -491,17 +503,6 @@ app.get('/api/applications/student/:studentId',
     }
   });
 
-  const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-
-    cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
-  },
-  filename: (req, file, cb) => {
-    appDao.getLastId().then((id) => {
-      cb(null, `APP_${id + 1}.${file.originalname.split('.').pop()}`);
-    });
-  },
-});
 
 
 //POST /api/application/

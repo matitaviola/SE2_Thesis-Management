@@ -85,7 +85,7 @@ export function ProposalComponent(props) {
                 }}
                 className="copy-button"
             >
-                Copy
+                COPY
             </button>
 			<button
                 onClick={() => {
@@ -113,7 +113,7 @@ export function ProposalComponent(props) {
                 }}
                 className="decline-button"
             >
-                Delete
+                DELETE
             </button>
             <button
                 onClick={() => {
@@ -141,7 +141,7 @@ export function ProposalComponent(props) {
                 }}
                 className="archive-button"
             >
-                Archive
+                ARCHIVE
             </button>
 
 	  </Container>
@@ -199,7 +199,7 @@ export function StudentProposalComponent(props) {
 			<h1>{proposal.title}</h1>
 			<h4 ><i>expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></i></h4>
 			</Row>
-			<Container className='proposal-container'>
+			<Container className='proposal-container' style={{marginBottom:'0%'}}>
 				<Row>
 					<Col className='proposal-show-field'>
 						<p><strong>Supervisor: </strong> {proposal.supervisorName} {proposal.supervisorSurname}</p>
@@ -239,8 +239,15 @@ export function StudentProposalComponent(props) {
 					</Row>
 				</Row>
 			</Container>
-			<Row className='my-3'>
-				<Button variant="secondary" disabled={proposal.applicationExists || comingFromApp} onClick={() => handleShowUpdateModal(proposal)}>Apply</Button>
+			<Row className='my-30 d-flex justify-content-center' style={{marginTop:'0px', marginBottom:'5%'}}>
+				<Button
+					variant="secondary"
+					style={{fontSize:'x-large', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
+					disabled={proposal.applicationExists || comingFromApp}
+					onClick={() => handleShowUpdateModal(proposal)}
+				>
+					APPLY
+				</Button>
 			</Row>
 			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>
