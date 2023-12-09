@@ -43,7 +43,7 @@ export default function ApplicationTable(props) {
                         <Table className='grades-table' striped hover responsive>
                         <thead>
                             <tr>
-                                <th>Title</th>
+                                <th>Proposal</th>
                                 <th>Student Anagraphic</th>
                                 <th>StudentID</th>
                                 <th></th>
@@ -81,7 +81,7 @@ export default function ApplicationTable(props) {
                         <Table responsive>
                             <thead>
                                 <tr>
-                                    <th>Title</th>
+                                    <th>Proposal</th>
                                     {/*<th>StudentID</th>*/}
                                     <th style={{ textAlign: 'center'}}>Status</th>
                                     <th style={{ textAlign: 'center'}}>Application Details</th>

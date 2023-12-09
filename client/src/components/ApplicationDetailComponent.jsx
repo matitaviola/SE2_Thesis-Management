@@ -139,7 +139,7 @@ function TeacherApplicationDetail(props){
                 }}
                 className="decline-button"
             >
-                Decline
+                DECLINE
             </button>
             <button 
                 onClick={() => {
@@ -166,7 +166,7 @@ function TeacherApplicationDetail(props){
                 }}
                 className="accept-button"
             >
-                Accept
+                ACCEPT
             </button>
         </Container>
     )

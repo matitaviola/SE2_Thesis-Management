@@ -16,13 +16,18 @@ body {
 
 /*logout button*/
 .enbiggen-logout-button {
-  background-color: rgb(244, 163, 116);
-  border-color: black;
+  background-color: rgb(252, 122, 8);
+  color: white;
+  border-color: white;
   font-size: 1.6rem;
+  padding-top: 0%;
 }
 .enbiggen-logout-button:hover {
-  background-color: white;
-  border-color: black;
+  background-color: rgb(252, 137, 43);
+  border-color: white;
+  color: white;
+  font-size: 1.8rem;
+  padding-top: 0%;
 }
 
 /*Proposals Table and Rows*/
