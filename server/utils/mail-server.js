@@ -1,8 +1,13 @@
 const nodemailer = require('nodemailer');
 const studentDao = require('../DB/students-dao');
 
+// Changed the config to make it secure
 const emailConfig = {
   service: 'gmail',
+  secure: true,
+  requireTLS: true,
+  port: 465,
+  secured: true,
   auth: {
       user: 'groupsofteng6@gmail.com',
       pass: 'afdmaktmymfaupmr',
