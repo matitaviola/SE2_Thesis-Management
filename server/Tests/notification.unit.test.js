@@ -121,11 +121,15 @@ describe('Mail Server', () => {
     expect(nodemailer.createTransport).toHaveBeenCalledTimes(1);
 
     expect(nodemailer.createTransport).toHaveBeenCalledWith({
-      service: 'gmail',
       auth: {
-        user: 'groupsofteng6@gmail.com',
-        pass: 'afdmaktmymfaupmr',
+        pass: "afdmaktmymfaupmr",
+        user: "groupsofteng6@gmail.com",
       },
+      port: 465,
+      requireTLS: true,
+      secure: true,
+      secured: true,
+      service: "gmail",
     });
 
     expect(nodemailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
