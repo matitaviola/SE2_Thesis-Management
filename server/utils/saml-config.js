@@ -16,14 +16,23 @@ const SAMLconfig = {
 };
 
 passport.use(new SamlStrategy(SAMLconfig, 
-    async (profile, done) => {
-        try{
-            const user = await loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn']); //uses the email
-            done(null, user);
-        }catch(err){
-            done(err,false);
+    (profile, done) => {
+        try {
+            loginDao.effectLogin(profile['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn'])
+                .then(user => {
+                    // Successful login, pass the user to the next middleware
+                    done(null, user);
+                })
+                .catch(err => {
+                    // Handle errors during login
+                    done(err, false);
+                });
+        } catch (err) {
+            // Handle synchronous errors (if any)
+            done(err, false);
         }
-}));
+    }
+));
 
 passport.serializeUser((user, done) => {
     // Implement serialization logic
