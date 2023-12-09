@@ -116,13 +116,10 @@ exports.isApplication = (teacherId, applicationId) => {
         db.get(sql, [applicationId, teacherId], function (err, row) {
             if (err) {
                 reject(err);
+            } else if (row) {
+                resolve(row.Id);
             } else {
-                if(row){
-                    resolve(row.Id)
-                }
-                else{
-                    resolve(null); 
-                }
+                resolve(null); 
             }
         });
     });
