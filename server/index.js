@@ -346,6 +346,45 @@ app.post('/api/proposals',
   }
 );
 
+app.patch('/api/proposals/:proposalId',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('title').not().isEmpty(),
+    check('keywords').not().isEmpty(),
+    check('type').not().isEmpty(),
+    check('description').not().isEmpty(),
+    check('expiration').custom((value) => {
+      if (moment(value, 'YYYY-MM-DD').startOf('day').isBefore(moment().startOf('day'))) {
+        throw new Error('Invalid expiration date');
+      }
+      return true;
+    }),
+    check('level').isIn(['BSc', 'MSc']).withMessage('Invalid level'),
+    check('cds').custom(async (value) => {
+      const degree = await degreeDao.getDegreeByCode(value);
+      if (!degree) {
+        throw new Error('Invalid degree');
+      }
+      return true;
+    }),
+  ],
+  async (req, res) => {
+    //validation rejected
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      const proposal = await propDao.updateProposal(req.body, req.params.proposalId);
+      res.json(proposal);
+    } catch (error) {
+      return res.status(500).json({ error: (error.message ? error.message : error) })
+    }
+  }
+);
+
 //deletes an existing proposal
 //DELETE /api/proposals/:proposalId
 app.delete('/api/proposals/:proposalId',

@@ -384,6 +384,39 @@ exports.addProposal = (body) => {
   });
 };
 
+exports.updateProposal = (body, proposalId) => {
+    const {
+      title,
+      coSupervisor,
+      keywords,
+      type,
+      description,
+      reqKnowledge,
+      notes,
+      expiration,
+      level,
+      cds,
+    } = body;
+    return new Promise((resolve, reject) => {
+      const sql =
+        "update proposal set Title = ?, Co_supervisor = ?, Keywords = ?, Type = ?, Description = ?, Req_knowledge = ?, Notes = ?, Expiration = ?, Level = ?, CdS = ? where id = ?";
+      db.run(
+        sql,
+        [title, coSupervisor, keywords, type, description, reqKnowledge, notes, expiration, level, cds, proposalId],
+        (err) => {
+          if (err) {
+              reject(err);
+          } else {
+              db.get('SELECT * FROM proposal WHERE Id = ?', [proposalId], function (err, row) {
+                  if (err) reject(err);
+                  else resolve(row);
+              });
+          }
+        }
+      );
+    });
+  };
+
 exports.deleteProposal = (proposalId) => {
     return new Promise((resolve, reject) => {
         const sqlDeleteProp = 'DELETE FROM PROPOSAL WHERE Id = ?';
