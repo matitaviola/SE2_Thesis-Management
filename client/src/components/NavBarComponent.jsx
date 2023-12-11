@@ -10,11 +10,18 @@ function NavHeader(props) {
   const location = useLocation();
 
   return (
-    <Navbar bg="primary" variant="dark" className='navbar' expand="lg">
+    <Navbar style={{ backgroundColor: loggedInUser && loggedInUser.role === 'TEACHER' ? 'green' : '#fc7a08' }} variant="dark" className='navbar' expand="lg">
       <Container fluid>
         <Link to='/' className='navbar-brand'>POLITO Thesis</Link>
         <Navbar.Toggle aria-controls="navbar-nav" onClick={() => setExpanded(!expanded)} />
-        <Navbar.Collapse id="navbar-nav" className="justify-content-end" style={{ backgroundColor: '#fc7a08', padding:'10px', borderRadius:'10px', zIndex:"2"}}>
+        <Navbar.Collapse id="navbar-nav" className="justify-content-end"
+          style={{
+            backgroundColor: loggedInUser && loggedInUser.role === 'TEACHER' ? 'green' : '#fc7a08',
+            padding: '10px',
+            borderRadius: '10px',
+            zIndex: "2"
+          }}
+        >
           <Nav className="me-auto">
             <Nav.Link href="/proposals" className={location.pathname === '/proposals' ? 'active' : ''}>Proposals</Nav.Link>
             <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
@@ -27,7 +34,27 @@ function NavHeader(props) {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  );
+  )
 }
+/*return (
+  <Navbar bg="primary" variant="dark" className='navbar' expand="lg">
+    <Container fluid>
+      <Link to='/' className='navbar-brand'>POLITO Thesis</Link>
+      <Navbar.Toggle aria-controls="navbar-nav" onClick={() => setExpanded(!expanded)} />
+      <Navbar.Collapse id="navbar-nav" className="justify-content-end" style={{ backgroundColor: '#fc7a08', padding:'10px', borderRadius:'10px', zIndex:"2"}}>
+        <Nav className="me-auto">
+          <Nav.Link href="/proposals" className={location.pathname === '/proposals' ? 'active' : ''}>Proposals</Nav.Link>
+          <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
+        </Nav>
+        {loggedInUser ?
+          <LogoutButton logout={props.handleLogout} user={loggedInUser} />
+          :
+          <></>
+        }
+      </Navbar.Collapse>
+    </Container>
+  </Navbar>
+);
+}*/
 
 export default NavHeader;
