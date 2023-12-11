@@ -227,7 +227,7 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
 
 exports.getAvailableProposals = async (studentId, filter, order) => {
     try{
-        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
+        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND P.CdS LIKE "%"||D.COD_DEGREE||"%" AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
         //#region Filters
         if(filter.title){
