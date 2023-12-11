@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, deleteProposal, getProposalById, getArchivedProposalById } = require('../DB/proposals-dao');
+const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, updateProposal, deleteProposal, getProposalById, getArchivedProposalById } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 const { Proposal } = require('../models/proposal');
@@ -1076,6 +1076,53 @@ describe('insertProposals Function Tests', () => {
     await expect(addProposal(proposal)).rejects.toEqual(expectedError);
   });
 });
+
+describe('updateProposal Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  const body = {
+    title: 'Updated Title',
+    coSupervisor: 'Updated Co-supervisor',
+    keywords: 'Updated Keywords',
+    type: 'Updated Type',
+    description: 'Updated Description',
+    reqKnowledge: 'Updated Req Knowledge',
+    notes: 'Updated Notes',
+    expiration: 'Updated Expiration',
+    level: 'Updated Level',
+    cds: 'Updated CdS',
+  };
+  const proposalId = 1;
+
+  it('should resolve with updated proposal object when there is no problem with inputs', async () => {
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { id: proposalId, ...body }));
+
+    const result = await updateProposal(body, proposalId);
+
+    expect(result).toEqual({ id: proposalId, ...body });
+  });
+
+  it('should reject with an error on db.run failure', async () => {
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'ANOTHER_ERROR' }));
+
+    await expect(updateProposal(body, proposalId)).rejects.toEqual({ code: 'ANOTHER_ERROR' });
+  });
+
+  it('should reject with an error on db.get failure', async () => {
+    const expectedError = new Error('Simulated db.get error');
+
+    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
+
+    db.get.mockImplementationOnce((sql, values, callback) => callback(expectedError));
+
+    await expect(updateProposal(body, proposalId)).rejects.toEqual(expectedError);
+  });
+});
+
 
 describe('deleteProposal Function Tests', () => {
   afterEach(() => {

@@ -346,10 +346,12 @@ app.post('/api/proposals',
   }
 );
 
+//update an existing proposal
 app.patch('/api/proposals/:proposalId',
   isLoggedIn,
   checkTeacherRole,
   [
+    check('proposalId').isInt(),
     check('title').not().isEmpty(),
     check('keywords').not().isEmpty(),
     check('type').not().isEmpty(),
@@ -446,7 +448,7 @@ app.patch('/api/proposals/:proposalId',
     } catch (err) {
       res.status(500).json({ error: 'An error occurred while archiving the proposal' });
     }
-  });
+});
 
 //#endregion
 

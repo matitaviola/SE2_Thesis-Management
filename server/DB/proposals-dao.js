@@ -415,7 +415,7 @@ exports.updateProposal = (body, proposalId) => {
         }
       );
     });
-  };
+};
 
 exports.deleteProposal = (proposalId) => {
     return new Promise((resolve, reject) => {
