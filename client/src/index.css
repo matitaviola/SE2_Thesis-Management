@@ -1,0 +1,20 @@
+.grades-table-card{
+    --bs-card-border-radius: 0;
+}
+
+.grades-table-td{
+    padding-top: 0.3 !important;
+    padding-bottom: 0.3 !important;
+}
+
+.grades-table{
+    margin: 0;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.proposal-table{
+    padding: 0;
+}

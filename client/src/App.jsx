@@ -5,61 +5,40 @@ import NavHeader from './components/NavBarComponent.jsx';
 import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
-import ProposalComponent from './components/ProposalComponent.jsx';
+import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
 import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
 import { LoginForm } from './components/LoginComponent.jsx';
 import ErrorToast from './components/ErrorToastComponent.jsx';
+import ApplicationDetailComponent from './components/ApplicationDetailComponent.jsx';
+import API from './API.js';
+import HomeComponent from './components/HomeComponent.jsx';
+import CancelledProposalMessage from './components/CancelledProposalComponent.jsx';
 
 export const AuthContext = createContext(null);
 
 function App() {
-
-  const [appName, setAppName] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  //const [dirty, setDirty] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
 
 
 useEffect(() => {
-    const checkAuth = async () => {
-      //const user = await API.getUserInfo(); // we have the user info here
-      let user = {
-        role: 'TEACHER',
-        id: 'd100003'
-        // role: 'STUDENT',
-        // id: 's200000'
-      }
-      setLoggedIn(user);
-
-    };
-    checkAuth();
-  }, []);
-
-  const handleLogin = async (credentials) => {
-    try {
-      //let user = await API.login(credentials);
-      let user = {
-        role: 'TEACHER',
-        id: 'd100003'
-        // role: 'STUDENT',
-        // id: 's200000'
-      }
-      setLoggedIn(user)
-    } catch (err) {
-      setErrorMessage(`Error during log in : ${err}`);
-    }
-
+  const checkAuth = async () => {
+    const user = await API.getUserInfo(); // we have the user info here
+    setLoggedIn(user);
   };
+  checkAuth();
+  }, []);
 
   const handleLogout = async () => {
     try {
-      //await API.logout();
-      setLoggedIn(false)
+      await API.logout();
+      setLoggedIn(false);
     } catch (err) {
       setErrorMessage(`Error during log out : ${err}`);
     }
-
   };
 
   return (
@@ -76,29 +55,37 @@ useEffect(() => {
             </Container>
           </>} >
           <Route index
-            element={<Navigate replace to='/login' />} />
+            element={loggedIn? <HomeComponent/> : <LoginForm/>} />
 
           { loggedIn && loggedIn.role == 'STUDENT' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent/>} />
+              element={<ProposalsTableComponent setErrorMessage={setErrorMessage}/>} />
+              <Route path='proposals/:proposalsId'
+              element={<StudentProposalComponent  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications'
-              element={<ApplicationsTable/>} />
+              element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>} />
+              <Route path='applications/:proposalId'
+              element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
+              <Route path='applications/null'
+              element={<CancelledProposalMessage  setErrorMessage={setErrorMessage}/>} />
               </>
               }
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
-              element={<ProposalsTableComponent/>} />
+              element={<ProposalsTableComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/:proposalsId'
-              element={<ProposalComponent/>} />
+              element={<ProposalComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/new'
-              element={<ProposalsFormComponent setErrorMessage={setErrorMessage} />} />
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='applications'
-              element={<ApplicationsTable/>}/>
+              element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>}/>
+          <Route path='application/:proposalId/:studentId'
+              element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
               </>
               }
           <Route path='*' element={<NotFound />} />
           <Route path='/login' element={
-            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm login={handleLogin} />
+            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm />
           } />
 
         </Route>
@@ -107,10 +94,7 @@ useEffect(() => {
     </AuthContext.Provider>
     <ErrorToast errorMessage={errorMessage} setErrorMessage={setErrorMessage}/>
     </>
-
-
   );
-
 
 }
 

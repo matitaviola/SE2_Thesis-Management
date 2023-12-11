@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { useState, useEffect, useContext } from 'react';
+import { Container, Button, Table, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../App';
 import API from '../API';
 
-export default function ApplicationTable() {
+export default function ApplicationTable(props) {
     const [applications, setApplications] = useState([]);
+    const [studentData, setStudentData] = useState(null);
     const loggedInUser = useContext(AuthContext);
 
     useEffect(() => {
@@ -14,66 +15,111 @@ export default function ApplicationTable() {
                 const retrievedApplications = await API.getApplications(loggedInUser);
                 setApplications(retrievedApplications);
             } catch (err) {
-                console.log("Applications getting an error: " + err);
+                //should use toast instead
+                props.setErrorMessage(`${err}`);
             }
         };
         getApplications();
     }, []);
 
-    return (
-        <div className="application-table">
-            <p className="lead" style={{ fontSize: '30px' }}>Applications Table</p>
-            {applications.map((p) => (
-                <div key={p.proposal + p.studentId} className="application-row">
-                    <ApplicationRow application={p} />
-                </div>
-            ))}
-        </div>
-    );
-}
+    //Added for student data
+    useEffect(() => {
+        const fetchStudentData = async () => {
+            try {
+                const response = await API.getStudents();
+                setStudentData(response);
+            } catch (err) {
+                props.setErrorMessage(`${err}`);
+            }
+        };
+        fetchStudentData();
+    }, []);
 
-function ApplicationRow(props) {
-    const loggedInUser = useContext(AuthContext);
     return (
         <Container fluid>
-        {
-            loggedInUser.role == 'TEACHER'?
-
-            <Link to={`/application/${props.application.proposal}/${props.application.studentId}`} style={{ textDecoration: 'none' }}>
-            <Row className="d-flex align-items-center">
-                <Col className="pt-2 application-info">
-                    <p>
-                        <span className="title">
-                            "{props.application.proposal}" 
-                        </span>
-                        application by student 
-                        <span className="student"> {props.application.studentId}</span>
-                    </p>
-                </Col>
-            </Row>
-            </Link>
-            :
-            <Link to={`proposals/${props.application.proposal}`} style={{ textDecoration: 'none' }}>
-            <Row className="d-flex align-items-center">
-                <Col className="pt-2 application-info">
-                    <p>
-                        <span className="title">
-                            "{props.application.proposal}" 
-                        </span>
-                    </p>
-                </Col>
-                <Col className="pt-2 application-info">
-                <span className="student" style={{ color: 
-                    props.application.status === 'Rejected' ? 'red' :
-                    props.application.status === 'Accepted' ? 'green' :
-                    'black'
-                }}>
-                        Status: {props.application.status}
-                </span>
-                </Col>
-            </Row>
-            </Link>
-        }
+            {
+                loggedInUser.role === 'TEACHER' ?
+                    <Card className='grades-table-card my-4'>
+                        <Table className='grades-table' striped hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Proposal</th>
+                                <th>Student Anagraphic</th>
+                                <th>StudentID</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                {applications.map((application, index) => {
+                                    let student;
+                                    if (studentData) {
+                                        student = studentData.find(s => s.studentId === application.studentId);
+                                    }
+                                    {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{application.proposal}</td>
+                                                <td>{student ? student.name + ' ' + student.surname : 'N/A'}</td>
+                                                <td>{application.studentId}</td>
+                                                <td>
+                                                    <Button variant="secondary" className='evaluate-button'>
+                                                    <Link to={`/application/${application.proposal_id}/${application.studentId}`}
+                                                        state={{ application }}
+                                                        style={{ textDecoration: 'none', color: 'inherit' }}>
+                                                            Evaluate
+                                                    </Link>
+                                                    </Button>
+                                                </td>
+                                            </tr>)
+                                    }
+                                })}
+                            </tbody>
+                        </Table>
+                    </Card>
+                    :
+                    <Card className='my-4'>
+                        <Table responsive>
+                            <thead>
+                                <tr>
+                                    <th>Proposal</th>
+                                    {/*<th>StudentID</th>*/}
+                                    <th style={{ textAlign: 'center'}}>Status</th>
+                                    <th style={{ textAlign: 'center'}}>Application Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {applications.map((application, index) => {
+                                    let className;
+                                    switch (application.status) {
+                                        case 'Rejected':
+                                            className = 'table-danger';
+                                            break;
+                                        case 'Accepted':
+                                            className = 'table-success';
+                                            break;
+                                        case 'Cancelled':
+                                            className = 'table-default';
+                                            break;
+                                        default:
+                                            className = 'table-warning';
+                                    }
+                                    return (
+                                        <tr key={index} className={className}>
+                                            <td style={{ textAlign: 'left', paddingTop: '14px' }}>{application.proposal}</td>
+                                            <td style={{ textAlign: 'center', paddingTop: '14px' }}>{application.status}</td>
+                                            <td style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Button>
+                                            <Link to={`/applications/${application.proposal_id}`}
+                                                state={{ application: application }}
+                                                style={{ textDecoration: 'none' }} >REVIEW APPLICATION
+                                            </Link>
+                                            </Button></td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </Table>
+                    </Card>
+            }
         </Container>
     );
 }
