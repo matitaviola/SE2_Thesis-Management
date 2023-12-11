@@ -124,7 +124,7 @@ app.get('/api/application/:proposalId/:studentId',
       console.error(err);
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
     }
-  });
+});
 
 // Added for ApplicationTableComponent
 app.get('/api/students', 
@@ -147,6 +147,29 @@ app.get('/api/students',
   }
 });
 //#endregion
+
+//#region Teacher&Cosupervisors
+app.get('/api/cosupervisors/:professorId', 
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
+  ],
+  async (req,res)=>{
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try{
+      const academicCoSup = await supervisorDao.getCoSupervisorsList(req.params.professorId);
+      res.json(academicCoSup);
+    }catch(err){
+      console.log(err);
+      res.status(500).json({ error: err });
+    }
+});
+//
 
 //#region Proposals
 //GET /api/proposals/:proposalId
@@ -346,6 +369,47 @@ app.post('/api/proposals',
   }
 );
 
+//update an existing proposal
+app.patch('/api/proposals/:proposalId',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('proposalId').isInt(),
+    check('title').not().isEmpty(),
+    check('keywords').not().isEmpty(),
+    check('type').not().isEmpty(),
+    check('description').not().isEmpty(),
+    check('expiration').custom((value) => {
+      if (moment(value, 'YYYY-MM-DD').startOf('day').isBefore(moment().startOf('day'))) {
+        throw new Error('Invalid expiration date');
+      }
+      return true;
+    }),
+    check('level').isIn(['BSc', 'MSc']).withMessage('Invalid level'),
+    check('cds').custom(async (value) => {
+      const degree = await degreeDao.getDegreeByCode(value);
+      if (!degree) {
+        throw new Error('Invalid degree');
+      }
+      return true;
+    }),
+  ],
+  async (req, res) => {
+    //validation rejected
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      const proposal = await propDao.updateProposal(req.body, req.params.proposalId);
+      res.json(proposal);
+    } catch (error) {
+      return res.status(500).json({ error: (error.message ? error.message : error) })
+    }
+  }
+);
+
 //deletes an existing proposal
 //DELETE /api/proposals/:proposalId
 app.delete('/api/proposals/:proposalId',
@@ -407,7 +471,7 @@ app.patch('/api/proposals/:proposalId',
     } catch (err) {
       res.status(500).json({ error: 'An error occurred while archiving the proposal' });
     }
-  });
+});
 
 //#endregion
 

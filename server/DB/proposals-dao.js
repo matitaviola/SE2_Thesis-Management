@@ -227,7 +227,7 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
 
 exports.getAvailableProposals = async (studentId, filter, order) => {
     try{
-        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND D.COD_DEGREE=P.CdS AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
+        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND P.CdS LIKE "%"||D.COD_DEGREE||"%" AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
         const dep = [studentId];
         //#region Filters
         if(filter.title){
@@ -382,6 +382,39 @@ exports.addProposal = (body) => {
       }
     );
   });
+};
+
+exports.updateProposal = (body, proposalId) => {
+    const {
+      title,
+      coSupervisor,
+      keywords,
+      type,
+      description,
+      reqKnowledge,
+      notes,
+      expiration,
+      level,
+      cds,
+    } = body;
+    return new Promise((resolve, reject) => {
+      const sql =
+        "update proposal set Title = ?, Co_supervisor = ?, Keywords = ?, Type = ?, Description = ?, Req_knowledge = ?, Notes = ?, Expiration = ?, Level = ?, CdS = ? where id = ?";
+      db.run(
+        sql,
+        [title, coSupervisor, keywords, type, description, reqKnowledge, notes, expiration, level, cds, proposalId],
+        (err) => {
+          if (err) {
+              reject(err);
+          } else {
+              db.get('SELECT * FROM proposal WHERE Id = ?', [proposalId], function (err, row) {
+                  if (err) reject(err);
+                  else resolve(row);
+              });
+          }
+        }
+      );
+    });
 };
 
 exports.deleteProposal = (proposalId) => {

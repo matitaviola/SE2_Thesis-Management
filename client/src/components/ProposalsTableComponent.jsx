@@ -115,7 +115,6 @@ function StudentProposalsTableComponent(props) {
   useEffect(() => {
     const fetchProposals = async () => {
       try{
-        console.log(filter)
         let proposalsResponse = await API.getStudentProposals(studentId, filter, order);
         setProposals(proposalsResponse);
       }catch(err){
@@ -258,7 +257,6 @@ function DropdownSelectionFilter(props){
 
   const onClick = (keyword) => {
     let filter = { ...props.filter };
-    console.log(keyword, filter)
     if (filter[keyword] !== undefined) {
       return;
     }

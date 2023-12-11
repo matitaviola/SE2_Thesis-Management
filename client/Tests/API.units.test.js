@@ -310,6 +310,70 @@ describe('getStudentData API', () => {
   });
 });
 
+describe('getCoSupervisorsList API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock user data
+  const teacherUser = { id: 1, role: 'TEACHER' };
+  const otherUser = { id: 3, role: 'SOMETHING_ELSE' };
+
+  // Mock response data
+  const coSupervisors = [
+    { id: 101, name: 'CoSupervisor 1', department: 'CS', group: 'Group X' },
+    { id: 102, name: 'CoSupervisor 2', department: 'ENG', group: 'Group Y' },
+  ];
+
+  // Mock fetch response for co-supervisors
+  const coSupervisorsResponse = {
+    ok: true,
+    json: async () => coSupervisors,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should get co-supervisors for a teacher', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    const result = await API.getCoSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors/1`, { credentials: 'include' });
+    expect(result).toEqual(coSupervisors);
+  });
+
+  it('should return empty array for teacher when no co-supervisors are found', async () => {
+    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
+
+    const result = await API.getCoSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors/1`, { credentials: 'include' });
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getCoSupervisorsList(teacherUser)).rejects.toThrow(
+      'Error on getting the cosupervisors list: Error occurred'
+    );
+  });
+
+  it('should throw an error for unknown role', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    await expect(API.getCoSupervisorsList(otherUser)).rejects.toThrow(
+      'Error on getting the cosupervisors list: Invalid role'
+    );
+  });
+});
+
 describe('updateApplicationStatus API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally

@@ -77,7 +77,9 @@ function TeacherApplicationDetail(props){
 
     return (
         <Container>
-            <h2 className='mt-5'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for <i>{application.proposal}</i></h2>
+            <Row className='application-show-field text-center'>
+            <h2 className='mt-2'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for <i>{application.proposal}</i></h2>
+            </Row>
             {application.resumeeExists?
             <Row>
                 <Col>
@@ -211,7 +213,8 @@ function StudentApplicationDetail(props){
 
     return (
         <Container>
-            <h1 className='mt-5'>{studentData.name} {studentData.surname}'s application for <i>
+            <Row className='application-show-field text-center'>   
+            <h1 className='mt-2'>{studentData.name} {studentData.surname}'s application for <i>
             <Link
                 to={{
                     pathname: `/proposals/${proposalData.id}`,
@@ -221,10 +224,11 @@ function StudentApplicationDetail(props){
                 "{application.proposal}"
             </Link></i>
             </h1>
-            <p>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.groups}</i> group</p>
-            <p>Expires on <b>{proposalData.expiration.substring(0,10)}</b></p>
+            </Row>
+            <h4>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.groups}</i> group</h4>
+            <h4>Expires on <b>{proposalData.expiration.substring(0,10)}</b></h4>
+            <h2>Your CV</h2>
             <Card className='grades-table-card my-4'>
-                <h2>Your CV</h2>
                 <Table className='grades-table' striped responsive>
                     <thead>
                         <tr>

@@ -14,3 +14,19 @@ exports.getSupervisorById = (supervisorId) => {
     });
   });
 };
+
+exports.getCoSupervisorsList = (professorId) => {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT ID, SURNAME, NAME, COD_DEPARTMENT, COD_GROUP FROM TEACHER WHERE ID != ?";
+    db.all(sql, [professorId], (err, rows) => {
+      if (err) reject(err);
+      else if (rows === undefined || rows.length === 0) {
+        reject('No cosupervisors available');
+      } else {
+        //I use map instead of directly getting them like that from the query because group is a reserved keyword for sqlite
+        const coSup = rows.map(r => {return {id:r.ID, name:r.NAME, surname:r.SURNAME, department:r.COD_DEPARTMENT, group:r.COD_GROUP}});
+        resolve(coSup);
+      }
+    });
+  });
+}
