@@ -27,7 +27,12 @@ function NavHeader(props) {
             <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
           </Nav>
           {loggedInUser ?
+            <div>
+            <Navbar.Text className="view-text">
+              {loggedInUser.role === 'TEACHER' ? 'Professor view' : 'Student view'}
+            </Navbar.Text>
             <LogoutButton logout={props.handleLogout} user={loggedInUser} />
+          </div>
             :
             <></>
           }
