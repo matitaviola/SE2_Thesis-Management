@@ -83,7 +83,6 @@ const createTables = () => {
                 Level TEXT NOT NULL,
                 CdS TEXT NOT NULL,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
-                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE)
             )`, (err) => {
                 if (err) {
                     reject(err);
@@ -109,7 +108,6 @@ const createTables = () => {
                 Status TEXT,
                 Thesist TEXT,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
-                FOREIGN KEY(CdS) REFERENCES DEGREE(COD_DEGREE),
                 FOREIGN KEY(Thesist) REFERENCES STUDENT(ID) ON DELETE SET NULL
             )`, (err) => {
                 if (err) {
