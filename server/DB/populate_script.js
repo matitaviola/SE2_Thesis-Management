@@ -82,7 +82,7 @@ const createTables = () => {
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
                 CdS TEXT NOT NULL,
-                FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID),
+                FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID)
             )`, (err) => {
                 if (err) {
                     reject(err);
