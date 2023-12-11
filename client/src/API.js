@@ -51,6 +51,24 @@ const getStudents = async () => {
 }
 //#endregion
 
+//#region Teacher&Cosupervisors
+const getCoSupervisorsList = async (user) =>{
+  let response, coSupervisorsJson;
+  if(user.role == 'TEACHER'){
+    response = await fetch(SERVER_URL + `/api/cosupervisors/${user.id}`,{ credentials: 'include'});
+    coSupervisorsJson = await response.json();
+  }else{
+    throw new Error("Error on getting the cosupervisors list: Invalid role");
+  }
+  if(response.ok) {
+    return coSupervisorsJson;
+  }
+  else{
+    throw new Error("Error on getting the cosupervisors list: "+coSupervisorsJson);
+  }
+}
+//#endregion
+
 //#region Proposal
 const getSingleProposal = async (proposalId) =>{
   const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, { credentials: 'include'});
@@ -253,5 +271,10 @@ const getResumee = async (applicationId) => {
 
 //#endregion
 
-const API = {getUserInfo, logout, getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getApplications, getStudentData, getStudents, updateApplicationStatus, getStudentProposals, addApplication, getDegrees, getResumee};
+const API = {getUserInfo, logout,
+  getCoSupervisorsList,
+  getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getStudentProposals, 
+  getApplications, getStudentData, getStudents, updateApplicationStatus, 
+  addApplication, getDegrees, getResumee
+};
 export default API;

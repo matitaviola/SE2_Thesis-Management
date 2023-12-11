@@ -124,7 +124,7 @@ app.get('/api/application/:proposalId/:studentId',
       console.error(err);
       res.status(500).json({ error: 'An error occurred while retrieving student data' });
     }
-  });
+});
 
 // Added for ApplicationTableComponent
 app.get('/api/students', 
@@ -147,6 +147,29 @@ app.get('/api/students',
   }
 });
 //#endregion
+
+//#region Teacher&Cosupervisors
+app.get('/api/cosupervisors/:professorId', 
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
+  ],
+  async (req,res)=>{
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try{
+      const academicCoSup = await supervisorDao.getCoSupervisorsList(req.params.professorId);
+      res.json(academicCoSup);
+    }catch(err){
+      console.log(err);
+      res.status(500).json({ error: err });
+    }
+});
+//
 
 //#region Proposals
 //GET /api/proposals/:proposalId

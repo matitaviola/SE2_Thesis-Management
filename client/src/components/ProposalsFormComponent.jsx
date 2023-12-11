@@ -22,6 +22,9 @@ export default function ProposalsFormComponent(props) {
     type: "",
     reqKnowledge: "",
   });
+  const [coSupervisorsList, setCoSupervisorList] = useState([{
+    id:"", name:"", surname:"", dep:"", group:""
+  }]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -48,7 +51,19 @@ export default function ProposalsFormComponent(props) {
         props.setErrorMessage(`${err}`);
       }
     };
+    const fetchCoSupervisors = async () => {
+      try {
+        const response = await API.getCoSupervisorsList(loggedInUser);
+        console.log(response);
+        setCoSupervisorList(response);
+        //TODO: remove console.log and add logic to allow selection of cosupervisors
+        console.log(coSupervisorsList);
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
+    };
 
+    fetchCoSupervisors();
     fetchDegrees();
   }, []);
 
