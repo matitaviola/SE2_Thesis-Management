@@ -16,18 +16,6 @@ export function ProposalComponent(props) {
 		navigate(`/proposals/update`, { state: proposal });
 	}
 
-	useEffect(() => {
-		const fetchCoSupervisors = async () => {
-			try {
-				await API.getCoSupervisorByProposal(proposal.id);
-			} catch (err) {
-				props.setErrorMessage(`${err}`);
-			}
-		};
-	
-		fetchCoSupervisors();
-	}, []);
-
 	const location = useLocation();
 	const { proposal } = location.state;
 
