@@ -414,7 +414,7 @@ app.post('/api/proposals',
             req.body.groups += " "+coSup.COD_GROUP;
           }else{
             const externalValues = id.split(' ');
-            if(/[a-zA-Z0-9\.\_\-]+@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9]/.test(externalValues[2])){//the last element of an extern must be the email
+            if(/^[^\s@][^\s@]*@[^\s@][^\s@]*\.[^\s@][^\s@]*$/.test(externalValues[2])){//the last element of an extern must be the email
               const coSup = await propDao.getAndAddExternalCoSupervisor(externalValues[0],externalValues[1], externalValues[2]);
               if (!coSup) {
                 throw new Error(`Invalid academic supervisor code: ${id}`);
@@ -502,7 +502,7 @@ app.patch('/api/proposals/:proposalId',
             req.body.groups += " "+coSup.COD_GROUP;
           }else{
             const externalValues = id.split(' ');
-            if(/[a-zA-Z0-9\.\_\-]+@[a-zA-Z0-9\.\_\-]+\.[a-zA-Z0-9]/.test(externalValues[2])){//the last element of an extern must be the email
+            if(/^[^\s@][^\s@]*@[^\s@][^\s@]*\.[^\s@][^\s@]*$/.test(externalValues[2])){//the last element of an extern must be the email
               const coSup = await propDao.getAndAddExternalCoSupervisor(externalValues[0],externalValues[1], externalValues[2]);
               if (!coSup) {
                 throw new Error(`Invalid academic supervisor code: ${id}`);
