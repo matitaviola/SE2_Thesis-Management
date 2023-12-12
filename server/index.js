@@ -281,15 +281,6 @@ app.get('/api/proposals/students/:studentId',
       if (req.query.supervisor && typeof req.query.supervisor === 'string') {
         filter['supervisor'] = req.query.supervisor;
       }
-
-      /*        
-      if(req.query.supervisorName && typeof req.query.supervisorName === 'string'){
-        filter['supervisorName'] = req.query.supervisorName;
-      }
-      if(req.query.supervisorSurname && typeof req.query.supervisorSurname === 'string'){
-        filter['supervisorSurname'] = req.query.supervisorSurname;
-      }
-      */
       if (req.query.coSupervisor && typeof req.query.coSupervisor === 'string') {
         filter['coSupervisor'] = req.query.coSupervisor;
       }

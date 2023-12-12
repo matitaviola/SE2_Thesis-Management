@@ -183,12 +183,12 @@ export function StudentProposalComponent(props) {
 		};
 
 		const isValidFileSize = (file) => {
-			const maxSizeInBytes = 5 * 1024 * 1024;
+			const maxSizeInBytes = 8 * 1024 * 1024;
 			return file.size <= maxSizeInBytes;
 		};
 
 		if (file && !isValidFileSize(file)) {
-			alert("Max 10MB files accepted");
+			alert("Max 8MB files accepted");
 			return;
 		}
 
