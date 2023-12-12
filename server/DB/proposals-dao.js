@@ -52,6 +52,28 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
     return coSuperNames.trim();
 };
 
+exports.getAndAddExternalCoSupervisor = async (name, surname, email) => {
+    //returns an existing external supervisor or add a new one. Is used during a proposal creation/update
+    return new Promise((resolve, reject) => {
+        const coSupSql = 'SELECT * FROM EXTERNAL_COSUPERVISOR  WHERE Email=?';
+        db.get(coSupSql, [email], (err, row) => {
+            if (err) {
+                reject(err);
+            } else if(row) {
+                resolve(row.Email);
+            }else{
+                const insertSql = 'INSERT INTO EXTERNAL_COSUPERVISOR (Email, Name, Surname) VALUES (?, ?, ?)'
+                db.run(insertSql, [email, name.replace('_',' '), surname.replace('_',' ')], (err) => {
+                    if (err) {
+                        reject(err);
+                    } else
+                        resolve(email);
+                })
+            }
+        });
+  });
+};
+
 //exports
 exports.getActiveProposalsByProfessor = async (professorId) => {
     try {
@@ -402,7 +424,7 @@ exports.addProposal = (body) => {
 };
 
 exports.updateProposal = (body, proposalId) => {
-    const {
+    let {
       title,
       coSupervisor,
       keywords,
@@ -413,24 +435,34 @@ exports.updateProposal = (body, proposalId) => {
       expiration,
       level,
       cds,
+      groups,
     } = body;
     return new Promise((resolve, reject) => {
-      const sql =
-        "update proposal set Title = ?, Co_supervisor = ?, Keywords = ?, Type = ?, Description = ?, Req_knowledge = ?, Notes = ?, Expiration = ?, Level = ?, CdS = ? where id = ?";
-      db.run(
-        sql,
-        [title, coSupervisor, keywords, type, description, reqKnowledge, notes, expiration, level, cds, proposalId],
-        (err) => {
-          if (err) {
-              reject(err);
-          } else {
-              db.get('SELECT * FROM proposal WHERE Id = ?', [proposalId], function (err, row) {
-                  if (err) reject(err);
-                  else resolve(row);
-              });
-          }
-        }
-      );
+        const sqlGetGroups = "SELECT Groups FROM PROPOSAL WHERE Id=?";
+        db.get(sqlGetGroups, [proposalId], (err, row) =>{
+            if (err) {
+                reject(err);
+            } else if(row) {
+                groups = row.Groups.split(' ')[0]+groups; //we keep the first of the old ones, the supervisor's group
+                const sqlUpdate = "UPDATE proposal set Title = ?, Co_supervisor = ?, Keywords = ?, Type = ?, Description = ?, Req_knowledge = ?, Notes = ?, Expiration = ?, Level = ?, CdS = ?, Groups = ? where id = ?";
+                db.run(
+                    sqlUpdate,
+                    [title, coSupervisor, keywords, type, description, reqKnowledge, notes, expiration, level, cds, groups, proposalId],
+                    (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        db.get('SELECT * FROM proposal WHERE Id = ?', [proposalId], function (err, row) {
+                            if (err) reject(err);
+                            else resolve(row);
+                        });
+                    }
+                    }
+                );
+            }else{
+                reject("No such proposal: "+proposalId);
+            }
+        });
     });
 };
 

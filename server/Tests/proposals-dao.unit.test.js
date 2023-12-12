@@ -1,5 +1,5 @@
-// Mocking the dependencies
-const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, updateProposal, deleteProposal, getProposalById, getArchivedProposalById } = require('../DB/proposals-dao');
+//Mocking the dependencies
+const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, updateProposal, deleteProposal, getProposalById, getArchivedProposalById, getAndAddExternalCoSupervisor } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 const { Proposal } = require('../models/proposal');
@@ -10,7 +10,7 @@ jest.mock('../DB/db', () => {
     get: jest.fn(),
     run: jest.fn((query, params, callback) => {
       if (callback) {
-        callback(null); // You can customize this to simulate success or failure
+        callback(null); //You can customize this to simulate success or failure
       }
     }),
     close: jest.fn(),
@@ -86,6 +86,73 @@ describe('getCoSupervisorNames Function Tests', () => {
   
     await expect(getCoSupervisorNames('alice@example.com')).rejects.toEqual('External database error');
     expect(db.get).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getAndAddExternalCoSupervisor Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with existing external co-supervisor email', async () => {
+    //Mock the database response for an existing external co-supervisor
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { Email: 'existing@example.com' });
+    });
+
+    const result = await getAndAddExternalCoSupervisor('John', 'Doe', 'existing@example.com');
+
+    expect(result).toBe('existing@example.com');
+    expect(db.get).toHaveBeenCalledTimes(1);
+    //Ensure that the insert query is not called
+    expect(db.run).not.toHaveBeenCalled();
+  });
+
+  it('should resolve with added external co-supervisor email', async () => {
+    //Mock the database response for a non-existing external co-supervisor
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, null);
+    });
+
+    const result = await getAndAddExternalCoSupervisor('Alice', 'Smith', 'new@example.com');
+
+    expect(result).toBe('new@example.com');
+    expect(db.get).toHaveBeenCalledTimes(1);
+    //Ensure that the insert query is called with the correct parameters
+    expect(db.run).toHaveBeenCalledWith(
+      'INSERT INTO EXTERNAL_COSUPERVISOR (Email, Name, Surname) VALUES (?, ?, ?)',
+      ['new@example.com', 'Alice', 'Smith'],
+      expect.any(Function)
+    );
+  });
+
+  it('should reject with database error during select query', async () => {
+    //Mock a database error during the select query
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback('Database error', null);
+    });
+
+    await expect(getAndAddExternalCoSupervisor('John', 'Doe', 'error@example.com')).rejects.toEqual('Database error');
+
+    expect(db.get).toHaveBeenCalledTimes(1);
+    expect(db.run).not.toHaveBeenCalled();
+  });
+
+  it('should reject with database error during insert query', async () => {
+    //Mock the database response for a non-existing external co-supervisor
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, null);
+    });
+
+    //Mock a database error during the insert query
+    db.run.mockImplementationOnce((query, params, callback) => {
+      callback('Insert error');
+    });
+
+    await expect(getAndAddExternalCoSupervisor('Bob', 'Johnson', 'new@example.com')).rejects.toEqual('Insert error');
+
+    expect(db.get).toHaveBeenCalledTimes(1);
+    expect(db.run).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -182,7 +249,7 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
       callback(null, mockedRows);
     });
 
-    // Mock the getCoSupervisorNames function to resolve with coSup
+    //Mock the getCoSupervisorNames function to resolve with coSup
     const getCoSupervisorNamesMock = jest.spyOn(require('../DB/proposals-dao'), 'getCoSupervisorNames');
     getCoSupervisorNamesMock.mockResolvedValue(coSup);
 
@@ -203,7 +270,6 @@ describe('getActiveProposalsByProfessor Function Tests', () => {
     await expect(getActiveProposalsByProfessor(professorId)).rejects.toEqual(expectedError);
   });
 });
-
 
 describe('archiveProposal Function Tests', () => {
   afterEach(() => {
@@ -244,7 +310,7 @@ describe('archiveProposal Function Tests', () => {
       expect(db.run.mock.calls[3][0]).toBe(expectedUpdateCancelledSql);
       expect(db.run.mock.calls[4][0]).toBe(expectedDeleteSql);
 
-      // Simulate successful execution of all queries
+      //Simulate successful execution of all queries
       db.run.mock.calls[1][1](null);
       db.run.mock.calls[2][1](null);
       db.run.mock.calls[3][1](null);
@@ -266,7 +332,7 @@ describe('archiveProposal Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
-      callback(expectedError, null); // Simulate proposal not found
+      callback(expectedError, null); //Simulate proposal not found
     });
 
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
@@ -280,7 +346,7 @@ describe('archiveProposal Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
-      callback(null, null); // Simulate proposal not found
+      callback(null, null); //Simulate proposal not found
     });
 
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual('Proposal not found.');
@@ -303,7 +369,7 @@ describe('archiveProposal Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedApplicationSql);
       expect(params).toEqual([proposalId, studentId]);
-      callback(expectedError, null); // Simulate application not found
+      callback(expectedError, null); //Simulate application not found
     });
 
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
@@ -325,7 +391,7 @@ describe('archiveProposal Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedApplicationSql);
       expect(params).toEqual([proposalId, studentId]);
-      callback(null, null); // Simulate application not found
+      callback(null, null); //Simulate application not found
     });
 
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual('Application not found.');
@@ -340,7 +406,7 @@ describe('archiveProposal Function Tests', () => {
     const mockedApplicationRow = { };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
@@ -353,24 +419,24 @@ describe('archiveProposal Function Tests', () => {
       callback(null, mockedApplicationRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Insert with an error
+      //Second db.run - Insert with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
   });
 
@@ -383,7 +449,7 @@ describe('archiveProposal Function Tests', () => {
     const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
@@ -396,13 +462,13 @@ describe('archiveProposal Function Tests', () => {
       callback(null, mockedApplicationRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
@@ -412,13 +478,13 @@ describe('archiveProposal Function Tests', () => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Update with an error
+      //Second db.run - Update with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
   });
 
@@ -431,7 +497,7 @@ describe('archiveProposal Function Tests', () => {
     const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
@@ -444,13 +510,13 @@ describe('archiveProposal Function Tests', () => {
       callback(null, mockedApplicationRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
@@ -465,13 +531,13 @@ describe('archiveProposal Function Tests', () => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Update Cancelled with an error
+      //Second db.run - Update Cancelled with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
   });
 
@@ -484,7 +550,7 @@ describe('archiveProposal Function Tests', () => {
     const mockedApplicationRow = {  };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
@@ -497,13 +563,13 @@ describe('archiveProposal Function Tests', () => {
       callback(null, mockedApplicationRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
@@ -523,18 +589,17 @@ describe('archiveProposal Function Tests', () => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Delete with an error
+      //Second db.run - Delete with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposal(proposalId, studentId)).rejects.toEqual(expectedError);
   });
   
 });
-
 
 describe('getProposals Function Tests', () => {
   afterEach(() => {
@@ -1015,7 +1080,7 @@ describe('getProposals Function Tests', () => {
       callback(null, mockedRows);
     });
 
-    // Mock the getCoSupervisorNames function to resolve with coSup
+    //Mock the getCoSupervisorNames function to resolve with coSup
     const getCoSupervisorNamesMock = jest.spyOn(require('../DB/proposals-dao'), 'getCoSupervisorNames');
     getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore A');
     getCoSupervisorNamesMock.mockResolvedValueOnce('Co Supervisore B');
@@ -1026,7 +1091,6 @@ describe('getProposals Function Tests', () => {
   });
 
 });
-
 
 describe('insertProposals Function Tests', () => {
   afterEach(() => {
@@ -1119,21 +1183,34 @@ describe('updateProposal Function Tests', () => {
     expiration: 'Updated Expiration',
     level: 'Updated Level',
     cds: 'Updated CdS',
+    groups: ' GEO303'
   };
   const proposalId = 1;
 
   it('should resolve with updated proposal object when there is no problem with inputs', async () => {
 
-    db.run.mockImplementationOnce((sql, values, callback) => callback(null));
-    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { id: proposalId, ...body }));
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { Groups:"CS101 BIO202" }));
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      expect(values).toEqual([body.title, body.coSupervisor, body.keywords, body.type, body.description,
+        body.reqKnowledge, body.notes, body.expiration, body.level, body.cds, "CS101 GEO303", proposalId]);
+      callback(null);
+    });
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { id: proposalId, ...body, groups:"CS101 GEO303" }));
 
     const result = await updateProposal(body, proposalId);
 
-    expect(result).toEqual({ id: proposalId, ...body });
+    expect(result).toEqual({ id: proposalId, ...body, groups:"CS101 GEO303" });
+  });
+
+  it('should reject with an error on the first db.get failure', async () => {
+
+    db.get.mockImplementationOnce((sql, values, callback) => callback({ code: 'ANOTHER_ERROR' }));
+
+    await expect(updateProposal(body, proposalId)).rejects.toEqual({ code: 'ANOTHER_ERROR' });
   });
 
   it('should reject with an error on db.run failure', async () => {
-
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { Groups:"CS101 BIO202" }));
     db.run.mockImplementationOnce((sql, values, callback) => callback({ code: 'ANOTHER_ERROR' }));
 
     await expect(updateProposal(body, proposalId)).rejects.toEqual({ code: 'ANOTHER_ERROR' });
@@ -1141,12 +1218,19 @@ describe('updateProposal Function Tests', () => {
 
   it('should reject with an error on db.get failure', async () => {
     const expectedError = new Error('Simulated db.get error');
-
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, { Groups:"CS101 BIO202" }));
     db.run.mockImplementationOnce((sql, values, callback) => callback(null));
 
     db.get.mockImplementationOnce((sql, values, callback) => callback(expectedError));
 
     await expect(updateProposal(body, proposalId)).rejects.toEqual(expectedError);
+  });
+
+  it('should reject with an error if the first db.get gets no results', async () => {
+
+    db.get.mockImplementationOnce((sql, values, callback) => callback(null, null));
+
+    await expect(updateProposal(body, proposalId)).rejects.toEqual('No such proposal: '+proposalId);
   });
 });
 
@@ -1161,9 +1245,9 @@ describe('deleteProposal Function Tests', () => {
     const expectedDeletePropSql = 'DELETE FROM PROPOSAL WHERE Id = ?';
     const expectedCancelAppsSql = 'UPDATE APPLICATION SET Status="Cancelled" WHERE Proposal_ID IS NULL and Archived_Proposal_ID IS NULL';
 
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
     
@@ -1191,9 +1275,9 @@ describe('deleteProposal Function Tests', () => {
     const expectedDeletePropSql = 'DELETE FROM PROPOSAL WHERE Id = ?';
     const expectedError = { error: 'Proposal not found' };
 
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
@@ -1203,7 +1287,7 @@ describe('deleteProposal Function Tests', () => {
     db.run.mockImplementationOnce((query, params, callback) => {
         expect(query).toEqual(expectedDeletePropSql);
         expect(params).toEqual([proposalId]);
-        callback.call({ changes: 0 },null); // Simulate proposal not found
+        callback.call({ changes: 0 },null); //Simulate proposal not found
     });
 
     await expect(deleteProposal(proposalId)).rejects.toEqual(expectedError);
@@ -1214,9 +1298,9 @@ describe('deleteProposal Function Tests', () => {
     const expectedDeletePropSql = 'DELETE FROM PROPOSAL WHERE Id = ?';
     const expectedError = 'Database error occurred';
 
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
@@ -1225,7 +1309,7 @@ describe('deleteProposal Function Tests', () => {
 
     db.run.mockImplementationOnce((query, params, callback) => {
       expect(params).toEqual([proposalId]);
-      callback(expectedError); // Simulate proposal found
+      callback(expectedError); //Simulate proposal found
     });
 
     await expect(deleteProposal(proposalId)).rejects.toEqual(expectedError);
@@ -1236,9 +1320,9 @@ describe('deleteProposal Function Tests', () => {
     const expectedDeletePropSql = 'DELETE FROM PROPOSAL WHERE Id = ?';
     const expectedError = 'Database error occurred';
 
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
@@ -1248,7 +1332,7 @@ describe('deleteProposal Function Tests', () => {
     db.run.mockImplementationOnce((query, params, callback) => {
       expect(query).toEqual(expectedDeletePropSql);
       expect(params).toEqual([proposalId]);
-      callback.call({ changes: 1 },null); // Simulate proposal found
+      callback.call({ changes: 1 },null); //Simulate proposal found
     });
 
     db.run.mockImplementationOnce((query, params, callback) => {
@@ -1356,7 +1440,7 @@ describe('getProposalById', () => {
   });
 });
 
-// --------
+//--------
 
 describe('archiveProposalWithoutApplication Function Tests', () => {
   afterEach(() => {
@@ -1384,7 +1468,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
       expect(db.run.mock.calls[1][0]).toBe(expectedInsertSql);
       expect(db.run.mock.calls[2][0]).toBe(expectedDeleteSql);
 
-      // Simulate successful execution of all queries
+      //Simulate successful execution of all queries
       db.run.mock.calls[1][1](null);
       db.run.mock.calls[2][1](null);
 
@@ -1403,7 +1487,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
-      callback(expectedError, null); // Simulate proposal not found
+      callback(expectedError, null); //Simulate proposal not found
     });
 
     await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
@@ -1416,7 +1500,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
-      callback(null, null); // Simulate proposal not found
+      callback(null, null); //Simulate proposal not found
     });
 
     await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual('Proposal not found.');
@@ -1428,31 +1512,31 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     const mockedProposalRow = { };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
       callback(null, mockedProposalRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Insert with an error
+      //Second db.run - Insert with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
   });
 
@@ -1462,20 +1546,20 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     const mockedProposalRow = { };
     const expectedError = 'Database error occurred';
   
-    // Mock the database get calls
+    //Mock the database get calls
     db.get.mockImplementationOnce((sql, params, callback) => {
       expect(sql).toBe(expectedProposalSql);
       expect(params).toEqual([proposalId]);
       callback(null, mockedProposalRow);
     });
   
-    // Mock the database serialize and run calls
+    //Mock the database serialize and run calls
     db.serialize.mockImplementationOnce((callback) => {
-      // Simulate the serialize block
+      //Simulate the serialize block
       callback();
     });
 
-    // Simulate the rest of the database calls within serialize
+    //Simulate the rest of the database calls within serialize
     db.run.mockImplementationOnce((query) => {
     });
 
@@ -1485,13 +1569,13 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      // Second db.run - Delete with an error
+      //Second db.run - Delete with an error
       innerCallback(expectedError);
     });
 
     db.run.mockImplementationOnce((query) =>{});
   
-    // Call the actual function
+    //Call the actual function
     await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
   });
   

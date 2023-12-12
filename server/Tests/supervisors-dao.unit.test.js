@@ -68,8 +68,8 @@ describe('getCoSupervisorsList', () => {
     it('should return a list of co-supervisors', async () => {
       // Mock data for the database response
       const mockRows = [
-        { ID: 1, NAME: 'John', SURNAME: 'Doe', COD_DEPARTMENT: 'CS', COD_GROUP: 'A' },
-        { ID: 2, NAME: 'Jane', SURNAME: 'Smith', COD_DEPARTMENT: 'EE', COD_GROUP: 'B' },
+        { ID: 1, NAME: 'John', SURNAME: 'Doe'},
+        { ID: 2, NAME: 'Jane', SURNAME: 'Smith'},
       ];
   
       // Mock the database query to return the mock data
@@ -83,8 +83,8 @@ describe('getCoSupervisorsList', () => {
   
       // Expectations
       expect(result).toEqual([
-        { id: 1, name: 'John', surname: 'Doe', department: 'CS', group: 'A' },
-        { id: 2, name: 'Jane', surname: 'Smith', department: 'EE', group: 'B' },
+        { id: 1, name: 'John', surname: 'Doe'},
+        { id: 2, name: 'Jane', surname: 'Smith'},
       ]);
     });
   
