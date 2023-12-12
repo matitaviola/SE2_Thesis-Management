@@ -67,6 +67,18 @@ const getCoSupervisorsList = async (user) =>{
     throw new Error("Error on getting the cosupervisors list: "+coSupervisorsJson);
   }
 }
+
+const getCoSupervisorByProposal = async (proposalId) => {
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}/cosupervisors`, { credentials: 'include'});
+  const cosupervisorsJson = await response.json();
+  if(response.ok) {
+    console.log(cosupervisorsJson)
+    return(cosupervisorsJson);
+  }
+  else{
+    throw new Error("Error on getting the proposal: "+cosupervisorsJson);
+  }
+}
 //#endregion
 
 //#region Proposal
@@ -272,7 +284,7 @@ const getResumee = async (applicationId) => {
 //#endregion
 
 const API = {getUserInfo, logout,
-  getCoSupervisorsList,
+  getCoSupervisorsList, getCoSupervisorByProposal,
   getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getStudentProposals, 
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
   addApplication, getDegrees, getResumee

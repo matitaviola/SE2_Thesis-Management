@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Modal, Card } from 'react-bootstrap';
 import API from '../API';
 import { FileUploadComponent } from './FileUploadComponent';
@@ -12,9 +12,21 @@ export function ProposalComponent(props) {
 		navigate(path);
 	}
 
+	useEffect(() => {
+		const fetchCoSupervisors = async () => {
+			try {
+				await API.getCoSupervisorByProposal(proposal.id);
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
+	
+		fetchCoSupervisors();
+	}, []);
+
 	const location = useLocation();
 	const { proposal } = location.state;
-	console.log(proposal);
+
 	return (
 		<Container>
 			<Row className='proposal-show-field text-center' style={{padding:'2px'}}>

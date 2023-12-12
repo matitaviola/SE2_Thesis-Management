@@ -165,7 +165,7 @@ app.get('/api/cosupervisors/:professorId',
       const academicCoSup = await supervisorDao.getCoSupervisorsList(req.params.professorId);
       res.json(academicCoSup);
     }catch(err){
-      console.log(err);
+      console.log("Cosupervisor error: ",err);
       res.status(500).json({ error: err });
     }
 });
@@ -202,6 +202,34 @@ app.get('/api/proposals/:proposalId',
     }
 });
 
+//gets a proposal's list of cosupervisors (name, surmane, id/mail for academic/external)
+//GET /api/proposals/:proposalId
+app.get('/api/proposals/:proposalId/cosupervisors',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('proposalId').not().isEmpty().isInt()
+  ],
+  async (req, res) => {
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      //gets all the professor's active proposals
+      const proposalCoSup = await propDao.getCoSupervisorByProposal(req.params.proposalId);
+      if(proposalCoSup){
+        return res.status(200).json(proposalCoSup);
+      }
+      throw new Error('No such Proposal: ', req.params.proposalId);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: err });
+    }
+});
+
 //gets all active proposals for a professor
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId',
@@ -222,7 +250,7 @@ app.get('/api/proposals/teacher/:professorId',
       const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
       res.json(proposals);
     } catch (err) {
-      console.log(err);
+      console.log("professor's active proposals:",err);
       res.status(500).json({ error: err });
     }
 });
@@ -317,7 +345,7 @@ app.get('/api/proposals/students/:studentId',
       console.log(err);
       res.status(500).end();
     }
-  });
+});
 
 //creates a new proposal
 //POST /api/proposals
@@ -344,12 +372,20 @@ app.post('/api/proposals',
       return true;
     }),
     check('cds').custom(async (value) => {
-      const degree = await degreeDao.getDegreeByCode(value);
-      if (!degree) {
-        throw new Error('Invalid degree');
+      // Split the input string into a list of degree codes
+      const degreeCodes = value.split(' ');
+    
+      // Validate each degree code
+      for (const code of degreeCodes) {
+        const degree = await degreeDao.getDegreeByCode(code);
+        if (!degree) {
+          throw new Error(`Invalid degree code: ${code}`);
+        }
       }
+    
       return true;
     }),
+
   ],
   async (req, res) => {
     //validation rejected
@@ -360,7 +396,45 @@ app.post('/api/proposals',
     }
 
     try {
-      req.body.groups = supervisor.COD_GROUP;
+      req.body.groups = ""; //this willneed to be updated too
+      //#region coSupervisor Chek
+      if(req.body.coSupervisor){
+        // Split the input string into a list of degree codes
+        const coSupIds = req.body.coSupervisor.split(',');
+        req.body.coSupervisor = "";
+        // Validate each degree code
+        for (const id of coSupIds) {
+          if(/d[0-9]{6}/.test(id)){
+            const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
+            if (!coSup) {
+              throw new Error(`Invalid academic supervisor code: ${id}`);
+            }
+            //add the value to the field
+            req.body.coSupervisor += id+" ";
+            req.body.groups += " "+coSup.COD_GROUP;
+          }else{
+            const externalValues = id.split(' ');
+            if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(externalValues[2])){//the last element of an extern must be the email
+              const coSup = await propDao.getAndAddExternalCoSupervisor(externalValues[0],externalValues[1], externalValues[2]);
+              if (!coSup) {
+                throw new Error(`Invalid academic supervisor code: ${id}`);
+              }
+              //add the value to the field
+              req.body.coSupervisor += coSup+" ";
+            }else{
+              throw new Error(`Invalid supervisor: ${id}`);
+          }}
+        }
+      }
+      //#endregion
+      //add the professor's group
+      if(req.body.groups){
+        //if I already added the cosupervisor's ones
+        req.body.groups = supervisor.COD_GROUP + req.body.groups;
+      }else{
+        req.body.groups = supervisor.COD_GROUP;
+      }
+      //we check each cosupervisor. Couldnt do it before because we needed the 
       const proposal = await propDao.addProposal(req.body);
       res.json(proposal);
     } catch (error) {
@@ -387,10 +461,17 @@ app.patch('/api/proposals/:proposalId',
     }),
     check('level').isIn(['BSc', 'MSc']).withMessage('Invalid level'),
     check('cds').custom(async (value) => {
-      const degree = await degreeDao.getDegreeByCode(value);
-      if (!degree) {
-        throw new Error('Invalid degree');
+      // Split the input string into a list of degree codes
+      const degreeCodes = value.split(' ');
+    
+      // Validate each degree code
+      for (const code of degreeCodes) {
+        const degree = await degreeDao.getDegreeByCode(code);
+        if (!degree) {
+          throw new Error(`Invalid degree code: ${code}`);
+        }
       }
+    
       return true;
     }),
   ],
@@ -402,6 +483,38 @@ app.patch('/api/proposals/:proposalId',
     }
 
     try {
+      //#region coSupervisor Chek
+      //keeps the first group, that is the professor's, removing the ones from the possibly deleted coSupervisors
+      req.body.groups = req.body.groups
+      if(req.body.coSupervisor){
+        // Split the input string into a list of degree codes
+        const coSupIds = req.body.coSupervisor.split(',');
+        req.body.coSupervisor = "";
+        // Validate each degree code
+        for (const id of coSupIds) {
+          if(/d[0-9]{6}/.test(id)){
+            const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
+            if (!coSup) {
+              throw new Error(`Invalid academic supervisor code: ${id}`);
+            }
+            //add the value to the field
+            req.body.coSupervisor += id+" ";
+            req.body.groups += " "+coSup.COD_GROUP;
+          }else{
+            const externalValues = id.split(' ');
+            if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(externalValues[2])){//the last element of an extern must be the email
+              const coSup = await propDao.getAndAddExternalCoSupervisor(externalValues[0],externalValues[1], externalValues[2]);
+              if (!coSup) {
+                throw new Error(`Invalid academic supervisor code: ${id}`);
+              }
+              //add the value to the field
+              req.body.coSupervisor += coSup+" ";
+            }else{
+              throw new Error(`Invalid supervisor: ${id}`);
+          }}
+        }
+      }
+      //#endregion
       const proposal = await propDao.updateProposal(req.body, req.params.proposalId);
       res.json(proposal);
     } catch (error) {

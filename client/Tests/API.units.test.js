@@ -374,6 +374,52 @@ describe('getCoSupervisorsList API', () => {
   });
 });
 
+describe('getCoSupervisorByProposal API', () => {
+  const proposalId = 123; // Replace with an actual proposal ID
+
+  it('should get co-supervisors for a proposal', async () => {
+    // Mock response data
+    const coSupervisorData = ['Supervisor 1', 'Supervisor 2'];
+
+    // Mock fetch response for co-supervisors
+    const coSupervisorResponse = {
+      ok: true,
+      json: async () => coSupervisorData,
+    };
+
+    // Mock the fetch method to return the co-supervisor response
+    fetch.mockResolvedValueOnce(coSupervisorResponse);
+
+    const result = await API.getCoSupervisorByProposal(proposalId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalId}/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual(coSupervisorData);
+  });
+
+  it('should return an empty array for a proposal with no co-supervisors', async () => {
+    // Mock an empty array response for co-supervisors
+    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
+
+    const result = await API.getCoSupervisorByProposal(proposalId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalId}/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error on failed request for co-supervisors', async () => {
+    // Mock fetch error response
+    const errorResponse = {
+      ok: false,
+      json: async () => 'Error occurred',
+    };
+
+    // Mock the fetch method to return an error response for co-supervisors
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getCoSupervisorByProposal(proposalId)).rejects.toThrow(
+      'Error on getting the proposal: Error occurred'
+    );
+  });
+});
+
 describe('updateApplicationStatus API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally

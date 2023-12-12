@@ -12,9 +12,12 @@ export default function ProposalsFormComponent(props) {
   const [proposal, setProposal] = useState({
     title: "",
     supervisor: "",
-    coSupervisor: "",
+    coSupervisor: "", //a list of either dXXXXXX (for academic) and/or Surname Name email (for non-academic), separated by commas
+    // e.g.: "d100001,Jordan Michael mike@anemail.com,d221100"
+    // if the name or the surname are composed the parts must be fused using underscores before being sent:
+    // e.g.: the user inputs name:Juan Maria, surname:Perrez Balsamica, mail:jmpb@email.mx and you send "Juan_Maria Perrez_Balsamica jmpb@email.mx"
     notes: "",
-    cds: "",
+    cds: "", //a list of CdS codes separated by a blank space, e.g.: "CS101 BIO303"
     description: "",
     expiration: "",
     level: "",
@@ -23,7 +26,7 @@ export default function ProposalsFormComponent(props) {
     reqKnowledge: "",
   });
   const [coSupervisorsList, setCoSupervisorList] = useState([{
-    id:"", name:"", surname:"", dep:"", group:""
+    id:"", name:"", surname:""
   }]);
 
   const handleChange = (event) => {
