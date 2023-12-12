@@ -262,7 +262,6 @@ const addApplication = async (file, proposalId, studentId) => {
 } 
 
 const getDegrees = async () => {
-  console.log("I'm getting my degrees")
   const response = await fetch(SERVER_URL + `/api/degrees`, {
     method: 'GET',
     credentials: 'include'
@@ -272,7 +271,6 @@ const getDegrees = async () => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   const degreesJson = await response.json();
-  console.log(degreesJson);
   return degreesJson;
 } 
 

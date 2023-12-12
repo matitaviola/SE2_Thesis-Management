@@ -71,7 +71,6 @@ export default function ProposalsFormComponent(props) {
   useEffect(() => {
     const fetchDegrees = async () => {
       try {
-        console.log("Before getting the degrees")
         const response = await API.getDegrees();
         setDegrees(response);
       } catch (err) {
@@ -103,10 +102,12 @@ export default function ProposalsFormComponent(props) {
     if(proposalToUpdate) fetchProposalCoSupervisors();
   }, []);
 
-  const renderCdSList = (cds) => {
-    const cdsList = cds.split(" ").map(c => {
+  const renderCdSList = () => {
+    const cdsList = proposal.cds.trim().split(" ").map(c => {
         const degree = degrees.find(d=> d.COD_DEGREE==c);
-        return {code:c, title:degree.TITLE_DEGREE}
+        console.log(degrees, degree);
+        console.log(proposal.cds, c);
+        return {code:degree.TITLE_DEGREE, title:degree.TITLE_DEGREE}
     });
     return(
       <>
@@ -234,7 +235,7 @@ export default function ProposalsFormComponent(props) {
               </Form.Select>
               {/* Show list of selected values */}
               {proposal.cds?.length>0 && degrees && degrees.length>0?
-                renderCdSList(proposal.cds)
+                renderCdSList()
               :
               <></>}
             </Form.Group>
