@@ -232,3 +232,8 @@ body {
   padding-top: 0px; /* Adjust the padding as needed */
   margin: 10px; /* Adjust the margin-bottom as needed */
 }
+
+.view-text{
+  font-size: 30px;
+  margin-right: 20px;
+}
