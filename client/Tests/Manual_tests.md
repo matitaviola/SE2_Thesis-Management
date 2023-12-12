@@ -6,12 +6,13 @@ Please note that each of the following test is written to be executed on a fresh
 - Should create proposal successfully
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
-- Should see 5 proposals for this teacher (proposals 3, 6, 9, 13, 16)
+- Should see 5 proposals for this teacher (Architectural Innovation in Software Development, Pioneering Groundbreaking Medical Research Projects, Linguistic Studies: Unraveling Language and Communication, Innovations in Software Engineering and Architecture, Impactful Contributions to Medical Research Exploration)
 - Click on "Add New Proposal" button
 - Enter all the fields as specified in the form (co-supervisor, notes, and required knowledge are optional):
     - Title must not be duplicate
     - Expiration date must be after today
-    - CdS must be a valid degree
+    - Add external supervisor name, surname and email or select existing internal co-supervisor
+    - Select all the CdS
 - Click on save
 - After clicking on save you will be redirected to proposals table and now you must see the new proposal added to the previous ones so 6 proposals in general
 ```
@@ -29,51 +30,75 @@ Please note that each of the following test is written to be executed on a fresh
 
 ## Story #2 - Search Proposals:
 
-- Should see 4 proposals and their data
+- Should see 2 proposals and their data
 ```
 - Login as usr:carlos@studenti.polito.com psw:s200002
-- Should see 2 proposals for this teacher:
+- Should see 2 proposals:
     - [Proposal 6 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Knowledge about medical research | 2024-03-04 | BSc | Biology ]
     - [Proposal 16 | David Martinez | Co-Supervisor F | medicine, health, research | Type F | Knowledge about medical research | 2024-03-04 | BSc | Biology ]    
 ```
 - Should display the data of a proposal:
 ```
-- Login as usr:john@studenti.polito.com psw:s200000
-- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Go to the first row (the one  with "Exploring Advanced Programming Paradigms" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 1
+    Exploring Advanced Programming Paradigms
     expires on: 2023-12-30
     Supervisor: Michael Johnson
     Co-supervisor: None
-    CdS: CS101 - Computer Science
+    CdS: ENG202 BIO303 CS101
     Level: BSc
-    Type: Type A
-    Groups: Group X
+    Type: Company
+    Groups: GroupA
     Keywords: programming, algorithms, null
     Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
-    Requested knowledge: None
+    Requested knowledge: Knowledge about programming
     Notes: Some notes
 - Should be visible an "Apply" button
 ```
+- Should filter by fields
+
+```
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Click on "Add filter" and select "Supervisor" (on the top right corner of the table)
+- Type "michael" on the text box just opened
+- Only proposals with "Michael Johnson" as Supervisor should be visible
+- Click on "Add filter" and select "Title"
+- Type "advanced" on the text box just opened
+- Only the proposal titled "Exploring Advanced Programming Paradigms" should be displayed
+```
+
+- Should order by field
+
+```
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Click on the double arrow next to any field
+- The list should appear in crescent order by that field
+- Click again in the button now turned in an arrow down
+- The list should appear in decrescent order by that field
+- Click again in the button now turned in an arrow up
+- The list should appear like before this test
+```
+
 
 ## Story #3 - Apply for Proposal
 - Should create 1 application
 ```
 - Login as usr:carlos@studenti.polito.com psw:s200002
-- Click on "View" in the row of [Proposal 6]
+- Click on "View" in the row of [Pioneering Groundbreaking Medical Research Projects]
 - Click on the "Apply" button
-- Should be visible a modal to upload a cv and confirm or cancel the submission of the application for [Proposal 6]
+- Should be visible a modal to upload a cv and confirm or cancel the submission of the application for [Pioneering Groundbreaking Medical Research Projects]
 - Click on the "Send Application" button
 - The modal should be closed
 - Should see the proposals table
-- Clicking again on "View" in the row of [Proposal 6], should be visible the disabled "Apply" button
+- Clicking again on "View" in the row of [Pioneering Groundbreaking Medical Research Projects], should be visible the disabled "Apply" button
 ```
 - Should not create 1 application
 ```
 - Login as usr:carlos@studenti.polito.com psw:s200002
-- Click on "View" in the row of [Proposal 16]
+- Click on "View" in the row of [Impactful Contributions to Medical Research Exploration]
 - Click on the "Apply" button
-- Should be visible a modal to confirm or cancel the submission of the application for [Proposal 16]
+- Should be visible a modal to confirm or cancel the submission of the application for [Impactful Contributions to Medical Research Exploration]
 - Click on the "Close" button or on the X at top right of the modal/outside the modal
 - The modal should be closed
 - Should see the proposals table without any changes
@@ -86,11 +111,11 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see 5 applications, which are the "Pending" applications for the active proposal of the teacher: 
-    - [Proposal 3, Alice Smith, s200001]
-    - [Proposal 3, Ling Wang, s200003]
-    - [Proposal 3, Mattia Oliva, s308786]
-    - [Proposal 13, Sophia Miller, s200011]
-    - [Proposal 13, Isabella Gonzalez, s200013]
+    - [Architectural Innovation in Software Development, Alice Smith, s200001]
+    - [Architectural Innovation in Software Development, Ling Wang, s200003]
+    - [Architectural Innovation in Software Development, Mario Alberto Rigetta, s000002]
+    - [Innovations in Software Engineering and Architecture, Sophia Miller, s200011]
+    - [Innovations in Software Engineering and Architecture, Isabella Gonzalez, s200013]
 - Should be visible an "Evaluate" button in the row of each application
 ```
 - Should show 0 applications
@@ -105,7 +130,7 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
-- Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
+- Should see a table with Title: "Title" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
 - Click on the "Evaluate" button in the row of s200013's application
 - Should be visible the student's data [Isabella Gonzalez s200013] and the career, with 1 exam
 - Click on the "Decline" button
@@ -120,7 +145,7 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
-- Should see a table with Title: Proposal "N" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
+- Should see a table with Title: "Title" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
 - Click on the "Evaluate" button in the row of s200001's application
 - Should be visible the student's data [Alice Smith s200001] and the career, with 1 exam
 - Click on the "Accept" button
@@ -137,15 +162,15 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:john@studenti.polito.com psw:s200000
 - Go to "Applications" tab
 - Should see two applications:
-    - [Title: "Proposal 1", Status: Pending]
-    - [Title:"Proposal 7", Status: Cancelled]
+    - [Title: "Exploring Advanced Programming Paradigms", Status: Pending] colored as orange
+    - [Title:"Pushing Boundaries in AI, Machine Learning, and Robotics", Status: Cancelled] colored as white
 ```
 - Should show 1 application with rejected status
 ```
 - Login as usr:raj@studenti.polito.com psw:s200004
 - Go to "Applications" tab
 - Should see one application:
-    - ["Proposal 4" Status: Rejected]
+    - ["Safeguarding the Digital Future: Cybersecurity Focus" Status: Rejected] colored as red
 ```
 - Should show 0 applications 
 ```
@@ -159,11 +184,11 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Should see 5 proposals for this teacher:
-    - [Proposal 3 | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101]
-    - [Proposal 6 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
-    - [Proposal 9 | Not assigned | linguistics, language, communication | Knowledge about linguistic studies | 2024-07-22 | BSc | ENG202]	
-    - [Proposal 13 | Not assigned | software development, architecture | Knowledge about software engineering | 2022-11-20 | MSc | CS101]
-    - [Proposal 16 | Not assigned | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
+    - [Architectural Innovation in Software Development | Not assigned | design, architecture, development | Knowledge about software engineering | 2022-11-20 | MSc | CS101 ENG202 BIO303]
+    - [Pioneering Groundbreaking Medical Research Projects | Emily Brown, Furio Uori | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
+    - [Linguistic Studies: Unraveling Language and Communication | Emma Smith | linguistics, language, communication | Knowledge about linguistic studies | 2024-07-22 | BSc | ENG202]	
+    - [Innovations in Software Engineering and Architecture | | software development, architecture | Knowledge about software engineering | 2022-11-20 | MSc | CS101]
+    - [Impactful Contributions to Medical Research Exploration | Michael Johnson | medicine, health, research | Knowledge about medical research | 2024-03-05 | BSc | BIO303]
 
 ```
 
@@ -172,7 +197,7 @@ Please note that each of the following test is written to be executed on a fresh
 ```
 - Login as usr:david@docenti.polito.com psw:d100003
 - Click on the "Proposals" tab
-- Go to first row and click edit on [proposal 3]
+- Go to first row and click edit on [Architectural Innovation in Software Development]
 - should be seen proposal details as below:
 Title
 Supervisor
@@ -188,24 +213,24 @@ Level
 CdS/Programmes
 - change the title of the proposal to ["Renamed Proposal"]
 - go to the bottom and click submit botton
-- [proposal 3] title should change to ["Renamed Proposal"] after submitting
+- [Architectural Innovation in Software Development] title should change to ["Renamed Proposal"] after submitting
 ```
 
 - Should display the data of a proposal:
 ```
 - Login as usr:david@example.com psw:d100003
 - Click on the "Proposals" tab
-- Go to the first row (the one  with "Proposal 3" in the Title column) and click on the last column ("View")
+- Go to the first row (the one  with "Architectural Innovation in Software Development" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 3
+    Architectural Innovation in Software Development
     Expiration date: 2022-11-20
-    CdS: CS101
+    CdS: CS101 ENG202 BIO303
     Level: MSc
-    Type C
-    Group Z
+    Type: Development
+    Group: GroupC
     Thesist: Not assigned
-    Co-supervisor: Not assigned
-    Description: Description for Proposal 3
+    Co-supervisor: None
+    Description: Explore the intricate realms of software engineering, emphasizing design and architecture, contributing to the evolution of technology and development.
     Requested knowledge: Knowledge about software engineering
     Notes: Additional info
     Keywords: design, architecture, development
@@ -216,25 +241,25 @@ CdS/Programmes
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
 - Should see 2 proposals for this teacher:
-    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
-    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
-- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+    - [Exploring Advanced Programming Paradigms | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | ENG202 BIO303 CS101]
+    - [Safeguarding the Digital Future: Cybersecurity Focus | Emily Brown, E. S. Terno | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
+- Go to the first row (the one  with "Exploring Advanced Programming Paradigms" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 1
+    Exploring Advanced Programming Paradigms
     expires on: 2023-12-30
     Supervisor: Michael Johnson
     Co-supervisor: None
-    CdS: CS101 - Computer Science
+    CdS: ENG202 BIO303 CS101
     Level: BSc
-    Type: Type A
-    Groups: Group X
+    Type: Company
+    Groups: GroupA
     Keywords: programming, algorithms, null
     Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
-    Requested knowledge: None
+    Requested knowledge: Knowledge about programming
     Notes: Some notes
 - Should be visible a red button called "Delete"
 - Click on "Delete" button
-- Should be visible a modal to confirm or cancel the submission of the delete for [Proposal 1]
+- Should be visible a modal to confirm or cancel the submission of the delete for the current proposal
 - Click on "Yes, delete it!" button
 - Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals list and show the previous list without Proposal 1
@@ -252,7 +277,7 @@ CdS/Programmes
     Exploring Advanced Programming Paradigms
     expires on: 2023-12-31
     Co-supervisor: None
-    CdS: CS101
+    CdS: ENG202 BIO303 CS101
     Level: BSc
     Type: Company
     Groups: GroupA
@@ -273,21 +298,21 @@ CdS/Programmes
 ```
 - Login as usr:michael@docenti.polito.com psw:d100001
 - Should see 2 proposals for this teacher:
-    - [Proposal 1 | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | CS101]
-    - [Proposal 4 | Not assigned | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
-- Go to the first row (the one  with "Proposal 1" in the Title column) and click on the last column ("View")
+    - [Exploring Advanced Programming Paradigms | Not assigned | programming, algorithms, null | Knowledge about programming | 2023-12-31 | BSc | ENG202 BIO303 CS101]
+    - [Safeguarding the Digital Future: Cybersecurity Focus | Emily Brown, E. S. Terno | networks, security, protocols | Knowledge cybersecurity | 2023-06-30 | MSc | CS101]
+- Go to the first row (the one  with "Exploring Advanced Programming Paradigms" in the Title column) and click on the last column ("View")
 - Should be visible the Proposal's data:
-    Proposal 1
+    Exploring Advanced Programming Paradigms
     expires on: 2023-12-30
     Supervisor: Michael Johnson
     Co-supervisor: None
-    CdS: CS101 - Computer Science
+    CdS: ENG202 BIO303 CS101
     Level: BSc
-    Type: Type A
-    Groups: Group X
+    Type: Company
+    Groups: GroupX
     Keywords: programming, algorithms, null
     Description: Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.
-    Requested knowledge: None
+    Requested knowledge: Knowledge about programming
     Notes: Some notes
 - Should be visible a yellow button called "Archive"
 - Click on "Archive" button
