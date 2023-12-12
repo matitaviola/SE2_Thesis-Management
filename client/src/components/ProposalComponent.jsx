@@ -11,6 +11,10 @@ export function ProposalComponent(props) {
 		let path = `/proposals`;
 		navigate(path);
 	}
+	const routeChangeUpdate = () => {
+		//const proposal = location.state;
+		navigate(`/proposals/update`, { state: proposal });
+	}
 
 	useEffect(() => {
 		const fetchCoSupervisors = async () => {
@@ -75,6 +79,28 @@ export function ProposalComponent(props) {
 				</Row>
 			</Container>
 
+			<button 
+                onClick={() => {
+                    Swal.fire({
+                        title: 'Update Proposal?',
+                        text: 'You will be redirected to the form to edit the proposal',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'No, cancel!',
+                        confirmButtonText: 'Yes, update it!',
+                        cancelButtonColor: "red",
+                        confirmButtonColor: "#449d44",
+                        reverseButtons: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            routeChangeUpdate();
+                        }
+                    });
+                }}
+                className="update-button"
+            >
+                UPDATE
+            </button>
 			<button 
                 onClick={() => {
                     Swal.fire({

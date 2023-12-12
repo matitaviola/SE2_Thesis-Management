@@ -137,6 +137,19 @@ body {
   float: right;
 }
 
+.update-button {
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-left: 15px;
+  transform: scale(1.1);
+  float: left;
+}
+
 .copy-button {
   background-color: #449d44;
   color: white;
