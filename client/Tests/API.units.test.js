@@ -905,6 +905,51 @@ describe('deleteProposal function', () => {
   });
 });
 
+describe('updateProposal API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore();
+  });
+
+  const teacherUser = { id: 1, role: 'TEACHER' };
+
+  const proposalData = { id: 1, studentId: 1, proposal: 'Test Proposal', status: 'Pending' };
+
+  const successResponse = {
+    ok: true,
+    json: async () => null,
+  };
+
+  const errorResponse = {
+    ok: false,
+    json: async () => {return {error:'Error occurred'}},
+  };
+
+  it('should create a proposal successfully', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.updateProposal(proposalData, teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/${proposalData.id}`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
+      body: JSON.stringify(proposalData),
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+  
+    await expect(API.updateProposal(proposalData, teacherUser)).rejects.toThrow(
+      'Error occurred'
+    );
+  });
+});
+
 describe('addApplication API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally

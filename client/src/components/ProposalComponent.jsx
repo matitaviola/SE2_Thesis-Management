@@ -11,18 +11,10 @@ export function ProposalComponent(props) {
 		let path = `/proposals`;
 		navigate(path);
 	}
-
-	useEffect(() => {
-		const fetchCoSupervisors = async () => {
-			try {
-				await API.getCoSupervisorByProposal(proposal.id);
-			} catch (err) {
-				props.setErrorMessage(`${err}`);
-			}
-		};
-	
-		fetchCoSupervisors();
-	}, []);
+	const routeChangeUpdate = () => {
+		//const proposal = location.state;
+		navigate(`/proposals/update`, { state: proposal });
+	}
 
 	const location = useLocation();
 	const { proposal } = location.state;
@@ -53,7 +45,7 @@ export function ProposalComponent(props) {
 					<p className='proposal-field-title'><strong>Keywords:</strong></p>
 					<Row className='proposal-show-field' style={{marginTop:'0px'}}>
 						<p>{proposal.keywords}</p>
-  					</Row>
+					</Row>
 				</Row>
 				<Row>
 					<p className='proposal-field-title'><strong>Description:</strong></p>
@@ -75,6 +67,28 @@ export function ProposalComponent(props) {
 				</Row>
 			</Container>
 
+			<button 
+                onClick={() => {
+                    Swal.fire({
+                        title: 'Update Proposal?',
+                        text: 'You will be redirected to the form to edit the proposal',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        cancelButtonText: 'No, cancel!',
+                        confirmButtonText: 'Yes, update it!',
+                        cancelButtonColor: "red",
+                        confirmButtonColor: "#449d44",
+                        reverseButtons: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            routeChangeUpdate();
+                        }
+                    });
+                }}
+                className="update-button"
+            >
+                UPDATE
+            </button>
 			<button 
                 onClick={() => {
                     Swal.fire({
@@ -183,12 +197,12 @@ export function StudentProposalComponent(props) {
 		};
 
 		const isValidFileSize = (file) => {
-			const maxSizeInBytes = 5 * 1024 * 1024;
+			const maxSizeInBytes = 8 * 1024 * 1024;
 			return file.size <= maxSizeInBytes;
 		};
 
 		if (file && !isValidFileSize(file)) {
-			alert("Max 10MB files accepted");
+			alert("Max 8MB files accepted");
 			return;
 		}
 
