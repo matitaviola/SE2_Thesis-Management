@@ -25,7 +25,7 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
             } catch (error) {
                 throw error;
             }
-        }else if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cs)){
+        }else if(/^\S+@\S+\.\S+$/.test(cs)){
             /*If it is an email, check in the external cosup Table*/
             const coSupSql = 'SELECT Surname, Name FROM EXTERNAL_COSUPERVISOR  WHERE Email=?';
             try {
@@ -96,7 +96,7 @@ exports.getCoSupervisorByProposal = async (proposalId) => {
                             });
                         });
                         academicCoSupervisors.push({id:row.ID, name:row.NAME, surname:row.SURNAME});
-                }else if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cs)){
+                }else if(/^\S+@\S+\.\S+$/.test(cs)){
                     const coSupSql = 'SELECT * FROM EXTERNAL_COSUPERVISOR  WHERE Email=?';
                         const row = await new Promise((resolve, reject) => {
                             db.get(coSupSql, [cs], (err, row) => {
