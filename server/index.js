@@ -202,6 +202,34 @@ app.get('/api/proposals/:proposalId',
     }
 });
 
+//gets a proposal's list of cosupervisors (name, surmane, id/mail for academic/external)
+//GET /api/proposals/:proposalId
+app.get('/api/proposals/:proposalId/cosupervisors',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('proposalId').not().isEmpty().isInt()
+  ],
+  async (req, res) => {
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      //gets all the professor's active proposals
+      const proposalCoSup = await propDao.getCoSupervisorByProposal(req.params.proposalId);
+      if(proposalCoSup){
+        return res.status(200).json(proposalCoSup);
+      }
+      throw new Error('No such Proposal: ', req.params.proposalId);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: err });
+    }
+});
+
 //gets all active proposals for a professor
 //GET /api/proposals/teacher/:professorId
 app.get('/api/proposals/teacher/:professorId',
@@ -317,7 +345,7 @@ app.get('/api/proposals/students/:studentId',
       console.log(err);
       res.status(500).end();
     }
-  });
+});
 
 //creates a new proposal
 //POST /api/proposals

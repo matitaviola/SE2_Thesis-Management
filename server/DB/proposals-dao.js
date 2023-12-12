@@ -74,6 +74,53 @@ exports.getAndAddExternalCoSupervisor = async (name, surname, email) => {
   });
 };
 
+exports.getCoSupervisorByProposal = async (proposalId) => {
+    try{
+        const proposal = await this.getProposalById(proposalId);
+        const coSupervisors = proposal? proposal.coSupervisor : null;
+        let externalCoSupervisors = [];
+        let academicCoSupervisors = [];
+        if(coSupervisors){
+            const externalCoSupList = coSupervisors.split(" "); //Take only the emails, that are the externals' id
+            await Promise.all(externalCoSupList.map(async (cs) => {
+                /*If it is an email, check in the external cosup Table*/
+                if(/d[0-9]{6}/.test(cs)){
+                    const coSupSql = 'SELECT ID, SURNAME, NAME FROM TEACHER  WHERE ID=?';
+                        const row = await new Promise((resolve, reject) => {
+                            db.get(coSupSql, [cs], (err, row) => {
+                                if (err || !row) {
+                                    reject(err? err : "No such Teacher");
+                                } else {
+                                    resolve(row);
+                                }
+                            });
+                        });
+                        academicCoSupervisors.push({id:row.ID, name:row.NAME, surname:row.SURNAME});
+                }else if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cs)){
+                    const coSupSql = 'SELECT * FROM EXTERNAL_COSUPERVISOR  WHERE Email=?';
+                        const row = await new Promise((resolve, reject) => {
+                            db.get(coSupSql, [cs], (err, row) => {
+                                if (err || !row) {
+                                    reject(err? err : "No such External collaborator");
+                                } else {
+                                    resolve(row);
+                                }
+                            });
+                        });
+                        //Add the new value to the list
+                        externalCoSupervisors.push({mail:row.Email, name:row.Name, surname:row.Surname});
+                }else{
+                    throw 'Invalid cosupervisor identifier';
+                }
+            }));
+        }
+        return  {academic:academicCoSupervisors, external:externalCoSupervisors};
+    }catch(err){
+        throw err;
+    }
+
+}
+
 //exports
 exports.getActiveProposalsByProfessor = async (professorId) => {
     try {

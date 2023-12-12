@@ -1,5 +1,5 @@
 //Mocking the dependencies
-const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, updateProposal, deleteProposal, getProposalById, getArchivedProposalById, getAndAddExternalCoSupervisor } = require('../DB/proposals-dao');
+const { getCoSupervisorNames,getActiveProposalsByProfessor, archiveProposal, archiveProposalWithoutApplication, getAvailableProposals, addProposal, updateProposal, deleteProposal, getProposalById, getArchivedProposalById, getAndAddExternalCoSupervisor, getCoSupervisorByProposal } = require('../DB/proposals-dao');
 const { db } = require('../DB/db');
 const dayjs = require('dayjs');
 const { Proposal } = require('../models/proposal');
@@ -155,6 +155,130 @@ describe('getAndAddExternalCoSupervisor Function Tests', () => {
     expect(db.run).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('getCoSupervisorByProposal Function Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return empty arrays when proposalId does not exist', async () => {
+    const nonExistentProposalId = 'nonexistentid';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce(null);
+    db.get.mockImplementation((sql, params, callback) => {
+      callback(null,null)
+    });
+    const result = await getCoSupervisorByProposal(nonExistentProposalId);
+
+    expect(result.academic).toEqual([]);
+    expect(result.external).toEqual([]);
+    expect(db.get).not.toHaveBeenCalled();
+  });
+
+  it('should return empty arrays when coSupervisors are not provided in the proposal', async () => {
+    // Arrange
+    const proposalIdWithoutCoSupervisors = 'proposalWithoutCoSupervisors';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: null});
+    // Act
+    const result = await getCoSupervisorByProposal(proposalIdWithoutCoSupervisors);
+
+    // Assert
+    expect(result.academic).toEqual([]);
+    expect(result.external).toEqual([]);
+    expect(db.get).toHaveBeenCalledTimes(0);
+  });
+
+  it('should return academic and external coSupervisors when provided in the proposal', async () => {
+    // Arrange
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "d123456 external@example.com"});
+    const proposalIdWithCoSupervisors = 'proposalWithCoSupervisors';
+
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { ID: 'd123456', NAME: 'John', SURNAME: 'Doe' });
+    });
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { Email: 'external@example.com', Name: 'External', Surname: 'CoSupervisor' });
+    });
+
+    // Act
+    const result = await getCoSupervisorByProposal(proposalIdWithCoSupervisors);
+
+    // Assert
+    expect(result.academic).toEqual([{ id: 'd123456', name: 'John', surname: 'Doe' }]);
+    expect(result.external).toEqual([{ mail: 'external@example.com', name: 'External', surname: 'CoSupervisor' }]);
+    expect(db.get).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle errors during database queries', async () => {
+    // Arrange
+    const proposalIdWithError = 'proposalWithError';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "d123456 external@example.com"});
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback('Database error', null);
+    });
+
+    // Act & Assert
+    await expect(getCoSupervisorByProposal(proposalIdWithError)).rejects.toEqual('Database error');
+  });
+
+  it('should handle missing search during database queries', async () => {
+    // Arrange
+    const proposalIdWithError = 'proposalWithError';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "d123456"});
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, null);
+    });
+
+    // Act & Assert
+    await expect(getCoSupervisorByProposal(proposalIdWithError)).rejects.toEqual('No such Teacher');
+  });
+
+  it('should handle errors during external coSupervisor database queries', async () => {
+    // Arrange
+    const proposalIdWithExternalError = 'proposalWithExternalError';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "d123456 external@example.com"});
+
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, {ID:'0', NAME:'o', SURNAME:'o'});
+    });
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback('External database error', null);
+    });
+
+    // Act & Assert
+    await expect(getCoSupervisorByProposal(proposalIdWithExternalError)).rejects.toEqual('External database error');
+    expect(db.get).toHaveBeenCalledTimes(2);
+  });
+
+  it('should handle missing search during external database queries', async () => {
+    // Arrange
+    const proposalIdWithError = 'proposalWithError';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "external@example.com"});
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, null);
+    });
+
+    // Act & Assert
+    await expect(getCoSupervisorByProposal(proposalIdWithError)).rejects.toEqual('No such External collaborator');
+  });
+
+  it('should throw an error for an invalid identifier', async () => {
+    // Arrange
+    const proposalIdWithError = 'proposalWithError';
+    const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    getProposalByIdMock.mockResolvedValueOnce({coSupervisor: "abba"});
+    // Act & Assert
+    await expect(getCoSupervisorByProposal(proposalIdWithError)).rejects.toEqual('Invalid cosupervisor identifier');
+  });
+
+});
+
 
 describe('getActiveProposalsByProfessor Function Tests', () => {
   afterEach(() => {
