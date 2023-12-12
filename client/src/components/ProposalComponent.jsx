@@ -45,7 +45,7 @@ export function ProposalComponent(props) {
 					<p className='proposal-field-title'><strong>Keywords:</strong></p>
 					<Row className='proposal-show-field' style={{marginTop:'0px'}}>
 						<p>{proposal.keywords}</p>
-  					</Row>
+					</Row>
 				</Row>
 				<Row>
 					<p className='proposal-field-title'><strong>Description:</strong></p>
