@@ -2,25 +2,28 @@ import { Button, Col, Container, Row, Form } from "react-bootstrap";
 import { AiOutlineUser, AiOutlineTeam, AiOutlineFileText, AiOutlineCalendar, AiOutlineBulb, AiOutlineInfoCircle } from "react-icons/ai";
 import API from "../API";
 import { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../App';
 
 export default function ProposalsFormComponent(props) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const proposalToUpdate = location.state;
+  console.log(proposalToUpdate);
   const loggedInUser = useContext(AuthContext);
   const [degrees, setDegrees] = useState([]);
   const [proposal, setProposal] = useState({
-    title: "",
-    supervisor: "",
-    coSupervisor: "",
-    notes: "",
-    cds: "",
-    description: "",
-    expiration: "",
-    level: "",
-    keywords: "",
-    type: "",
-    reqKnowledge: "",
+    title: proposalToUpdate? proposalToUpdate.title : "",
+    supervisor: proposalToUpdate? proposalToUpdate.supervisor : "",
+    coSupervisor: proposalToUpdate? proposalToUpdate.coSupervisor : "",
+    notes: proposalToUpdate? proposalToUpdate.notes : "",
+    cds: proposalToUpdate? proposalToUpdate.cds : "",
+    description: proposalToUpdate? proposalToUpdate.description : "",
+    expiration: proposalToUpdate? proposalToUpdate.expiration : "",
+    level: proposalToUpdate? proposalToUpdate.level : "",
+    keywords: proposalToUpdate? proposalToUpdate.keywords : "",
+    type: proposalToUpdate? proposalToUpdate.type : "",
+    reqKnowledge: proposalToUpdate? proposalToUpdate.reqKnowledge : "",
   });
 
   const handleChange = (event) => {
@@ -31,11 +34,20 @@ export default function ProposalsFormComponent(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     proposal.supervisor = loggedInUser.id;
-    try {
-      await API.createProposal(proposal, loggedInUser);
-      navigate("/proposals");
-    } catch (err) {
-      props.setErrorMessage(`${err}`);
+    if(proposalToUpdate) {
+      try {
+        await API.createProposal(proposal, loggedInUser);
+        navigate("/proposals");
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
+    } else {
+      try {
+        await API.createProposal(proposal, loggedInUser);
+        navigate("/proposals");
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
     }
   };
 
@@ -79,7 +91,7 @@ export default function ProposalsFormComponent(props) {
   return (
     <Container>
       <Row className="justify-content-center">
-        <h1>{"New Proposal"}</h1>
+        <h1>{proposalToUpdate? "Update Proposal" : "New Proposal"}</h1>
       </Row>
       <Row className="justify-content-center">
         <Col md={6}>

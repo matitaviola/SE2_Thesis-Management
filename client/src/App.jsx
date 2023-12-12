@@ -77,6 +77,8 @@ useEffect(() => {
               element={<ProposalComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/new'
               element={<ProposalsFormComponent setErrorMessage={setErrorMessage}/>} />
+              <Route path='proposals/update'
+              element={<ProposalsFormComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='applications'
               element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>}/>
           <Route path='application/:proposalId/:studentId'
