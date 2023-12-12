@@ -60,6 +60,33 @@ describe('getCoSupervisorNames Function Tests', () => {
     expect(db.get).toHaveBeenCalledTimes(1);
   });
 
+  it('should handle empty coSupervisor input', async () => {
+    const result = await getCoSupervisorNames('');
+    expect(result).toBe('');
+    expect(db.get).not.toHaveBeenCalled();
+  });
+  
+  it('should handle coSupervisor with only email addresses', async () => {
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { Surname: 'Smith', Name: 'Alice' });
+    });
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback(null, { Surname: 'Johnson', Name: 'Bob' });
+    });
+  
+    const result = await getCoSupervisorNames('alice@example.com bob@example.com');
+    expect(result).toBe('Alice Smith, Bob Johnson');
+    expect(db.get).toHaveBeenCalledTimes(2);
+  });
+  
+  it('should handle errors during external coSupervisor database queries', async () => {
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      callback('External database error', null);
+    });
+  
+    await expect(getCoSupervisorNames('alice@example.com')).rejects.toEqual('External database error');
+    expect(db.get).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('getActiveProposalsByProfessor Function Tests', () => {
