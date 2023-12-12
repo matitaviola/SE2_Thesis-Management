@@ -25,6 +25,23 @@ exports.getCoSupervisorNames = async (coSupervisor) => {
             } catch (error) {
                 throw error;
             }
+        }else if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cs)){
+            /*If it is an email, check in the external cosup Table*/
+            const coSupSql = 'SELECT Surname, Name FROM EXTERNAL_COSUPERVISOR  WHERE Email=?';
+            try {
+                const row = await new Promise((resolve, reject) => {
+                    db.get(coSupSql, [cs], (err, row) => {
+                        if (err || !row) {
+                            reject(err);
+                        } else {
+                            resolve(row);
+                        }
+                    });
+                });
+                coSuperNames = coSuperNames + " " + row.Name + " " + row.Surname + ",";
+            } catch (error) {
+                throw error;
+            }
         }
     }));
 
