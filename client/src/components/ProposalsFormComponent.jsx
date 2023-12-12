@@ -2,14 +2,11 @@ import { Button, Col, Container, Row, Form } from "react-bootstrap";
 import { AiOutlineUser, AiOutlineTeam, AiOutlineFileText, AiOutlineCalendar, AiOutlineBulb, AiOutlineInfoCircle } from "react-icons/ai";
 import API from "../API";
 import { useState, useContext, useEffect } from "react";
-import { useNavigate, useLocation, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../App';
 
 export default function ProposalsFormComponent(props) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const proposalToUpdate = location.state;
-  console.log(proposalToUpdate);
   const location = useLocation();
   const proposalToUpdate = location.state;
   console.log(proposalToUpdate);
@@ -43,20 +40,6 @@ export default function ProposalsFormComponent(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     proposal.supervisor = loggedInUser.id;
-    if(proposalToUpdate) {
-      try {
-        await API.createProposal(proposal, loggedInUser);
-        navigate("/proposals");
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
-      }
-    } else {
-      try {
-        await API.createProposal(proposal, loggedInUser);
-        navigate("/proposals");
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
-      }
     if(proposalToUpdate) {
       try {
         await API.createProposal(proposal, loggedInUser);
@@ -126,7 +109,6 @@ export default function ProposalsFormComponent(props) {
   return (
     <Container>
       <Row className="justify-content-center">
-        <h1>{proposalToUpdate? "Update Proposal" : "New Proposal"}</h1>
         <h1>{proposalToUpdate? "Update Proposal" : "New Proposal"}</h1>
       </Row>
       <Row className="justify-content-center">
