@@ -175,6 +175,19 @@ const archiveProposal = async (proposalId) => {
   return {ok:true};
 }
 
+const updateProposal = async (proposal) => {
+  const response = await fetch(`${SERVER_URL}/api/proposals/${proposal.id}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {'Content-Type' : "application/json"},
+    body: JSON.stringify(proposal)
+  });
+  if(!response.ok) {
+    const errMessage = await response.json();
+    throw new Error(errMessage.error);
+  }
+  return {ok:true};
+}
 //#endregion
 
 //#region Application
@@ -285,7 +298,7 @@ const getResumee = async (applicationId) => {
 
 const API = {getUserInfo, logout,
   getCoSupervisorsList, getCoSupervisorByProposal,
-  getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, getStudentProposals, 
+  getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, updateProposal, getStudentProposals,
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
   addApplication, getDegrees, getResumee
 };
