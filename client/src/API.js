@@ -72,7 +72,6 @@ const getCoSupervisorByProposal = async (proposalId) => {
   const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}/cosupervisors`, { credentials: 'include'});
   const cosupervisorsJson = await response.json();
   if(response.ok) {
-    console.log(cosupervisorsJson)
     return(cosupervisorsJson);
   }
   else{
@@ -134,7 +133,7 @@ const getStudentProposals = async (studentId, filter, order) =>{
 }
 
 const createProposal = async (proposal) => {
-
+  console.log(proposal);
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
     credentials: 'include',
@@ -162,7 +161,6 @@ const deleteProposal = async (proposal) => {
 }
 
 const archiveProposal = async (proposalId) => {
-
   const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, {
     method: 'PATCH',
     credentials: 'include',
@@ -176,6 +174,7 @@ const archiveProposal = async (proposalId) => {
 }
 
 const updateProposal = async (proposal) => {
+  console.log(proposal);
   const response = await fetch(`${SERVER_URL}/api/proposals/${proposal.id}`, {
     method: 'PATCH',
     credentials: 'include',
