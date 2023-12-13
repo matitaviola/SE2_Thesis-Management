@@ -15,15 +15,29 @@ body {
 }
 
 /*logout button*/
-.enbiggen-logout-button {
-  background-color: rgb(252, 122, 8);
+.enbiggen-logout-button-student {
+  background-color: rgb(226, 109, 6);
   color: white;
   border-color: white;
   font-size: 1.6rem;
   padding-top: 0%;
 }
-.enbiggen-logout-button:hover {
+.enbiggen-logout-button-student:hover {
   background-color: rgb(252, 137, 43);
+  border-color: white;
+  color: white;
+  font-size: 1.8rem;
+  padding-top: 0%;
+}
+.enbiggen-logout-button-teacher {
+  background-color: rgb(1, 90, 1);
+  color: white;
+  border-color: white;
+  font-size: 1.6rem;
+  padding-top: 0%;
+}
+.enbiggen-logout-button-teacher:hover {
+  background-color: #5f9553;
   border-color: white;
   color: white;
   font-size: 1.8rem;
