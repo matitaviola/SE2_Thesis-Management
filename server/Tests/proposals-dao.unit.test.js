@@ -1664,7 +1664,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
   });
 
-  it('should reject with an error if an error occurs during database transaction - delete', async () => {
+  it('should reject with an error if an error occurs during database transaction - update', async () => {
     const proposalId = 1;
     const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
     const mockedProposalRow = { };
@@ -1693,7 +1693,51 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     });
 
     db.run.mockImplementationOnce((query, params, innerCallback) => {
-      //Second db.run - Delete with an error
+      //Second db.run - update
+      innerCallback(expectedError);
+    });
+
+    db.run.mockImplementationOnce((query) =>{});
+  
+    //Call the actual function
+    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
+  });
+
+  it('should reject with an error if an error occurs during database transaction - delete', async () => {
+    const proposalId = 1;
+    const expectedProposalSql = 'SELECT * FROM PROPOSAL WHERE Id = ?';
+    const mockedProposalRow = { };
+    const expectedError = 'Database error occurred';
+  
+    //Mock the database get calls
+    db.get.mockImplementationOnce((sql, params, callback) => {
+      expect(sql).toBe(expectedProposalSql);
+      expect(params).toEqual([proposalId]);
+      callback(null, mockedProposalRow);
+    });
+  
+    //Mock the database serialize and run calls
+    db.serialize.mockImplementationOnce((callback) => {
+      //Simulate the serialize block
+      callback();
+    });
+
+    //Simulate the rest of the database calls within serialize
+    db.run.mockImplementationOnce((query) => {
+    });
+
+    //Insert
+    db.run.mockImplementationOnce((query, params, innerCallback) => {
+      innerCallback();
+    });
+
+    //Update
+    db.run.mockImplementationOnce((query, params, innerCallback) => {
+      innerCallback();
+    });
+
+    db.run.mockImplementationOnce((query, params, innerCallback) => {
+      //Third db.run - Delete with an error
       innerCallback(expectedError);
     });
 

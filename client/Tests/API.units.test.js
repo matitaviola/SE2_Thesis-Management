@@ -1193,7 +1193,7 @@ describe('archiveProposal API', () => {
     fetch.mockResolvedValueOnce(successResponse);
 
     const result = await API.archiveProposal(proposalId);
-    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/123`, {
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/proposals/123/archive`, {
       method: 'PATCH',
       credentials: 'include',
       headers: {'Content-Type' : "application/json"},
