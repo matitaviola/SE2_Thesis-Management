@@ -413,9 +413,10 @@ app.post('/api/proposals',
               //add the value to the field
               req.body.coSupervisor += coSup+" ";
             }else{
-              throw new Error(`Invalid supervisor: ${id}`);
+              throw new Error(`Invalid cosupervisor: ${id}`);
           }}
         }
+        req.body.coSupervisor =  req.body.coSupervisor.trim();
       }
       //#endregion
       //add the professor's group
@@ -504,6 +505,7 @@ app.patch('/api/proposals/:proposalId',
               throw new Error(`Invalid supervisor: ${id}`);
           }}
         }
+        req.body.coSupervisor =  req.body.coSupervisor.trim();
       }
       //#endregion
       const proposal = await propDao.updateProposal(req.body, req.params.proposalId);

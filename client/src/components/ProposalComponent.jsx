@@ -71,7 +71,7 @@ export function ProposalComponent(props) {
                 onClick={() => {
                     Swal.fire({
                         title: 'Update Proposal?',
-                        text: 'You will be redirected to the form to edit the proposal',
+                        text: 'You will be redirected to the form to edit the proposal. You will need to update the expiration date',
                         icon: 'warning',
                         showCancelButton: true,
                         cancelButtonText: 'No, cancel!',
