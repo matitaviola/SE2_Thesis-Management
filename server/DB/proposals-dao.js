@@ -265,6 +265,7 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
                 //There's a trigger to update the remaining proposals
                 const insertSQL = "INSERT INTO ARCHIVED_PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status, Thesist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 const deleteSQL = "DELETE FROM PROPOSAL WHERE Id=?";
+                const updateCancelledSQL = "UPDATE APPLICATION SET Archived_Proposal_ID=?, Status='Cancelled' WHERE Proposal_ID=? AND Status!='Accepted'";
                 // Begin a transaction
                 db.serialize(() => {
                     db.run("BEGIN TRANSACTION");
@@ -292,15 +293,23 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
                             db.run("ROLLBACK");
                             reject(err);
                         }
-                        db.run(deleteSQL, [proposalId], (err) => {
-                            if(err){
+                        // Execute the third SQL statement
+                        db.run(updateCancelledSQL, [proposalId, proposalId], (err) => {
+                            if (err) {
+                                // Roll back the transaction if an error occurs
                                 db.run("ROLLBACK");
                                 reject(err);
                             }
+                            db.run(deleteSQL, [proposalId], (err) => {
+                                if(err){
+                                    db.run("ROLLBACK");
+                                    reject(err);
+                                }
 
-                            // Commit the transaction if all statements succeed
-                            db.run("COMMIT");
-                            resolve({ success: true });
+                                // Commit the transaction if all statements succeed
+                                db.run("COMMIT");
+                                resolve({ success: true });
+                            });
                         });
                     });
                 });

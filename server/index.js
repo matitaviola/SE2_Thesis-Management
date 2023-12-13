@@ -548,7 +548,7 @@ app.delete('/api/proposals/:proposalId',
 
 // archive an existing proposal
 //PATCH /api/proposals/:proposalId
-app.patch('/api/proposals/:proposalId',
+app.patch('/api/proposals/:proposalId/archive',
   isLoggedIn,
   checkTeacherRole,
   [

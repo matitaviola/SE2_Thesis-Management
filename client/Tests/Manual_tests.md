@@ -322,6 +322,7 @@ Please note that each of the following test is written to be executed on a fresh
 - Should be visibile a modal confirming that the operation was successful
 - The application should return to the proposals table and show the previous list without ["Pioneering Groundbreaking Medical Research Projects"]
 ```
+
 ## Story #13 - Access applicant CV:
 - Should access applicant CV through the applications table:
 ```

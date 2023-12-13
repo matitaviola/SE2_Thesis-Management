@@ -161,7 +161,7 @@ const deleteProposal = async (proposal) => {
 }
 
 const archiveProposal = async (proposalId) => {
-  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}`, {
+  const response = await fetch(SERVER_URL + `/api/proposals/${proposalId}/archive`, {
     method: 'PATCH',
     credentials: 'include',
     headers: {'Content-Type' : "application/json"},
