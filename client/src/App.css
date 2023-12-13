@@ -250,3 +250,43 @@ body {
   font-size: 30px;
   margin-right: 20px;
 }
+
+.externals-container {
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  width: 50vw;
+}
+
+.centered-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px; /* Adjust the margin as needed */
+}
+.externals-form {
+  border: 1px solid #212529;
+  border-radius: 10px;
+  padding: 8px;
+  margin-right: 0px; /* Adjust the margin as needed */
+}
+.add-option-button{
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #212529;
+  border-radius: 10px;
+  font-size: large;
+}
+.add-option-button:hover{
+  background-color: rgb(252, 137, 43);
+  border-radius: 10px;
+  font-size: large;
+}
+.remove-option-button{
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #212529;
+  border-radius: 10px;
+}
+.remove-option-button:hover{
+  background-color: rgb(236, 16, 12);
+  border-radius: 10px;
+}

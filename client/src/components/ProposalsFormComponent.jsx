@@ -1,7 +1,7 @@
 import { Button, Col, Container, Row, Form } from "react-bootstrap";
 import { AiOutlineUser, AiOutlineTeam, AiOutlineFileText, AiOutlineCalendar, AiOutlineBulb, AiOutlineInfoCircle } from "react-icons/ai";
 import API from "../API";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, React } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../App';
 
@@ -32,6 +32,13 @@ export default function ProposalsFormComponent(props) {
   }]);
   const [academics, setAcademics] = useState([]);
   const [externals, setExternals] = useState([]);
+  const [externalsFormData, setExternalsFormData] = useState({
+    name: '',
+    surname: '',
+    mail: '',
+  });
+  const [externalsError, setExternalsError] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const handleChange = (event) => {
     let { name, value } = event.target;
@@ -45,26 +52,96 @@ export default function ProposalsFormComponent(props) {
     }else{
     setProposal({ ...proposal, [name]: value });
     }
+    setSubmitError("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     proposal.supervisor = loggedInUser.id;
-    if(proposalToUpdate) {
-      try {
-        /*TODO: logic to get the academic ids and the externals in the correct format*/
-        await API.updateProposal(proposal);
-        navigate("/proposals");
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
+    proposal.cds = proposal.cds.trim();
+    proposal.coSupervisor = formatCoSupervisors();
+    if(submitFormsCheck()){
+      if(proposalToUpdate) {
+        try {
+          proposal.id = proposalToUpdate.id;
+          await API.updateProposal(proposal);
+          navigate("/proposals");
+        } catch (err) {
+          props.setErrorMessage(`${err}`);
+        }
+      } else {
+        try {
+          await API.createProposal(proposal, loggedInUser);
+          navigate("/proposals");
+        } catch (err) {
+          props.setErrorMessage(`${err}`);
+        }
       }
-    } else {
-      try {
-        await API.createProposal(proposal, loggedInUser);
-        navigate("/proposals");
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
+    }
+  };
+
+  const submitFormsCheck = () => {
+    //checks for multiple cds
+      if(!proposal.cds){
+        setSubmitError('At least 1 Degree is required.');
+        return false;
       }
+      return true;
+  }
+
+  const formatCoSupervisors = () =>{
+    const formattedAcademics = academics? academics.map(ac => ac.id).join(",") : ""
+    const formattedExternals = externals? externals.map(ex => ex.name.trim().replace(" ","_")+" "+ex.surname.trim().replace(" ","_")+" "+ex.mail.trim()).join(",") :"";
+    const formattedAll = formattedAcademics + (academics?.length>0 && externals?.length>0 ?",":"") + formattedExternals;
+    return formattedAll;
+  }
+
+  const removeOption = (name, value) =>{
+    if(name=="cds"){
+      const newCds = proposal.cds.replace(" "+value, "").replace(value+" ", "").replace(value,""); //if it's the first or if there is something after it or is the only one
+      setProposal({...proposal, cds:newCds});
+    }
+    else if(name=="academics"){
+      setAcademics(academics => academics.filter(ac => ac.id!=value));
+    }else if(name=="externals"){
+      setExternals(externals => externals.filter(ex => ex.mail!=value));
+    }
+  }
+
+//External cosupervisors utilities
+  const handleExternalsInputChange = (e) => {
+    const { name, value } = e.target;
+    setExternalsFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setExternalsError('');
+  };
+  const validateExternalsForm = () => {
+    if (!externalsFormData.name || !externalsFormData.surname || !externalsFormData.mail) {
+      setExternalsError('All fields must be filled.');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(externalsFormData.mail)) {
+      setExternalsError('Enter a valid email address.');
+      return false;
+    }
+    return true;
+  };
+  const handleExternalsButtonClick = () => {
+    if(validateExternalsForm()){
+      const name = externalsFormData.name.trim();
+      const surname= externalsFormData.surname.trim();
+      const mail= externalsFormData.mail.trim();
+      setExternals([...externals, {mail:mail, name:name, surname:surname}]);
+      // Clear the form fields
+      setExternalsFormData({
+        name: '',
+        surname: '',
+        mail: '',
+      });
     }
   };
 
@@ -81,7 +158,6 @@ export default function ProposalsFormComponent(props) {
       try {
         const response = await API.getCoSupervisorsList(loggedInUser);
         setCoSupervisorList(response);
-        //TODO: remove console.log and add logic to allow selection of cosupervisors
       } catch (err) {
         props.setErrorMessage(`${err}`);
       }
@@ -91,7 +167,6 @@ export default function ProposalsFormComponent(props) {
         const response = await API.getCoSupervisorByProposal(proposalToUpdate.id);
         setAcademics(response.academic);
         setExternals(response.external);
-        //TODO: remove console.log and add logic to allow selection of cosupervisors
       } catch (err) {
         props.setErrorMessage(`${err}`);
       }
@@ -105,21 +180,52 @@ export default function ProposalsFormComponent(props) {
   const renderCdSList = () => {
     const cdsList = proposal.cds.trim().split(" ").map(c => {
         const degree = degrees.find(d=> d.COD_DEGREE==c);
-        console.log(degrees, degree);
-        console.log(proposal.cds, c);
-        return {code:degree.TITLE_DEGREE, title:degree.TITLE_DEGREE}
+        return {code:degree.COD_DEGREE, title:degree.TITLE_DEGREE}
     });
     return(
-      <>
-      {cdsList.map(c => (<p key={c.code}><i>{c.title}</i></p>))}
-      </>
+      <Container style={{padding:'0px', marginTop:'10px'}}>
+      {cdsList.map(c => ((
+        <Row key={c.code} style={{padding:'0px'}}>
+          <Col xs={1}>
+          <Button
+                    className="remove-option-button"
+                    variant=""
+                    size="sm"
+                    onClick={() => removeOption("cds", c.code)}
+                  >
+                    X
+                  </Button>
+                  </Col>
+        <Col xs={11}>
+          <p><i>{c.title}</i></p>
+          </Col>
+        </Row>
+        )))}
+      </Container>
     )
   }
 
   const renderAcademicList = () => {
     return(
       <>
-      {academics.map(ac => (<p key={ac.id}><i>{ac.name} {ac.surname}</i></p>))}
+      {academics.map(ac => (
+        <Row key={ac.id} style={{padding:'0px', marginTop:'5px'}}>
+          <Col xs={1}>
+          <Button
+                    className="remove-option-button"
+                    variant=""
+                    size="sm"
+                    onClick={() => removeOption("academics", ac.id)}
+                  >
+                    X
+                  </Button>
+        </Col>
+          <Col xs={11}>
+          <p><i>{ac.name} {ac.surname}</i></p>
+          </Col>
+        </Row>
+        ))
+      }
       </>
     )
   }
@@ -127,7 +233,23 @@ export default function ProposalsFormComponent(props) {
   const renderExternalList = () => {
     return(
       <>
-      {externals.map(ex => (<p key={ex.email}><i><b>Name: </b>{ex.name} <b>Surname: </b>{ex.surname} <b>Email:{ex.email}</b></i></p>))}
+      {externals.map(ex => (
+        <Row key={ex.mail} style={{padding:'0px', marginTop:'5px'}}>
+          <Col xs={1}>
+          <Button
+                    className="remove-option-button"
+                    variant=""
+                    size="sm"
+                    onClick={() => removeOption("externals", ex.mail)}
+                  >
+                    X
+                  </Button>
+          </Col>
+          <Col xs={11}>
+          <p>Name: <i>{ex.name}</i> Surname: <i>{ex.surname}</i> Email: <i>{ex.mail}</i></p>
+          </Col>
+        </Row>
+        ))}
       </>
     )
   }
@@ -167,7 +289,7 @@ export default function ProposalsFormComponent(props) {
             {renderFormGroup("Title", "title", "text", "", <AiOutlineFileText />)}
             {/*renderFormGroup("Co-Supervisor", "coSupervisor", "text", "", <AiOutlineUser />)*/}
             <Form.Group controlId="formAcademics" className="mb-3">
-              <Form.Label>Academic Co-Supervisors<span className="text-danger">*</span></Form.Label>
+              <Form.Label><AiOutlineUser />Academic Co-Supervisors<span className="text-danger">*</span></Form.Label>
               <Form.Select
                 name="academics"
                 value={proposal.coSupervisor}
@@ -181,7 +303,7 @@ export default function ProposalsFormComponent(props) {
                       {sup.name} {sup.surname}
                     </option>
                   :
-                    <></>
+                    null
                 ))}
               </Form.Select>
               {/* Show list of selected academics supervisors*/}
@@ -190,10 +312,63 @@ export default function ProposalsFormComponent(props) {
               :
               <></>}
             </Form.Group>
+            {/*External Co-supervisor*/}
+            <Form.Group controlId="formExternals" className="mb-3">
+              <Form.Label>
+                <AiOutlineUser />External Co-Supervisors
+                <span className="text-danger">*</span>
+              </Form.Label>
+              <Container className="externals-container">
+                <Container className="externals-form">
+                  <Row>
+                    <Col>
+                      Name:
+                      <Form.Control
+                        aria-label="Name"
+                        name="name"
+                        value={externalsFormData.name}
+                        onChange={handleExternalsInputChange}
+                      />
+                    </Col>
+                    <Col>
+                      Surname:
+                      <Form.Control
+                        aria-label="Surname"
+                        name="surname"
+                        value={externalsFormData.surname}
+                        onChange={handleExternalsInputChange}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      Email:
+                      <Form.Control
+                        aria-label="Email"
+                        name="mail"
+                        value={externalsFormData.mail}
+                        onChange={handleExternalsInputChange}
+                      />
+                    </Col>
+                  </Row>
+                </Container>
+                <div className="centered-button">
+                  <Button
+                    className="add-option-button"
+                    variant=""
+                    size="lg"
+                    onClick={handleExternalsButtonClick}
+                  >
+                    +
+                  </Button>
+                </div>
+              </Container>
+              {externalsError && <div className="error-message" style={{color:'red'}}>{externalsError}</div>}
+            </Form.Group>
             {externals?.length>0?
                 renderExternalList()
               :
-              <></>}
+              null}
             {renderFormGroup("Keywords", "keywords", "text", "", <AiOutlineBulb />)}
             {renderFormGroup("Type", "type", "text", "", <AiOutlineInfoCircle />)}
             {renderFormGroup("Description", "description", "textarea", "Enter description", <AiOutlineInfoCircle />)}
@@ -221,7 +396,6 @@ export default function ProposalsFormComponent(props) {
                 value={proposal.cds}
                 onChange={handleChange}
                 className="place-holder-style"
-                required
               >
                 <option key="default" value="">Select Degree</option>
                 {degrees.map((degree) => (
@@ -230,7 +404,7 @@ export default function ProposalsFormComponent(props) {
                       {degree.TITLE_DEGREE}
                     </option>
                   :
-                    <></>
+                    null
                 ))}
               </Form.Select>
               {/* Show list of selected values */}
@@ -238,10 +412,20 @@ export default function ProposalsFormComponent(props) {
                 renderCdSList()
               :
               <></>}
+              {submitError && <div className="error-message" style={{color:'red'}}>{submitError}</div>}
             </Form.Group>
-            <Button variant="success" type="submit" className="mt-2">
-              Save
+            <Button variant="success" type="submit" className="mt-3" style={{color:"white", marginRight:"10px"}}>
+              SUBMIT
             </Button>
+            { proposalToUpdate?
+              <Button variant="danger" onClick={() => {
+                let proposal = proposalToUpdate;
+                console.log(proposal);
+                navigate(`/proposals/${proposalToUpdate.id}`, { state: {proposal} })}} className="mt-3">
+              CANCEL
+            </Button> 
+            : null
+            }
           </Form>
         </Col>
       </Row>
