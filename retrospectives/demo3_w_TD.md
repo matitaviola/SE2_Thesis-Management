@@ -77,7 +77,7 @@ sections:
 We overstimated a bit due to unknown size of technical debt after a team member left and the presence of new technologies
 
 - What lessons did you learn (both positive and negative) in this sprint?
-Overstimating tasks of unknown size allows us to work more structuraly and in a less prone to error way.
+Overstimating tasks of unknown size allows us to work more structuraly and in a less error-prone way.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
 Both: we did not underestimate the new technologies nor we started more stories than the ones we were absolutely sure to be able to commit
