@@ -59,17 +59,17 @@ npm run coverage
 
 ## Users:
 ### Students
-- usr:john@studenti.polito.com psw:s200000
-- usr:alice@studenti.polito.com psw:s200001
-- usr:carlos@studenti.polito.com psw:s200002
-- usr:ling@studenti.polito.com psw:s200003
-- usr:raj@studenti.polito.com psw:s200004
+- usr:john@studenti.polito.com psw:s200000 (1 pending, 1 cancelled applications)
+- usr:alice@studenti.polito.com psw:s200001 (1 pending application)
+- usr:carlos@studenti.polito.com psw:s200002 (no applications)
+- usr:ling@studenti.polito.com psw:s200003 (1 pending)
+- usr:raj@studenti.polito.com psw:s200004 (1 rejected)
 #### Mail test students:
 - usr:mta_studenti.polito@libero.it psw:s000001
 - usr:mtr_studenti.polito@libero.it psw:s000002
 
 ### Teachers
-- usr:michael@docenti.polito.com psw:d100001
-- usr:emily@docenti.polito.com psw:d200002
-- usr:david@docenti.polito.com psw:d100003
-- usr:emma@docenti.polito.com psw:d100011
+- usr:michael@docenti.polito.com psw:d100001 (2 proposals)
+- usr:emily@docenti.polito.com psw:d200002 (1 proposal)
+- usr:david@docenti.polito.com psw:d100003 (5 proposals)
+- usr:emma@docenti.polito.com psw:d100011 (1 proposal)

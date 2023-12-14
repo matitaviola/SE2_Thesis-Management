@@ -48,7 +48,7 @@ useEffect(() => {
       <Routes>
         <Route element={
           <>
-            <NavHeader handleLogout={handleLogout}/>
+            {loggedIn? <NavHeader handleLogout={handleLogout}/> : <></>}
             <Container fluid className="mt-3">
 
               <Outlet />
