@@ -12,9 +12,9 @@ sections:
 
 ### Macro statistics
 
-- Number of stories committed vs done 
-- Total points committed vs done 
-- Nr of hours planned vs spent (as a team)
+- Number of stories committed vs done: 3 vs 3
+- Total points committed vs done: 6 vs 6
+- Nr of hours planned vs spent (as a team) 
 
 **Remember**  a story is done ONLY if it fits the Definition of Done:
  
@@ -29,8 +29,10 @@ sections:
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| _#0_   |         |    -   |            |              |
-| n      |         |        |            |              |
+| _#0_   |   19    |    -   |     61     |              |
+|   8    |    3    |    2   |      6     |       6      |
+|  11    |    3    |    2   |      5     |     1h 30m   |
+|  13    |    4    |    2   |      8     |       6      |
    
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
@@ -44,22 +46,22 @@ sections:
 - Unit Testing:
   - Total hours estimated
   - Total hours spent
-  - Nr of automated unit test cases 
-  - Coverage (if available)
+  - Nr of automated unit test cases 181 
+  - Coverage (if available) 100% (NOTE: Sonarcloud shows less for it takes into account also the part that have been manually tested)
 - E2E testing:
   - Total hours estimated
   - Total hours spent
 - Code review 
-  - Total hours estimated 
-  - Total hours spent
+  - Total hours estimated 6h
+  - Total hours spent 
 - Technical Debt management:
-  - Total hours estimated 
-  - Total hours spent
+  - Total hours estimated 6h
+  - Total hours spent 6h 15m
   - Hours estimated for remediation by SonarQube
   - Hours estimated for remediation by SonarQube only for the selected and planned issues 
   - Hours spent on remediation 
-  - debt ratio (as reported by SonarQube under "Measures-Maintainability")
-  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability )
+  - debt ratio (as reported by SonarQube under "Measures-Maintainability") 0.6%
+  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability )  A, A, A
   
 
 
