@@ -6,6 +6,9 @@ import { FileUploadComponent } from './FileUploadComponent';
 import Swal from 'sweetalert2';
 
 export function ProposalComponent(props) {
+	const [academics, setAcademics] = useState([]);
+  	const [externals, setExternals] = useState([]);
+
 	let navigate = useNavigate();
 	const routeChange = () => {
 		let path = `/proposals`;
@@ -15,6 +18,27 @@ export function ProposalComponent(props) {
 		//const proposal = location.state;
 		navigate(`/proposals/update`, { state: proposal });
 	}
+	const formatCoSupervisors = () =>{
+		const formattedAcademics = academics? academics.map(ac => ac.id).join(",") : ""
+		const formattedExternals = externals? externals.map(ex => ex.name.trim().replace(" ","_")+" "+ex.surname.trim().replace(" ","_")+" "+ex.mail.trim()).join(",") :"";
+		const formattedAll = formattedAcademics + (academics?.length>0 && externals?.length>0 ?",":"") + formattedExternals;
+		return formattedAll;
+	}
+
+	useEffect(()=>{
+		const fetchProposalCoSupervisors = async () => {
+			try {
+			  const response = await API.getCoSupervisorByProposal(proposal.id);
+			  setAcademics(response.academic);
+			  setExternals(response.external);
+			} catch (err) {
+			  props.setErrorMessage(`${err}`);
+			}
+		  };
+		fetchProposalCoSupervisors();
+	}, [])
+
+
 
 	const location = useLocation();
 	const { proposal } = location.state;
@@ -103,9 +127,15 @@ export function ProposalComponent(props) {
                         reverseButtons: false,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            API.createProposal(proposal);
-							routeChange();
-                            Swal.fire('Copy completed!', 'The proposal has been successfully duplicated.', 'success');
+							try{
+								proposal.coSupervisor = formatCoSupervisors();
+								API.createProposal(proposal);
+								console.log(proposal);
+								routeChange();
+								Swal.fire('Copy completed!', 'The proposal has been successfully duplicated.', 'success');
+							}catch(err){
+								console.log(err);
+							}
                         }
                     });
                 }}
