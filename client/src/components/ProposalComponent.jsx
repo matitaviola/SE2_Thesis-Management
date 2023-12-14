@@ -42,12 +42,23 @@ export function ProposalComponent(props) {
 
 	const location = useLocation();
 	const { proposal } = location.state;
+	const expirationDate = new Date(proposal.expiration);
+	const currentDate = new Date();
 
+	const isExpired = expirationDate < currentDate;
 	return (
 		<Container>
 			<Row className='proposal-show-field text-center' style={{padding:'2px'}}>
-			<h1>{proposal.title}</h1>
-			<h4 ><i>expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></i></h4>
+				<h1>{proposal.title}</h1>
+				<h4>
+					<i>
+						{isExpired ? (
+						<span>Expired on: <strong>{proposal.expiration.substring(0, 10)}</strong></span>
+						) : (
+						<span>Expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></span>
+						)}
+					</i>
+				</h4>
 			</Row>
 			<Container className='proposal-container'>
 				<Row>
@@ -211,7 +222,10 @@ export function StudentProposalComponent(props) {
 	const [selectedProposal, setSelectedProposal] = useState({ title: "", id: -1 });
 	const [file, setFile] = useState(null);
 
+	const expirationDate = new Date(proposal.expiration);
+	const currentDate = new Date();
 
+	const isExpired = expirationDate < currentDate;
 	const handleShowUpdateModal = (proposal) => {
 		setSelectedProposal(proposal);
 		setShowUpdateModal(true);
@@ -252,7 +266,15 @@ export function StudentProposalComponent(props) {
 		<Container>
 			<Row className='proposal-show-field text-center' style={{padding:'2px'}}>
 			<h1>{proposal.title}</h1>
-			<h4 ><i>expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></i></h4>
+			<h4>
+				<i>
+					{isExpired ? (
+					<span>Expired on: <strong>{proposal.expiration.substring(0, 10)}</strong></span>
+					) : (
+					<span>Expires on: <strong>{proposal.expiration.substring(0, 10)}</strong></span>
+					)}
+				</i>
+			</h4>
 			</Row>
 			<Container className='proposal-container' style={{marginBottom:'0%'}}>
 				<Row>
