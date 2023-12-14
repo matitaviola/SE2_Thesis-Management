@@ -20,8 +20,8 @@ const applicationMailData = async (studentId, options) => {
   const subject = 'Application Status';
   let text = `Dear ${student.name},
   I hope this email finds you well.`;
-  text += options.status === 'accepted' ? ` Your application for proposal ${options.proposal} has been accepted, and we believe your contributions will greatly enhance the proposal ${options.proposal}.`
-    : ` We regret to inform you that, after careful consideration, we are unable to accept your application for the proposal ${options.proposal}.`;
+  text += options.status === 'accepted' ? ` Your application for proposal "${options.proposal}" has been accepted, and we believe your contributions will greatly enhance the proposal ${options.proposal}.`
+    : ` We regret to inform you that, after careful consideration, we are unable to accept your application for the proposal "${options.proposal}".`;
   text += ' Thank you for your interest and participation in the application process.';
   return { to, subject, text };
 };

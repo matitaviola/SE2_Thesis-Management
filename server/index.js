@@ -733,14 +733,14 @@ app.patch('/api/application/:proposalId/:studentId',
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
           }
-          mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.Title });
+          mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.title });
         } else {
           // Update the application status, will probably be a "rejected"
           const result = await appDao.setApplicationStatus(req.params.proposalId, req.params.studentId, req.body.status);
           if (!result.success) {
             throw new Error('Application not found');
           }
-          mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'rejected', proposal: proposal.Title });
+          mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'rejected', proposal: proposal.title });
         }
 
         res.status(200).end();
