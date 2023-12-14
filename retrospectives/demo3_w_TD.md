@@ -74,15 +74,15 @@ sections:
 ???
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
-???
+Both: we did not underestimate the new technologies nor we started more stories than the ones we were absolutely sure to be able to commit
   
 - Which ones you were not able to achieve? Why?
 ???
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
-
-
-> Propose one or two
+  - Improving manual test -> producing more test for the same analyzed function
+  - Improving the documentation (e.g. adding Swagger to help automatically produce it)
+  > Propose one or two
 
 - One thing you are proud of as a Team!!
-We were able to quickly adapt to the "disappearance" of a team member and produce an acceptable amount of work. We also kept on improving the graphical interface of the application, which is one of the underlying issues of the app.
+We were able to quickly adapt to changes (both the "disappearance" of a team member and new requirements emerging from the FAQs).
