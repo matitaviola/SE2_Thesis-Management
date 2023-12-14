@@ -256,6 +256,7 @@ export function StudentProposalComponent(props) {
 		try{
 			API.addApplication(file, proposal.id, studentId);
 			setShowUpdateModal(false);
+			Swal.fire('Sent', 'The application has been sent successfully.', 'success');
 			navigate('/proposals');
 		}catch(err){
 			props.setErrorMessage(`${err}`);
