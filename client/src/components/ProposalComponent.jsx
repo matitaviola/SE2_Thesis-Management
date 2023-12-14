@@ -130,7 +130,6 @@ export function ProposalComponent(props) {
 							try{
 								proposal.coSupervisor = formatCoSupervisors();
 								API.createProposal(proposal);
-								console.log(proposal);
 								routeChange();
 								Swal.fire('Copy completed!', 'The proposal has been successfully duplicated.', 'success');
 							}catch(err){
