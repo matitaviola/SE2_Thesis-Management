@@ -133,7 +133,6 @@ const getStudentProposals = async (studentId, filter, order) =>{
 }
 
 const createProposal = async (proposal) => {
-  console.log(proposal);
   const response = await fetch(`${SERVER_URL}/api/proposals`, {
     method: 'POST',
     credentials: 'include',
@@ -174,7 +173,6 @@ const archiveProposal = async (proposalId) => {
 }
 
 const updateProposal = async (proposal) => {
-  console.log(proposal);
   const response = await fetch(`${SERVER_URL}/api/proposals/${proposal.id}`, {
     method: 'PATCH',
     credentials: 'include',

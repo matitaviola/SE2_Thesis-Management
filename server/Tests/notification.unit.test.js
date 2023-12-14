@@ -57,7 +57,7 @@ describe('Mail Server', () => {
       from: 'groupsofteng6@gmail.com',
       to: 'john.doe@example.com',
       subject: 'Application Status',
-      text: expect.stringContaining('Your application for proposal Proposal 123 has been accepted'),
+      text: expect.stringContaining('Your application for proposal "Proposal 123" has been accepted'),
     });
   });
 
@@ -102,7 +102,7 @@ describe('Mail Server', () => {
       from: 'groupsofteng6@gmail.com',
       to: 'john.doe@example.com',
       subject: 'Application Status',
-      text: expect.stringContaining('we are unable to accept your application for the proposal Proposal 123.'),
+      text: expect.stringContaining('we are unable to accept your application for the proposal "Proposal 123".'),
     });
   });
 
