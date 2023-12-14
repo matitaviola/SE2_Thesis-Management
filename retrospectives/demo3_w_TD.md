@@ -29,10 +29,10 @@ sections:
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| _#0_   |   19    |    -   |     61     |      ???     |
-|   8    |    3    |    2   |      6     |       6      |
-|  11    |    3    |    2   |      5     |     2h 30m   |
-|  13    |    4    |    2   |      8     |       6      |
+|  #0    |   19    |    -   |     61     |      ???     |
+|  #8    |    3    |    2   |      6     |       6      |
+|  #11   |    3    |    2   |      5     |     2h 30m   |
+|  #13   |    4    |    2   |      8     |       6      |
    
 
 > place technical tasks corresponding to story `#0` and leave out story points (not applicable in this case)
