@@ -77,7 +77,7 @@ sections:
 Both: we did not underestimate the new technologies nor we started more stories than the ones we were absolutely sure to be able to commit
   
 - Which ones you were not able to achieve? Why?
-???
+We were able to achieve all of them
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
   - Improving manual test -> producing more test for the same analyzed function
