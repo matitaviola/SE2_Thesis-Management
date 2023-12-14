@@ -13,6 +13,7 @@ function LoginForm() {
 }
 
 function LogoutButton(props) {
+  const loggedInUser = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogoutClick = async () => {
@@ -20,8 +21,10 @@ function LogoutButton(props) {
     navigate('/login');
   };
 
+  const buttonClassName = loggedInUser.role === 'TEACHER' ? 'enbiggen-logout-button-teacher' : 'enbiggen-logout-button-student'; 
+
   return (
-      <Button variant="light" onClick={handleLogoutClick} className='enbiggen-logout-button text-center'>
+      <Button variant="light" onClick={handleLogoutClick} className={`text-center ${buttonClassName}`}>
         Logout
       </Button>
   );
