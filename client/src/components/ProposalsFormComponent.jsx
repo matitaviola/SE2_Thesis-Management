@@ -323,7 +323,7 @@ export default function ProposalsFormComponent(props) {
               <Form.Label><AiOutlineUser />Academic Co-Supervisors<span className="text-danger">*</span></Form.Label>
               <Form.Select
                 name="academics"
-                value={proposal.coSupervisor}
+                value={proposal.coSupervisor? proposal.coSupervisor : ""}
                 onChange={handleChange}
                 className="place-holder-style"
               >

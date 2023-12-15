@@ -1,10 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
-import API from "../API";
-import { Container, Row, Col, Table, Form, Button, Card, Dropdown } from "react-bootstrap";
+import { useContext, useState, useEffect } from "react";
+import { Container, Row, Col, Table, Form, Button, Dropdown } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
+import TimeTravelComponent from "./TimeTravel.jsx";
+import API from "../API";
 
 export default function ProposalsTableComponent(props) {
 
@@ -47,6 +48,7 @@ function TeacherProposalsTableComponent(props) {
       <Link to="/proposals/new">
         <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
       </Link>
+      <TimeTravelComponent setErrorMessage={props.setErrorMessage}/>
 			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
@@ -127,11 +129,10 @@ function StudentProposalsTableComponent(props) {
   return (
     <div className="proposal-table">
       <h1>Thesis Proposals</h1>
-
+      <TimeTravelComponent setErrorMessage={props.setErrorMessage}/>
       <Row className="mb-2" >
         <Col><SearchBarComponent filter={filter} setFilter={setFilter}></SearchBarComponent></Col>           
         <Col className="justify-content-end"><DropdownSelectionFilter filter={filter} setFilter={setFilter}></DropdownSelectionFilter></Col>
-
       </Row>
 
       <Row>

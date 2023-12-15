@@ -292,10 +292,28 @@ const getResumee = async (applicationId) => {
 
 //#endregion
 
+//#region
+//takes the date to go to
+const boardTardis = async (destination) =>{
+  const response = await fetch(SERVER_URL + `/api/timetravel`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({'destination':destination}),
+  });
+  if (!response.ok) {
+    throw new Error(`Something went wrong during the TARDIS landing`);
+  }
+}
+//#endregion
+
 const API = {getUserInfo, logout,
   getCoSupervisorsList, getCoSupervisorByProposal,
   getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, updateProposal, getStudentProposals,
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
-  addApplication, getDegrees, getResumee
+  addApplication, getDegrees, getResumee,
+  boardTardis
 };
 export default API;

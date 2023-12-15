@@ -1,5 +1,4 @@
-// Sever's main file
-const loginDao = require('./DB/login-dao');
+//Sever's main file
 const appDao = require('./DB/applications-dao');
 const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
@@ -15,6 +14,7 @@ const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
 const multer = require('multer');
 const fs = require('fs');
+const autoArchive = require('./utils/auto-archive')
 
 const passport = require('./utils/saml-config');
 const session = require('express-session');
@@ -22,38 +22,47 @@ const session = require('express-session');
 const PORT = 3001;
 const FRONTEND = "http://localhost:5173/"
 const app = express();
-      app.disable("x-powered-by"); // Added for security reasons
+app.disable("x-powered-by"); //Added for security reasons
 const corsOptions = {
   origin: "http://localhost:5173",
   optionsSuccessStatus: 200,
   credentials: true
 }
+//#region Auto Archiviation
+const currentDate = dayjs();
+function runAutoArchive() {
+  autoArchive.timelyArchive(currentDate);
+}
+const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
+//#endregion
+
 //middleman to every call
-app.use(cors(corsOptions)); // Enable CORS for all routes
+app.use(cors(corsOptions)); //Enable CORS for all routes
 app.use(bodyParser.json()); //to read from req.body
 app.use(express.json()); //used for the validator
 
 //session for login, using the passport defined in utils/saml-config
-// Session middleware
+//Session middleware
 app.use(session({
   secret: 'two men can share a secret, if one of them is dead',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 86400000, // 24 hours
+    maxAge: 86400000, //24 hours
   }
 }));
 
-// Passport middleware
+
+//Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate('session'));
 
-// This function is used to format express-validator errors as strings
+//This function is used to format express-validator errors as strings
 const errorFormatter = ({ location, msg, path, value, nestedErrors }) => {
   return `${location}[${path}]: ${msg}`;
 };
-// Start the server
+//Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
@@ -105,7 +114,7 @@ app.get('/api/application/:proposalId/:studentId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -126,7 +135,7 @@ app.get('/api/application/:proposalId/:studentId',
     }
 });
 
-// Added for ApplicationTableComponent
+//Added for ApplicationTableComponent
 app.get('/api/students', 
   isLoggedIn,
   async (req, res) => {
@@ -149,6 +158,7 @@ app.get('/api/students',
 //#endregion
 
 //#region Teacher&Cosupervisors
+
 app.get('/api/cosupervisors/:professorId', 
   isLoggedIn,
   checkTeacherRole,
@@ -157,7 +167,7 @@ app.get('/api/cosupervisors/:professorId',
   ],
   async (req,res)=>{
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -169,7 +179,7 @@ app.get('/api/cosupervisors/:professorId',
       res.status(500).json({ error: err });
     }
 });
-//
+//#endregion
 
 //#region Proposals
 //GET /api/proposals/:proposalId
@@ -180,7 +190,7 @@ app.get('/api/proposals/:proposalId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -212,7 +222,7 @@ app.get('/api/proposals/:proposalId/cosupervisors',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -240,7 +250,7 @@ app.get('/api/proposals/teacher/:professorId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -265,7 +275,7 @@ app.get('/api/proposals/students/:studentId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -363,10 +373,10 @@ app.post('/api/proposals',
       return true;
     }),
     check('cds').custom(async (value) => {
-      // Split the input string into a list of degree codes
+      //Split the input string into a list of degree codes
       const degreeCodes = value.split(' ');
     
-      // Validate each degree code
+      //Validate each degree code
       for (const code of degreeCodes) {
         const degree = await degreeDao.getDegreeByCode(code);
         if (!degree) {
@@ -381,7 +391,7 @@ app.post('/api/proposals',
   async (req, res) => {
     //validation rejected
     const supervisor = await supervisorDao.getSupervisorById(req.body.supervisor);
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -390,10 +400,10 @@ app.post('/api/proposals',
       req.body.groups = ""; //this willneed to be updated too
       //#region coSupervisor Chek
       if(req.body.coSupervisor){
-        // Split the input string into a list of degree codes
+        //Split the input string into a list of degree codes
         const coSupIds = req.body.coSupervisor.split(',');
         req.body.coSupervisor = "";
-        // Validate each degree code
+        //Validate each degree code
         for (const id of coSupIds) {
           if(/d[0-9]{6}/.test(id)){
             const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
@@ -453,10 +463,10 @@ app.patch('/api/proposals/:proposalId',
     }),
     check('level').isIn(['BSc', 'MSc']).withMessage('Invalid level'),
     check('cds').custom(async (value) => {
-      // Split the input string into a list of degree codes
+      //Split the input string into a list of degree codes
       const degreeCodes = value.split(' ');
     
-      // Validate each degree code
+      //Validate each degree code
       for (const code of degreeCodes) {
         const degree = await degreeDao.getDegreeByCode(code);
         if (!degree) {
@@ -469,7 +479,7 @@ app.patch('/api/proposals/:proposalId',
   ],
   async (req, res) => {
     //validation rejected
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -479,10 +489,10 @@ app.patch('/api/proposals/:proposalId',
       //keeps the first group, that is the professor's, removing the ones from the possibly deleted coSupervisors
       req.body.groups = "";
       if(req.body.coSupervisor){
-        // Split the input string into a list of degree codes
+        //Split the input string into a list of degree codes
         const coSupIds = req.body.coSupervisor.split(',');
         req.body.coSupervisor = "";
-        // Validate each degree code
+        //Validate each degree code
         for (const id of coSupIds) {
           if(/d[0-9]{6}/.test(id)){
             const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
@@ -526,7 +536,7 @@ app.delete('/api/proposals/:proposalId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -546,7 +556,7 @@ app.delete('/api/proposals/:proposalId',
   }
 );
 
-// archive an existing proposal
+//archive an existing proposal
 //PATCH /api/proposals/:proposalId
 app.patch('/api/proposals/:proposalId/archive',
   isLoggedIn,
@@ -556,7 +566,7 @@ app.patch('/api/proposals/:proposalId/archive',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -564,7 +574,7 @@ app.patch('/api/proposals/:proposalId/archive',
     try {
       const proposal = await propDao.getProposalById(req.params.proposalId);
       if (proposal) {
-          // Archives the proposal
+          //Archives the proposal
           const archiveResult = await propDao.archiveProposalWithoutApplication(req.params.proposalId);
 
           if (!archiveResult.success) {
@@ -593,7 +603,7 @@ app.get('/api/applications/teacher/:professorId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -632,7 +642,7 @@ app.get('/api/applications/student/:studentId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -650,7 +660,7 @@ app.get('/api/applications/student/:studentId',
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
   
-      cb(null, 'uploads/'); // La cartella dove verranno memorizzati i file
+      cb(null, 'uploads/'); //La cartella dove verranno memorizzati i file
     },
     filename: (req, file, cb) => {
       appDao.getLastId().then((id) => {
@@ -718,7 +728,7 @@ app.patch('/api/application/:proposalId/:studentId',
   ],
   async (req, res) => {
     //validation rejected 
-    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
@@ -727,7 +737,7 @@ app.patch('/api/application/:proposalId/:studentId',
       const proposal = await propDao.getProposalById(req.params.proposalId);
       if (proposal) {
         if (req.body.status === "Accepted") {
-          // Archives the proposal
+          //Archives the proposal
           const archiveResult = await propDao.archiveProposal(req.params.proposalId, req.params.studentId);
 
           if (!archiveResult.success) {
@@ -735,7 +745,7 @@ app.patch('/api/application/:proposalId/:studentId',
           }
           mailServer.sendMail(req.params.studentId, 'APPLICATION', { status: 'accepted', proposal: proposal.title });
         } else {
-          // Update the application status, will probably be a "rejected"
+          //Update the application status, will probably be a "rejected"
           const result = await appDao.setApplicationStatus(req.params.proposalId, req.params.studentId, req.body.status);
           if (!result.success) {
             throw new Error('Application not found');
@@ -758,7 +768,7 @@ isLoggedIn, checkTeacherRole,
   check('applicationId').isInt()
 ], async (req, res) => {
 
-  const errors = validationResult(req).formatWith(errorFormatter); // format error message
+  const errors = validationResult(req).formatWith(errorFormatter); //format error message
   if (!errors.isEmpty()) {
     return res.status(422).json({ error: errors.array().join(", ") });
   }
@@ -804,5 +814,21 @@ app.get('/api/degrees',
   });
 //#endregion
 
+//#region TimeTravel
+app.patch('/api/timetravel',
+isLoggedIn,
+[
+  check('destination').isISO8601().toDate()
+],
+async (req, res) => {
+  //validation rejected 
+  const errors = validationResult(req).formatWith(errorFormatter); //format error message
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ error: errors.array().join(", ") });
+  }
 
+  //Set the current date as the one passed:
+  runAutoArchive(req.body.destination);
+})
+//#endregion
 

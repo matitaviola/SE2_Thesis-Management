@@ -12,7 +12,7 @@ export default function ErrorToast(props) {
                 <Toast.Header >
                     <strong className="me-auto">Error</strong>
                 </Toast.Header>
-                <Toast.Body>{props.errorMessage}</Toast.Body>
+                <Toast.Body style={{color:"white"}}>{props.errorMessage}</Toast.Body>
             </Toast>
         </ToastContainer>
     )
