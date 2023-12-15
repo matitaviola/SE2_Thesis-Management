@@ -463,7 +463,6 @@ export default function ProposalsFormComponent(props) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                       let proposal = proposalToUpdate;
-                      console.log(proposal);
                       navigate(`/proposals/${proposalToUpdate.id}`, { state: {proposal} })
                     }
                   });

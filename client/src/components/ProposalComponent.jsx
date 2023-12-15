@@ -128,7 +128,7 @@ export function ProposalComponent(props) {
 								routeChange();
 								Swal.fire('Copy completed!', 'The proposal has been successfully duplicated.', 'success');
 							}catch(err){
-								console.log(err);
+								props.setErrorMessage(`${err}`);
 							}
                         }
                     });
@@ -149,10 +149,6 @@ export function ProposalComponent(props) {
                         cancelButtonColor: "red",
                         confirmButtonColor: "#449d44",
                         reverseButtons: false,
-                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
-                        imageWidth: 400,
-                        imageHeight: 300,
-                        imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
 							try{
@@ -160,7 +156,7 @@ export function ProposalComponent(props) {
 								routeChange();
 								Swal.fire('Deleted!', 'The proposal has been deleted.', 'success');
 							}catch(err){
-								console.log(err);
+								props.setErrorMessage(`${err}`);
 							}
                         }
                     });
@@ -181,10 +177,6 @@ export function ProposalComponent(props) {
                         cancelButtonColor: "red",
                         confirmButtonColor: "#449d44",
                         reverseButtons: false,
-                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
-                        imageWidth: 400,
-                        imageHeight: 300,
-                        imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
 							try{
@@ -192,7 +184,7 @@ export function ProposalComponent(props) {
 								routeChange();
 								Swal.fire('Archived!', 'The proposal has been archived.', 'success');
 							}catch(err){
-								console.log(err);
+								props.setErrorMessage(`${err}`);
 							}
                         }
                     });
