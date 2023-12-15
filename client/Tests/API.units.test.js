@@ -1262,3 +1262,41 @@ describe('get resumee API', () => {
     );
   });
 });
+
+describe('boardTardis API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore();
+  });
+  const destination = Date("19/10/2000");
+
+  const successResponse = {
+    ok: true,
+  };
+  const errorResponse = {
+    ok: false,
+  };
+
+  it('should create a proposal successfully', async () => {
+    fetch.mockResolvedValueOnce(successResponse);
+
+    const result = await API.boardTardis(destination);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/timetravel`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
+      body: JSON.stringify({'destination':destination}),
+    });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+  
+    await expect(API.boardTardis(destination)).rejects.toThrow(
+      'Something went wrong during the TARDIS landing'
+    );
+  });
+});
