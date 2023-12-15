@@ -77,8 +77,21 @@ function TeacherApplicationDetail(props){
 
     return (
         <Container>
-            <Row className='application-show-field text-center'>
-            <h2 className='mt-2'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for <i>{application.proposal}</i></h2>
+            <Row>   
+                <p className='proposal-field-title'>{studentData.name} {studentData.surname} {studentData.studentId}'s application for </p>
+                <Row className='application-show-field text-center' style={{marginTop:'0px', paddingTop:"5px", paddingBottom:"5px"}}>
+                    <h1>
+                    <i>
+                    <Link
+                        to={{
+                            pathname: `/proposals/${proposalData.id}`,
+                        }}
+                        state = {{proposal:proposalData, studentId:studentId, comingFromApp:true}}
+                    >
+                        "{application.proposal}"
+                    </Link></i>
+                    </h1>
+                </Row>
             </Row>
             {application.resumeeExists?
             <Row>
@@ -128,10 +141,6 @@ function TeacherApplicationDetail(props){
                         cancelButtonColor: "red",
                         confirmButtonColor: "#449d44",
                         reverseButtons: false,
-                        /*imageUrl: "https://upload.wikimedia.org/wikipedia/it/2/27/Politecnico_di_Torino_-_Logo.svg",
-                        imageWidth: 400,
-                        imageHeight: 300,
-                        imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
                             declineApplication();
@@ -213,18 +222,23 @@ function StudentApplicationDetail(props){
 
     return (
         <Container>
-            <Row className='application-show-field text-center'>   
-            <h1 className='mt-2'>{studentData.name} {studentData.surname}'s application for <i>
-            <Link
-                to={{
-                    pathname: `/proposals/${proposalData.id}`,
-                }}
-                state = {{proposal:proposalData, studentId:studentId, comingFromApp:true}}
-            >
-                "{application.proposal}"
-            </Link></i>
-            </h1>
+            <Row>   
+                <p className='proposal-field-title'>Your application for </p>
+                <Row className='application-show-field text-center' style={{marginTop:'0px', paddingTop:"5px", paddingBottom:"5px"}}>
+                    <h1>
+                    <i>
+                    <Link
+                        to={{
+                            pathname: `/proposals/${proposalData.id}`,
+                        }}
+                        state = {{proposal:proposalData, studentId:studentId, comingFromApp:true}}
+                    >
+                        "{application.proposal}"
+                    </Link></i>
+                    </h1>
+                </Row>
             </Row>
+
             <h4>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.groups}</i> group</h4>
             <h4>Expires on <b>{proposalData.expiration.substring(0,10)}</b></h4>
             <h2>Your CV</h2>

@@ -103,23 +103,7 @@ export function ProposalComponent(props) {
 			</Container>
 
 			<button 
-                onClick={() => {
-                    Swal.fire({
-                        title: 'Update Proposal?',
-                        text: 'You will be redirected to the form to edit the proposal. You will need to update the expiration date',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        cancelButtonText: 'No, cancel!',
-                        confirmButtonText: 'Yes, update it!',
-                        cancelButtonColor: "red",
-                        confirmButtonColor: "#449d44",
-                        reverseButtons: false,
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            routeChangeUpdate();
-                        }
-                    });
-                }}
+                onClick={() => routeChangeUpdate()}
                 className="update-button"
             >
                 UPDATE
@@ -171,9 +155,13 @@ export function ProposalComponent(props) {
                         imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            API.deleteProposal(proposal.id);
-							routeChange();
-                            Swal.fire('Deleted!', 'The proposal has been deleted.', 'success');
+							try{
+								API.deleteProposal(proposal.id);
+								routeChange();
+								Swal.fire('Deleted!', 'The proposal has been deleted.', 'success');
+							}catch(err){
+								console.log(err);
+							}
                         }
                     });
                 }}
@@ -199,9 +187,13 @@ export function ProposalComponent(props) {
                         imageAlt: "Custom image"*/
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            API.archiveProposal(proposal.id);
-							routeChange();
-                            Swal.fire('Archived!', 'The proposal has been archived.', 'success');
+							try{
+								API.archiveProposal(proposal.id);
+								routeChange();
+								Swal.fire('Archived!', 'The proposal has been archived.', 'success');
+							}catch(err){
+								console.log(err);
+							}
                         }
                     });
                 }}
@@ -317,16 +309,18 @@ export function StudentProposalComponent(props) {
 					</Row>
 				</Row>
 			</Container>
+			{comingFromApp? null :
 			<Row className='my-30 d-flex justify-content-center' style={{marginTop:'0px', marginBottom:'5%'}}>
 				<Button
 					variant="secondary"
 					style={{fontSize:'x-large', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
-					disabled={proposal.applicationExists || comingFromApp}
+					disabled={proposal.applicationExists}
 					onClick={() => handleShowUpdateModal(proposal)}
 				>
 					APPLY
 				</Button>
 			</Row>
+			}
 			<Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
               <Modal.Header closeButton>
                 <Modal.Title>{selectedProposal.title}</Modal.Title>

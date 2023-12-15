@@ -4,6 +4,7 @@ import API from "../API";
 import { useState, useContext, useEffect, React } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../App';
+import Swal from 'sweetalert2';
 
 export default function ProposalsFormComponent(props) {
   const navigate = useNavigate();
@@ -62,20 +63,50 @@ export default function ProposalsFormComponent(props) {
     proposal.coSupervisor = formatCoSupervisors();
     if(submitFormsCheck()){
       if(proposalToUpdate) {
-        try {
-          proposal.id = proposalToUpdate.id;
-          await API.updateProposal(proposal);
-          navigate("/proposals");
-        } catch (err) {
-          props.setErrorMessage(`${err}`);
-        }
-      } else {
-        try {
-          await API.createProposal(proposal, loggedInUser);
-          navigate("/proposals");
-        } catch (err) {
-          props.setErrorMessage(`${err}`);
-        }
+          Swal.fire({
+              title: 'Update Proposal?',
+              text: 'This operation will update the Proposal with the new data inserted',
+              icon: 'warning',
+              showCancelButton: true,
+              cancelButtonText: 'No, cancel!',
+              confirmButtonText: 'Yes, update it!',
+              cancelButtonColor: "red",
+              confirmButtonColor: "#449d44",
+              reverseButtons: false,
+          }).then(async (result) => {
+              if (result.isConfirmed) {
+                try {
+                  proposal.id = proposalToUpdate.id;
+                  await API.updateProposal(proposal);
+                  navigate("/proposals");
+                  Swal.fire('Update completed!', 'The proposal has been successfully updated.', 'success');
+                } catch (err) {
+                  props.setErrorMessage(`${err}`);
+                }
+              }
+          });
+        } else {
+          Swal.fire({
+            title: 'Create Proposal?',
+            text: 'This operation will create a new Proposal with the inserted data',
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'NO',
+            confirmButtonText: 'Yes, create!',
+            cancelButtonColor: "red",
+            confirmButtonColor: "#449d44",
+            reverseButtons: false,
+        }).then(async (result) => {
+            if (result.isConfirmed) { 
+              try {
+                await API.createProposal(proposal, loggedInUser);
+                navigate("/proposals");
+                Swal.fire('Creation completed!', 'The new proposal has been successfully created.', 'success');
+              } catch (err) {
+                props.setErrorMessage(`${err}`);
+              }
+      }
+        });
       }
     }
   };
@@ -418,10 +449,26 @@ export default function ProposalsFormComponent(props) {
               SUBMIT
             </Button>
             { proposalToUpdate?
-              <Button variant="danger" onClick={() => {
-                let proposal = proposalToUpdate;
-                console.log(proposal);
-                navigate(`/proposals/${proposalToUpdate.id}`, { state: {proposal} })}} className="mt-3">
+            <Button variant="danger" onClick={() => {
+                Swal.fire({
+                    title: 'Update Proposal?',
+                    text: 'You will be redirected to the previous page. All the inserted data will be lost',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    cancelButtonText: 'No, stay!',
+                    confirmButtonText: 'Yes, go back!',
+                    cancelButtonColor: "red",
+                    confirmButtonColor: "#449d44",
+                    reverseButtons: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                      let proposal = proposalToUpdate;
+                      console.log(proposal);
+                      navigate(`/proposals/${proposalToUpdate.id}`, { state: {proposal} })
+                    }
+                  });
+                }}
+                className="mt-3">
               CANCEL
             </Button> 
             : null
