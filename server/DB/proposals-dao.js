@@ -253,7 +253,7 @@ exports.archiveProposal = (proposalId, studentId) => {
     });
 }
 
-exports.archiveProposalWithoutApplication = (proposalId) => {
+exports.archiveProposalWithoutApplication = (proposalId, cause) => {
     return new Promise((resolve, reject) => {
         // Step 1: Retrieve data from PROPOSAL table
         db.get('SELECT * FROM PROPOSAL WHERE Id = ?', [proposalId], (err, row) => {
@@ -285,7 +285,7 @@ exports.archiveProposalWithoutApplication = (proposalId) => {
                         originalProposal.Expiration,
                         originalProposal.Level,
                         originalProposal.CdS,
-                        "Archived",
+                        cause,
                         null
                     ], (err) => {
                         if (err) {

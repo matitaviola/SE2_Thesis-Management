@@ -29,9 +29,12 @@ const corsOptions = {
   credentials: true
 }
 //#region Auto Archiviation
-const currentDate = dayjs();
-function runAutoArchive() {
-  autoArchive.timelyArchive(currentDate);
+let currentDate = dayjs();
+async function runAutoArchive(destination) {
+  //set the system date to the destination, if any
+  currentDate = destination? dayjs(destination) : dayjs();
+  //call the archiviation manament util
+  await autoArchive.timelyArchive(currentDate);
 }
 const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
 //#endregion
@@ -575,7 +578,7 @@ app.patch('/api/proposals/:proposalId/archive',
       const proposal = await propDao.getProposalById(req.params.proposalId);
       if (proposal) {
           //Archives the proposal
-          const archiveResult = await propDao.archiveProposalWithoutApplication(req.params.proposalId);
+          const archiveResult = await propDao.archiveProposalWithoutApplication(req.params.proposalId, "Archived");
 
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
@@ -828,7 +831,7 @@ async (req, res) => {
   }
 
   //Set the current date as the one passed:
-  runAutoArchive(req.body.destination);
+  await runAutoArchive(req.body.destination);
 })
 //#endregion
 

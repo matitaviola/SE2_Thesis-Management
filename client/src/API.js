@@ -295,6 +295,7 @@ const getResumee = async (applicationId) => {
 //#region
 //takes the date to go to
 const boardTardis = async (destination) =>{
+  console.log(destination)
   const response = await fetch(SERVER_URL + `/api/timetravel`, {
     method: 'PATCH',
     credentials: 'include',

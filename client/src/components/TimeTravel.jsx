@@ -30,6 +30,7 @@ export default function TimeTravelComponent(props) {
                 try{
                     API.boardTardis(selectedDate);
                     Swal.fire(`We arrived at  ${selectedDate.toLocaleDateString()}!`, '"Time can be rewritten." - River Song', 'success');
+                    props.refresh(true);
                 }catch(err){
                     props.setErrorMessage(`${err}`);
                 }

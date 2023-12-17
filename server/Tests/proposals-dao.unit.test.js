@@ -1599,7 +1599,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
       expect(db.run.mock.calls[3][0]).toBe('COMMIT');
     });
 
-    const result = await archiveProposalWithoutApplication(proposalId);
+    const result = await archiveProposalWithoutApplication(proposalId, "Archived");
     expect(result).toEqual({ success: true });
   });
 
@@ -1614,7 +1614,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
       callback(expectedError, null); //Simulate proposal not found
     });
 
-    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
+    await expect(archiveProposalWithoutApplication(proposalId,"Archived")).rejects.toEqual(expectedError);
   });
 
   it('should reject with "Proposal not found" when proposal is not found', async () => {
@@ -1627,7 +1627,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
       callback(null, null); //Simulate proposal not found
     });
 
-    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual('Proposal not found.');
+    await expect(archiveProposalWithoutApplication(proposalId, "Archived")).rejects.toEqual('Proposal not found.');
   });
 
   it('should reject with an error if an error occurs during database transaction - insert', async () => {
@@ -1661,7 +1661,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
   
     //Call the actual function
-    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
+    await expect(archiveProposalWithoutApplication(proposalId,"Archived")).rejects.toEqual(expectedError);
   });
 
   it('should reject with an error if an error occurs during database transaction - update', async () => {
@@ -1700,7 +1700,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
   
     //Call the actual function
-    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
+    await expect(archiveProposalWithoutApplication(proposalId,"Archived")).rejects.toEqual(expectedError);
   });
 
   it('should reject with an error if an error occurs during database transaction - delete', async () => {
@@ -1744,7 +1744,7 @@ describe('archiveProposalWithoutApplication Function Tests', () => {
     db.run.mockImplementationOnce((query) =>{});
   
     //Call the actual function
-    await expect(archiveProposalWithoutApplication(proposalId)).rejects.toEqual(expectedError);
+    await expect(archiveProposalWithoutApplication(proposalId,"Archived")).rejects.toEqual(expectedError);
   });
   
 });

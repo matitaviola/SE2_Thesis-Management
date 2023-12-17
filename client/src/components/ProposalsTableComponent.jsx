@@ -28,19 +28,38 @@ export default function ProposalsTableComponent(props) {
 function TeacherProposalsTableComponent(props) {
 	const [proposals, setProposals] = useState([]);
 	const loggedInUser = useContext(AuthContext);
+  const [timeTravelled, setTimeTravelled] = useState(false);
+
 
 	useEffect(() => {
-		const getProposals = async () => {
-			try {
-				const retrievedProposals = await API.getProposals(loggedInUser);
+    const getProposals = async () => {
+      try {
+        await API.getProposals(loggedInUser);
         const retrievedProposals2 = await API.getProposals(loggedInUser);
-				setProposals(retrievedProposals2);
-			} catch (err) {
-				props.setErrorMessage(`${err}`);
-			}
-		};
+        setProposals(retrievedProposals2);
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
+    };
 		getProposals();
 	}, []);
+
+  useEffect(() => {
+    const getProposalsAfterTime = async () => {
+      try {
+        setProposals([]);
+        const retrievedProposals = await API.getProposals(loggedInUser);
+        console.log(proposals,retrievedProposals);
+        setProposals(retrievedProposals);
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
+    };
+    if(timeTravelled == true){
+      getProposalsAfterTime();
+      setTimeTravelled(false);
+    }
+	}, [timeTravelled]);
 
 	return (
 		<div className="proposal-table">
@@ -48,7 +67,7 @@ function TeacherProposalsTableComponent(props) {
       <Link to="/proposals/new">
         <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
       </Link>
-      <TimeTravelComponent setErrorMessage={props.setErrorMessage}/>
+      <TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
 			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
