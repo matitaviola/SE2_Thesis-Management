@@ -25,10 +25,10 @@ export default function TimeTravelComponent(props) {
             cancelButtonColor: "red",
             confirmButtonColor: "#449d44",
             reverseButtons: false,
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 try{
-                    API.boardTardis(selectedDate);
+                    await API.boardTardis(selectedDate);
                     Swal.fire(`We arrived at  ${selectedDate.toLocaleDateString()}!`, '"Time can be rewritten." - River Song', 'success');
                     props.refresh(true);
                 }catch(err){

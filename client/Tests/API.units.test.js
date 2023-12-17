@@ -1275,9 +1275,15 @@ describe('boardTardis API', () => {
 
   const successResponse = {
     ok: true,
+    json: async () => ({success:true})
+  };
+  const errorResponse1 = {
+    ok: false,
+    json: async () => ({success:false})
   };
   const errorResponse = {
     ok: false,
+    json: async () => ({success:false})
   };
 
   it('should create a proposal successfully', async () => {
@@ -1292,7 +1298,7 @@ describe('boardTardis API', () => {
     });
   });
 
-  it('should throw an error on failed request', async () => {
+  it('should throw an error on failed request - generic error', async () => {
     fetch.mockResolvedValueOnce(errorResponse);
   
     await expect(API.boardTardis(destination)).rejects.toThrow(

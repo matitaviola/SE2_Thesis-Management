@@ -47,9 +47,7 @@ function TeacherProposalsTableComponent(props) {
   useEffect(() => {
     const getProposalsAfterTime = async () => {
       try {
-        setProposals([]);
         const retrievedProposals = await API.getProposals(loggedInUser);
-        console.log(proposals,retrievedProposals);
         setProposals(retrievedProposals);
       } catch (err) {
         props.setErrorMessage(`${err}`);
@@ -64,10 +62,10 @@ function TeacherProposalsTableComponent(props) {
 	return (
 		<div className="proposal-table">
 			<h1>Active Proposals Table</h1>
-      <Link to="/proposals/new">
-        <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
-      </Link>
-      <TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
+        <TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
+        <Link to="/proposals/new">
+          <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
+        </Link>
 			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
@@ -131,6 +129,7 @@ function StudentProposalsTableComponent(props) {
   const [studentId, setStudentId] = useState(props.studentId);
   const navigate = useNavigate();
   const loggedInUser = useContext(AuthContext);
+  const [timeTravelled, setTimeTravelled] = useState(false);
 
 
   useEffect(() => {
@@ -145,10 +144,25 @@ function StudentProposalsTableComponent(props) {
     fetchProposals()
   }, [filter, studentId, order]);
 
+  useEffect(() => {
+    const getProposalsAfterTime = async () => {
+      try {
+        const retrievedProposals = await API.getStudentProposals(studentId, filter, order);
+        setProposals(retrievedProposals);
+      } catch (err) {
+        props.setErrorMessage(`${err}`);
+      }
+    };
+    if(timeTravelled == true){
+      getProposalsAfterTime();
+      setTimeTravelled(false);
+    }
+	}, [timeTravelled]);
+
   return (
     <div className="proposal-table">
       <h1>Thesis Proposals</h1>
-      <TimeTravelComponent setErrorMessage={props.setErrorMessage}/>
+      <TimeTravelComponent  setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
       <Row className="mb-2" >
         <Col><SearchBarComponent filter={filter} setFilter={setFilter}></SearchBarComponent></Col>           
         <Col className="justify-content-end"><DropdownSelectionFilter filter={filter} setFilter={setFilter}></DropdownSelectionFilter></Col>

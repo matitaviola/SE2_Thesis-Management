@@ -34,7 +34,7 @@ async function runAutoArchive(destination) {
   //set the system date to the destination, if any
   currentDate = destination? dayjs(destination) : dayjs();
   //call the archiviation manament util
-  await autoArchive.timelyArchive(currentDate);
+  return await autoArchive.timelyArchive(currentDate);
 }
 const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
 //#endregion
@@ -829,9 +829,13 @@ async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ error: errors.array().join(", ") });
   }
-
-  //Set the current date as the one passed:
-  await runAutoArchive(req.body.destination);
+  try {
+    //Set the current date as the one passed:
+    const success = await runAutoArchive(req.body.destination);
+    res.status(success.travelled? 200:500).json(success);
+  } catch (err) {
+    res.status(500).end();
+  }
 })
 //#endregion
 

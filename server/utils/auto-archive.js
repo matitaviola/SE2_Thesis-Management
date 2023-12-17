@@ -22,14 +22,14 @@ exports.timelyArchive = async (date) => {
             for (const id of ids){
                 try{
                     const success = await propDao.archiveProposalWithoutApplication(id.Id, "Expired");
-                    console.log(success,id);
                 }catch(err){
-                    console.log(err," When tying to read proposa with id", id.Id);
+                    console.log(err," When trying to read proposal with id", id.Id);
                 }
             }
         }
         return {travelled:true};
     }catch(err){
         console.log(err);
+        return {error:err};
     }
 };
