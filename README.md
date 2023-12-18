@@ -1,7 +1,7 @@
 # SE2_Thesis-Management
 
 ## Project Setup Guide
-## Run with docker
+## Run with docker - from repo
 ### 1 - Install the Docker app
 Go to [docker's official site](www.docker.com), download and install the docker application following the installation wizard's instructions
 ### 2 - Cloning the repository

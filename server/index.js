@@ -35,7 +35,7 @@ async function runAutoArchive(destination) {
   currentDate = destination? dayjs(destination) : dayjs();
   await timely.timelyExpiringEmails(currentDate, 7);
   //call the archiviation management util
-  return await timely.timelyArchive(currentDate);
+  await timely.timelyArchive(currentDate);
 }
 const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
 //#endregion
@@ -835,11 +835,11 @@ async (req, res) => {
     return res.status(422).json({ error: errors.array().join(", ") });
   }
   try {
-    //Set the current date as the one passed:
-    const success = await runAutoArchive(req.body.destination);
     //we use deArchive to return to the past
-    await timely.timelyDeArchive(currentDate); //used to go back in time
-    res.status(success.travelled? 200:500).json(success);
+    await timely.timelyDeArchive(dayjs(req.body.destination)); //used to go back in time
+    //Set the current date as the one passed:
+    await runAutoArchive(req.body.destination);
+    res.status(200).json({success:true});
   } catch (err) {
     res.status(500).end();
   }

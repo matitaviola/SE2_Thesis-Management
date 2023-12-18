@@ -17,7 +17,7 @@ exports.timelyArchive = async (date) => {
             });
         });
         
-        if(ids?.length > 0){
+        if(await ids?.length > 0){
             //using fo instead of promise.all becuse the archiveProposal uses db.serialize, that won't work if there's another serialize promise running
             for (const id of ids){
                 try{
@@ -45,7 +45,7 @@ exports.timelyDeArchive = async (date) => {
             });
         });
         
-        if(ids?.length > 0){
+        if(await ids?.length > 0){
             //using fo instead of promise.all becuse the archiveProposal uses db.serialize, that won't work if there's another serialize promise running
             for (const id of ids){
                 try{
@@ -72,7 +72,7 @@ exports.timelyExpiringEmails = async (date, remainingDays) => {
                 resolve(rows?.length>0? rows :  []);
             });
         });
-        if(props?.length > 0){
+        if(await props?.length > 0){
             //using fo instead of promise.all becuse the archiveProposal uses db.serialize, that won't work if there's another serialize promise running
             for (const prop of props){
                 try{
