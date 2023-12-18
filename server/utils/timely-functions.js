@@ -9,7 +9,7 @@ exports.timelyArchive = async (date) => {
     try{
         sqlFindByDate = "SELECT Id FROM PROPOSAL WHERE Expiration < ?"
         const ids = await new Promise((resolve, reject) => {
-            db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], async (err,rows) =>{
+            db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
                     reject("Time Travel forward error: "+err.toString());
                 }
@@ -37,7 +37,7 @@ exports.timelyDeArchive = async (date) => {
     try{
         sqlFindByDate = "SELECT Id FROM ARCHIVED_PROPOSAL WHERE Expiration > ? AND Status='Expired'"
         const ids = await new Promise((resolve, reject) => {
-            db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], async (err,rows) =>{
+            db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
                     reject("Time Travel backward error: "+err.toString());
                 }
@@ -65,7 +65,7 @@ exports.timelyExpiringEmails = async (date, remainingDays) => {
     try{
         sqlFindByDate = "SELECT Id, Supervisor, Title, Expiration FROM PROPOSAL WHERE Expiration = ?"
         const props = await new Promise((resolve, reject) => {
-            db.all(sqlFindByDate,[date.add(remainingDays, 'day').format('YYYY-MM-DD')], async (err,rows) =>{
+            db.all(sqlFindByDate,[date.add(remainingDays, 'day').format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
                     reject("Expiring proposals emails error: "+err.toString());
                 }
