@@ -578,3 +578,77 @@ exports.getArchivedProposalById = (proposalId) => {
       });
     });
 };
+
+exports.deArchiveProposal = (proposalId) => {
+    return new Promise((resolve, reject) => {
+        // Step 1: Retrieve data from PROPOSAL table
+        db.get('SELECT * FROM ARCHIVED_PROPOSAL WHERE Id = ?', [proposalId], (err, row) => {
+            if (err) {
+                reject(err);
+            }else if (row){
+                const originalProposal = row;
+                // Step 2: Add the Proposal to the archived ones and delete it from the old one
+                //There's a trigger to update the remaining proposals
+                const insertSQL = "INSERT INTO PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                const deleteSQL = "DELETE FROM ARCHIVED_PROPOSAL WHERE Id=?";
+                const updateCancelledSQL = "UPDATE APPLICATION SET Proposal_ID=?, Archived_Proposal_ID=?, Status='Pending' WHERE Archived_Proposal_ID=? AND Status='Pending'";
+                const updateRejectedSQL = "UPDATE APPLICATION SET Proposal_ID=?, Archived_Proposal_ID=?, Status='Pending' WHERE Archived_Proposal_ID=? AND Status!='Pending'";
+                // Begin a transaction
+                db.serialize(() => {
+                    db.run("BEGIN TRANSACTION");
+
+                    // Execute the first SQL statement
+                    db.run(insertSQL, [
+                        proposalId,
+                        originalProposal.Title,
+                        originalProposal.Supervisor,
+                        originalProposal.Co_supervisor,
+                        originalProposal.Keywords,
+                        originalProposal.Type,
+                        originalProposal.Groups,
+                        originalProposal.Description,
+                        originalProposal.Req_knowledge,
+                        originalProposal.Notes,
+                        originalProposal.Expiration,
+                        originalProposal.Level,
+                        originalProposal.CdS,
+                    ], (err) => {
+                        if (err) {
+                            // Roll back the transaction if an error occurs
+                            db.run("ROLLBACK");
+                            reject(err);
+                        }
+                        // Execute the third SQL statement
+                        db.run(updateCancelledSQL, [proposalId, null, proposalId], (err) => {
+                            if (err) {
+                                // Roll back the transaction if an error occurs
+                                db.run("ROLLBACK");
+                                reject(err);
+                            }
+                            // Execute the fourth SQL statement
+                            db.run(updateRejectedSQL, [proposalId, null, proposalId], (err) => {
+                                if (err) {
+                                    // Roll back the transaction if an error occurs
+                                    db.run("ROLLBACK");
+                                    reject(err);
+                                }
+                                db.run(deleteSQL, [proposalId], (err) => {
+                                    if(err){
+                                        db.run("ROLLBACK");
+                                        reject(err);
+                                    }
+
+                                    // Commit the transaction if all statements succeed
+                                    db.run("COMMIT");
+                                    resolve({ success: true });
+                                });
+                            });
+                        });
+                    });
+                });
+            } else{
+                reject('Archived proposal not found.');
+            }
+        });
+    });
+}

@@ -832,6 +832,8 @@ async (req, res) => {
   try {
     //Set the current date as the one passed:
     const success = await runAutoArchive(req.body.destination);
+    //we use deArchive to return to the past
+    await autoArchive.timelyDeArchive(currentDate); //used to go back in time
     res.status(success.travelled? 200:500).json(success);
   } catch (err) {
     res.status(500).end();
