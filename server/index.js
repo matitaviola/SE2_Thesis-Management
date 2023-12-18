@@ -37,7 +37,10 @@ async function runAutoArchive(destination) {
   //call the archiviation management util
   await timely.timelyArchive(currentDate);
 }
-const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
+const interval = setInterval(()=>{
+  runAutoArchive()
+  .catch((error) => {console.error('Error in runAutoArchive:', error);});
+}, 86400000); //runs every 24h
 //#endregion
 
 //middleman to every call
