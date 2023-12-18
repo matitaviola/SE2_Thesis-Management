@@ -73,3 +73,4 @@ npm run coverage
 - usr:emily@docenti.polito.com psw:d200002 (1 proposal)
 - usr:david@docenti.polito.com psw:d100003 (5 proposals)
 - usr:emma@docenti.polito.com psw:d100011 (1 proposal)
+- usr:doc_docenti.polito@libero.it psw:d100000 (1 proposal)

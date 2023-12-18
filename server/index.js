@@ -14,7 +14,7 @@ const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
 const multer = require('multer');
 const fs = require('fs');
-const autoArchive = require('./utils/auto-archive')
+const timely = require('./utils/timely-functions')
 
 const passport = require('./utils/saml-config');
 const session = require('express-session');
@@ -33,8 +33,9 @@ let currentDate = dayjs();
 async function runAutoArchive(destination) {
   //set the system date to the destination, if any
   currentDate = destination? dayjs(destination) : dayjs();
-  //call the archiviation manament util
-  return await autoArchive.timelyArchive(currentDate);
+  await timely.timelyExpiringEmails(currentDate, 7);
+  //call the archiviation management util
+  return await timely.timelyArchive(currentDate);
 }
 const interval = setInterval(runAutoArchive, 86400000); //runs every 24h
 //#endregion
@@ -710,6 +711,10 @@ app.post('/api/applications',
         return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
       } const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
 
+      //now we get the informations for the email
+      const proposalInfo = await propDao.getProposalById(req.body.proposalId);
+      mailServer.sendMail(proposalInfo.supervisorId, 'APPLICATION', {proposal: proposalInfo.title, expires: proposalInfo.expiration, submitter:req.body.studentId });
+
       return res.status(200).json(application);
     } catch (err) {
       if (file) {
@@ -833,7 +838,7 @@ async (req, res) => {
     //Set the current date as the one passed:
     const success = await runAutoArchive(req.body.destination);
     //we use deArchive to return to the past
-    await autoArchive.timelyDeArchive(currentDate); //used to go back in time
+    await timely.timelyDeArchive(currentDate); //used to go back in time
     res.status(success.travelled? 200:500).json(success);
   } catch (err) {
     res.status(500).end();
