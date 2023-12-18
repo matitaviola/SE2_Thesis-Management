@@ -4,7 +4,7 @@ on:
     branches:
       - main
       - develop
-      - BE-Validation
+      - Archive-TimeTravel
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
