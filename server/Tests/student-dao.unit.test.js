@@ -14,8 +14,9 @@ describe('getStudentData', () => {
     jest.clearAllMocks();
   });
 
-  it('should resolve with an empty object when no student data is found', async () => {
+  it('should reject when no student data is found', async () => {
     const studentId = 's200000'; 
+    const expectedError = new Error(`No such student with id:${studentId}`);
     const expectedSql = 'SELECT * FROM STUDENT WHERE ID=?';
     db.get.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
@@ -23,8 +24,7 @@ describe('getStudentData', () => {
       callback(null, undefined);
     });
 
-    const result = await getStudentData(studentId);
-    expect(result).toEqual({});
+    await expect(getStudentData(studentId)).rejects.toEqual(expectedError);
   });
 
   it('should resolve with student data when it is found', async () => {

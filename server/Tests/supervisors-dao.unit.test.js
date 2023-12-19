@@ -3,7 +3,8 @@ const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
   const mockedDB = {
-    all: jest.fn()
+    all: jest.fn(),
+    get:jest.fn()
   };
   return { db: mockedDB };
 });
@@ -21,8 +22,8 @@ describe('getSupervisorById', () => {
       };
   
       // Mock the database query to return the mock data
-      db.all.mockImplementationOnce((sql, params, callback) => {
-        callback(null, [mockRow]);
+      db.get.mockImplementationOnce((sql, params, callback) => {
+        callback(null, mockRow);
       });
   
       // Call the function with a mock supervisorId
@@ -34,24 +35,23 @@ describe('getSupervisorById', () => {
     });
   
     // Test case for supervisor not found
-    it('should resolve with undefined when no supervisor is found with the given ID', async () => {
+    it('should reject with an error when no supervisor is found with the given ID', async () => {
       // Mock the database query to return an empty array
-      db.all.mockImplementationOnce((sql, params, callback) => {
-        callback(null, []);
+      db.get.mockImplementationOnce((sql, params, callback) => {
+        callback(null, null);
       });
   
       // Call the function with a mock supervisorId
       const supervisorId = 456;
   
       // Expectations
-      const result = await getSupervisorById(supervisorId);
-      expect(result).toBeUndefined();
+      await expect(getSupervisorById(supervisorId)).rejects.toThrow(new Error(`No such teacher with id:${supervisorId}`));
     });
   
     // Test case for database error
     it('should reject with an error when there is a database error', async () => {
       // Mock the database query to return an error
-      db.all.mockImplementationOnce((sql, params, callback) => {
+      db.get.mockImplementationOnce((sql, params, callback) => {
         callback(new Error('Database error'));
       });
   

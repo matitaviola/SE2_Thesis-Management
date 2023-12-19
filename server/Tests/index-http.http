@@ -1,4 +1,7 @@
-#NOTE THAT MANY OF THESE SHOULD FAIL, due to missing auth or validation
+#NOTE THAT THESE SHOULD FAIL, due to missing auth or validation.
+#These tests are used during development to check the outes of the server before auth and validation,
+#just to test the logic. The auth+validation are tested in the E2E test, that can be seen
+#n the client test folder, in the Manual_tests.md file
 
 # Testing Student Data Retrieval
 
@@ -222,5 +225,32 @@ X-USER-ROLE: TEACHER
     "proposalId": 123,
     "studentId": "s123456",
     "status": "InvalidStatus"
+}
+###
+
+# Test the requests
+
+## Get all requests
+GET http://localhost:3001/api/requests HTTP/1.1
+X-USER-ROLE: STUDENT
+###
+
+## Get request with that id
+GET http://localhost:3001/api/requests/1 HTTP/1.1
+X-USER-ROLE: STUDENT
+###
+
+## Get requests of that supervisor
+GET http://localhost:3001/api/requests/teacher/d100001 HTTP/1.1
+X-USER-ROLE: TEACHER
+###
+
+## Create a new request
+POST http://localhost:3001/api/requests HTTP/1.1
+X-USER-ROLE: STUDENT
+content-type: application/json
+
+{
+    "reqData":{"title":"AAA","studentId":"s200001","supervisorId":"d100001","coSupervisorId":"d200002","description":"abba","applicationId":null}
 }
 ###

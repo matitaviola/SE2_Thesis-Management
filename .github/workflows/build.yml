@@ -4,7 +4,7 @@ on:
     branches:
       - main
       - develop
-      - Archive-TimeTravel
+      - ThesisRequest
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

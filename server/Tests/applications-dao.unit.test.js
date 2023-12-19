@@ -1,5 +1,5 @@
 // Mocking the dependencies
-const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, createApplication, getLastId, isApplication } = require('../DB/applications-dao');
+const { getActiveApplicationsByProposal, getApplicationsByStudent, setApplicationStatus, createApplication, getLastId, isApplication, getApplicationById } = require('../DB/applications-dao');
 const { db } = require('../DB/db');
 
 jest.mock('../DB/db', () => {
@@ -360,5 +360,55 @@ describe('isApplication', () => {
     });
 
     await expect(isApplication(teacherId, applicationId)).rejects.toEqual(expectedError);
+  });
+});
+
+describe('getApplicationById', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with the application when it is found by Id', async () => {
+    const applicationId = 1;
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Id=?';
+    const mockedRow = { Id: applicationId, Student_ID: 1, Proposal_ID: 2, Status: 'Pending' };
+    const expectedApplication = mockedRow;
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId]);
+      callback(null, mockedRow);
+    });
+
+    const result = await getApplicationById(applicationId);
+    expect(result).toEqual(expectedApplication);
+  });
+
+  it('should reject with an error if no application is found by Id', async () => {
+    const applicationId = 2;
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Id=?';
+    const expectedError = new Error(`No such application with Id:${applicationId}`);
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId]);
+      callback(null, null);
+    });
+
+    await expect(getApplicationById(applicationId)).rejects.toEqual(expectedError);
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const applicationId = 3;
+    const expectedSql = 'SELECT * FROM APPLICATION WHERE Id=?';
+    const expectedError = 'Database error occurred';
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([applicationId]);
+      callback(expectedError, null);
+    });
+
+    await expect(getApplicationById(applicationId)).rejects.toEqual(expectedError);
   });
 });

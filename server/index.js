@@ -4,8 +4,11 @@ const propDao = require('./DB/proposals-dao');
 const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
+const reqDao = require('./DB/request-dao');
 const { isLoggedIn, checkTeacherRole, checkStudentRole, checkUserId } = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
+const timely = require('./utils/timely-functions');
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
@@ -14,7 +17,7 @@ const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
 const multer = require('multer');
 const fs = require('fs');
-const timely = require('./utils/timely-functions')
+
 
 const passport = require('./utils/saml-config');
 const session = require('express-session');
@@ -400,13 +403,13 @@ app.post('/api/proposals',
   ],
   async (req, res) => {
     //validation rejected
-    const supervisor = await supervisorDao.getSupervisorById(req.body.supervisor);
     const errors = validationResult(req).formatWith(errorFormatter); //format error message
     if (!errors.isEmpty()) {
       return res.status(422).json({ error: errors.array().join(", ") });
     }
 
     try {
+      const supervisor = await supervisorDao.getSupervisorById(req.body.supervisor);
       req.body.groups = ""; //this willneed to be updated too
       //#region coSupervisor Chek
       if(req.body.coSupervisor){
@@ -852,3 +855,114 @@ async (req, res) => {
 })
 //#endregion
 
+//#region Request
+//gets all existing requests, for clerks
+app.get('/api/requests',
+  //TODO: isLoggedIn,
+  async (req, res) => {
+    try {
+      const requests = await reqDao.getAllRequests();
+      res.json(requests);
+    } catch (err) {
+      res.status(500).end();
+    }
+  }
+);
+
+//gets a specific request
+app.get('/api/requests/:reqId',
+  //TODO: isLoggedIn,
+  [
+    check('reqId').not().isEmpty().isInt()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try {
+      const requests = await reqDao.getRequestById(req.params.reqId);
+      res.json(requests);
+    } catch (err) {
+      res.status(500).end();
+    }
+  }
+);
+
+//gets all the requests of a specific supervisor
+app.get('/api/requests/teacher/:professorId',
+  //TODO: isLoggedIn,
+  //TODO: checkTeacherRole,
+  [
+    check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try {
+      const requests = await reqDao.getRequestBySupervisor(req.params.professorId);
+      res.json(requests);
+    } catch (err) {
+      res.status(500).end();
+    }
+  }
+);
+
+//creates a new request, it comes from a student
+app.post('/api/requests',
+  //TODO: isLoggedIn,
+  //TODO: checkStudentRole,
+  [
+    check('reqData').custom((value) => {
+      if (!value.title) {
+        throw new Error('Invalid or missing title');
+      }
+      if (!(/s[0-9]{6}/.test(value.studentId))) {
+        throw new Error('Invalid or missing studentId');
+      }
+      if (!(/d[0-9]{6}/.test(value.supervisorId))) {
+        throw new Error('Invalid or missing teacherId');
+      }
+      if (!value.description) {
+        throw new Error('Invalid or missing decription');
+      }
+      return true;
+    })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try {
+      const reqData = req.body.reqData;
+      //check on cosupervisors
+      if(reqData.coSupervisorId?.length>0){
+        const coSupIds = reqData.coSupervisorId.trim().split(' ');
+        for(id of coSupIds){
+          if(/d[0-9]{6}/.test(id)){
+            const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
+            if (!coSup) {
+              throw new Error(`Invalid academic supervisor code: ${id}`);
+            }
+          }else{
+            throw new Error(`Invalid academic supervisor code: ${id}`);
+          }
+        }
+      }
+      //check on applicationId
+      if(reqData.applicationId){
+        //if it founds nothing it will trhow an error
+        await appDao.getApplicationById(reqData.applicationId);
+      }
+      const requests = await reqDao.addRequest(reqData);
+      res.json(requests);
+    } catch (err) {
+      console.log("Creating request error",err);
+      res.status(500).end();
+    }
+  }
+);
+//#endregion
