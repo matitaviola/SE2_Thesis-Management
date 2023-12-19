@@ -126,7 +126,6 @@ exports.addRequest = async (requestData) => {
     try{
         const studentData = await studDao.getStudentData(requestData.studentId);
         const supervisorData = await supervDao.getSupervisorById(requestData.supervisorId);
-        console.log(studentData, supervisorData);
         if(studentData && supervisorData){
             return await new Promise((resolve,reject)=>{
                 const sql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date) VALUES(?,?,?,?,?,?, ?)';
@@ -140,7 +139,6 @@ exports.addRequest = async (requestData) => {
                     null,
                 ],(err)=>{
                     if(err){
-                        console.log(err);
                         reject(err);
                     }
                     resolve({success:true});

@@ -7,7 +7,7 @@ exports.getDegreeByCode = (degreeCode) => {
     db.all(sql, [degreeCode], (err, row) => {
       if (err) reject(err);
       else if (row === undefined || row.length === 0) {
-        resolve();
+        reject(new Error(`No such degree with code:${degreeCode}`));
       } else {
         resolve(row);
       }
@@ -18,12 +18,12 @@ exports.getDegreeByCode = (degreeCode) => {
 exports.getAll = () => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM DEGREE";
-    db.all(sql, [], (err, row) => {
+    db.all(sql, [], (err, rows) => {
       if (err) reject(err);
-      else if (row === undefined || row.length === 0) {
-        resolve();
+      else if (rows === undefined || rows.length === 0) {
+        resolve([]);
       } else {
-        resolve(row);
+        resolve(rows);
       }
     });
   });

@@ -5,7 +5,7 @@ const studDao = require('./DB/students-dao');
 const supervisorDao = require('./DB/supervisors-dao');
 const degreeDao = require('./DB/degrees-dao');
 const reqDao = require('./DB/request-dao');
-const { isLoggedIn, checkTeacherRole, checkStudentRole, checkUserId } = require('./Middlewares/authorization-middleware');
+const { isLoggedIn, checkTeacherRole, checkStudentRole} = require('./Middlewares/authorization-middleware');
 const mailServer = require('./utils/mail-server');
 const timely = require('./utils/timely-functions');
 
@@ -17,7 +17,6 @@ const dayjs = require('dayjs');
 const { check, validationResult } = require('express-validator');
 const multer = require('multer');
 const fs = require('fs');
-
 
 const passport = require('./utils/saml-config');
 const session = require('express-session');
@@ -76,7 +75,7 @@ const errorFormatter = ({ location, msg, path, value, nestedErrors }) => {
   return `${location}[${path}]: ${msg}`;
 };
 //Start the server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
@@ -858,7 +857,7 @@ async (req, res) => {
 //#region Request
 //gets all existing requests, for clerks
 app.get('/api/requests',
-  //TODO: isLoggedIn,
+  isLoggedIn,
   async (req, res) => {
     try {
       const requests = await reqDao.getAllRequests();
@@ -871,7 +870,7 @@ app.get('/api/requests',
 
 //gets a specific request
 app.get('/api/requests/:reqId',
-  //TODO: isLoggedIn,
+  isLoggedIn,
   [
     check('reqId').not().isEmpty().isInt()
   ],
@@ -891,8 +890,8 @@ app.get('/api/requests/:reqId',
 
 //gets all the requests of a specific supervisor
 app.get('/api/requests/teacher/:professorId',
-  //TODO: isLoggedIn,
-  //TODO: checkTeacherRole,
+  isLoggedIn,
+  checkTeacherRole,
   [
     check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
   ],
@@ -912,8 +911,8 @@ app.get('/api/requests/teacher/:professorId',
 
 //creates a new request, it comes from a student
 app.post('/api/requests',
-  //TODO: isLoggedIn,
-  //TODO: checkStudentRole,
+  isLoggedIn,
+  checkStudentRole,
   [
     check('reqData').custom((value) => {
       if (!value.title) {
@@ -966,3 +965,6 @@ app.post('/api/requests',
   }
 );
 //#endregion
+
+//export, fo testing:
+module.exports = {app, server};
