@@ -31,7 +31,7 @@ const corsOptions = {
 //#region Auto Archiviation
 let currentDate = dayjs();
 async function runAutoArchive(destination) {
-  destination? null : console.log("Time-stabilizing the system");
+  if(destination) console.log("Time-stabilizing the system");
   //set the system date to the destination, if any
   currentDate = destination? dayjs(destination) : dayjs();
   await timely.timelyExpiringEmails(currentDate, 7);
