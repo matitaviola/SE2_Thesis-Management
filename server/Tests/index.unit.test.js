@@ -9,7 +9,12 @@ const appDao = require('../DB/applications-dao');
 jest.mock('../DB/applications-dao',()=>({
     getApplicationById: jest.fn(),
 }))
-// reqdao
+// degreeDao
+const degreeDao = require('../DB/degrees-dao');
+jest.mock('../DB/degrees-dao',()=>({
+    getAll: jest.fn(),
+}))
+// reqDao
 const reqDao = require('../DB/request-dao');
 jest.mock('../DB/request-dao',()=>({
     getAllRequests: jest.fn(),
@@ -57,6 +62,7 @@ afterAll((done) => {
     // Close the server to release the handle
     server.close(done);
   });
+  
 //#region login/out/session
 /*
 describe('Logout route', () => {
@@ -99,6 +105,20 @@ describe('Logout route', () => {
 */
 //#endregion
 
+//#region Degrees
+describe('Degrees routes', () => {
+  it('should respond with status 200 for GET /api/degrees', async () => {
+    degreeDao.getAll.mockResolvedValueOnce({data:"aaa"})
+    const response = await request(app).get('/api/degrees');
+    expect(response.status).toBe(200);
+  });
+  it('should respond with status 500 for GET /api/requests with some error', async () => {
+      degreeDao.getAll.mockImplementationOnce(()=> {throw new Error('error')});
+      const response = await request(app).get('/api/degrees');
+      expect(response.status).toBe(500);
+  });
+});
+//#endregion
 //#region TimeTravel
 describe('TimeTravel routes', () => {
   const validBody={destination:dayjs()};
@@ -108,6 +128,24 @@ describe('TimeTravel routes', () => {
     timely.timelyArchive.mockResolvedValueOnce({success:true});
     const response = (await request(app).patch('/api/timetravel').send(validBody));
     expect(response.status).toBe(200);
+  });
+  it('should respond with status 422 for PATCH /api/timetravel with invalid date', async () => {
+    const response = (await request(app).patch('/api/timetravel').send({}));
+    expect(response.status).toBe(422);
+  });
+  it('should respond with status 500 for PATCH /api/timetravel with error in runAutoArchive', async () => {
+    timely.timelyDeArchive.mockResolvedValueOnce({success:true});
+    timely.timelyExpiringEmails.mockImplementationOnce(()=> {throw new Error('error')});
+    timely.timelyArchive.mockResolvedValueOnce({success:true});
+    const response = (await request(app).patch('/api/timetravel').send(validBody));
+    expect(response.status).toBe(500);
+  });
+  it('should respond with status 500 for PATCH /api/timetravel with error in timelyDeArchive', async () => {
+    timely.timelyDeArchive.mockImplementationOnce(()=> {throw new Error('error')});
+    timely.timelyExpiringEmails.mockResolvedValueOnce({success:true});
+    timely.timelyArchive.mockResolvedValueOnce({success:true});
+    const response = (await request(app).patch('/api/timetravel').send(validBody));
+    expect(response.status).toBe(500);
   });
 });
 //#endregion
