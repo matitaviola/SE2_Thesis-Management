@@ -12,7 +12,6 @@ const userFormatter = (row, role) => {
 }
 exports.effectLogin = (credentials) => {
     return new Promise((resolve, reject) => {
-        let user = {id:"", role:"", email: "", name:"", surname:"" };
         //TODO: CHANGE THIS LOGIC TO HAVE A SINGLE ACCOUNT TABLE, instead of looking into the student/teacher tables based on password
         if(credentials.includes("studenti.polito")){
             //TODO: GENERATE A 
