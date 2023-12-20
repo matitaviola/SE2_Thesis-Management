@@ -35,7 +35,21 @@ exports.effectLogin = (credentials) => {
                 }
                 reject("Teacher not found");
             })
-        } else {
+        } else if(credentials.includes("secretary.polito")){
+            db.get('SELECT * FROM SECRETARY_CLERK WHERE EMAIL = ?', [credentials], (err, row) => {
+                if(err){
+                    reject(err);
+                }else if ( typeof row !== 'undefined'){
+                    user.id = row.Email;
+                    user.role = "CLERK";
+                    user.email = row.Email;
+                    user.surname = row.Surname;
+                    user.name = row.Name;
+                    resolve(user);
+                }
+                reject("Secretary clerk not found");
+            })
+        }else {
             reject("Unexpected user role");
         }
     });

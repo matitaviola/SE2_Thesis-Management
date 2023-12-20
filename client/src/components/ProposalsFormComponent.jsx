@@ -320,7 +320,7 @@ export default function ProposalsFormComponent(props) {
             {renderFormGroup("Title", "title", "text", "", <AiOutlineFileText />)}
             {/*renderFormGroup("Co-Supervisor", "coSupervisor", "text", "", <AiOutlineUser />)*/}
             <Form.Group controlId="formAcademics" className="mb-3">
-              <Form.Label><AiOutlineUser />Academic Co-Supervisors<span className="text-danger">*</span></Form.Label>
+              <Form.Label><AiOutlineUser />Academic Co-Supervisors</Form.Label>
               <Form.Select
                 name="academics"
                 value={proposal.coSupervisor? proposal.coSupervisor : ""}
@@ -347,7 +347,6 @@ export default function ProposalsFormComponent(props) {
             <Form.Group controlId="formExternals" className="mb-3">
               <Form.Label>
                 <AiOutlineUser />External Co-Supervisors
-                <span className="text-danger">*</span>
               </Form.Label>
               <Container className="externals-container">
                 <Container className="externals-form">
@@ -451,7 +450,7 @@ export default function ProposalsFormComponent(props) {
             { proposalToUpdate?
             <Button variant="danger" onClick={() => {
                 Swal.fire({
-                    title: 'Update Proposal?',
+                    title: 'Renounce to Update the Proposal?',
                     text: 'You will be redirected to the previous page. All the inserted data will be lost',
                     icon: 'warning',
                     showCancelButton: true,

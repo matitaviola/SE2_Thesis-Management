@@ -52,6 +52,22 @@ const getStudents = async () => {
 //#endregion
 
 //#region Teacher&Cosupervisors
+const getAllSupervisorsList = async (user) =>{
+  let response, coSupervisorsJson;
+  if(user.role == 'STUDENT'){
+    response = await fetch(SERVER_URL + `/api/cosupervisors`,{ credentials: 'include'});
+    coSupervisorsJson = await response.json();
+  }else{
+    throw new Error("Error on getting the professors list: Invalid role");
+  }
+  if(response.ok) {
+    return coSupervisorsJson;
+  }
+  else{
+    throw new Error("Error on getting the cosupervisors list: "+coSupervisorsJson);
+  }
+}
+
 const getCoSupervisorsList = async (user) =>{
   let response, coSupervisorsJson;
   if(user.role == 'TEACHER'){
@@ -330,6 +346,7 @@ const getRequests = async (user) =>{
     throw new Error("Error on getting the requests: "+requestsJson);
   }
 }
+
 const getStudentActiveRequest = async (studentId) =>{
 
   const response = await fetch(SERVER_URL + `/api/requests/student/${studentId}`, { credentials: 'include'});
@@ -341,15 +358,42 @@ const getStudentActiveRequest = async (studentId) =>{
     throw new Error("Error on getting the requests: "+requestsJson);
   }
 }
+
+const createRequest = async (proposal) => {
+    const response = await fetch(`${SERVER_URL}/api/requests`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {'Content-Type' : "application/json"},
+      body: JSON.stringify({reqData:proposal})
+    });
+    if(!response.ok) {
+      const errMessage = await response.json();
+      throw new Error(errMessage.error);
+    }
+    return {ok:true};
+}
+
+const updateRequest = async (request) => {
+  const response = await fetch(SERVER_URL + `/api/requests/${request.id}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({reqData:request}),
+  });
+  if (!response.ok) {
+    throw new Error(`Something went wrong while updating the request`);
+  }
+}
 //#endregion
 
 const API = {getUserInfo, logout,
-  getCoSupervisorsList, getCoSupervisorByProposal,
+  getAllSupervisorsList, getCoSupervisorsList, getCoSupervisorByProposal,
   getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, updateProposal, getStudentProposals,
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
   addApplication, getDegrees, getResumee,
   boardTardis,
-  getRequests, 
-  getStudentActiveRequest
+  getRequests, getStudentActiveRequest, createRequest, updateRequest
 };
 export default API;

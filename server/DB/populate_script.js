@@ -160,6 +160,19 @@ const createTables = () => {
                 resolve();
             });
 
+            //SECRETARY CLERK
+            db.run(`CREATE TABLE IF NOT EXISTS SECRETARY_CLERK (
+                Email TEXT UNIQUE NOT NULL,
+                Name TEXT NOT NULL,
+                Surname TEXT NOT NULL,
+                PRIMARY KEY (Email)
+            )`, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+
             //REQUEST
             //The status are: Created -> SEC_Approved -> Approved (-> Accepted?)
             db.run(`CREATE TABLE IF NOT EXISTS REQUEST (
@@ -563,6 +576,25 @@ const insertData = () => {
                 stmt.finalize();
             };
 
+            const insertSecretaryClerkData = () => {
+                const secClerkData = [
+                    ['sergio@secretary.polito.it','Sergio', 'Clerico'],  
+                    ['giuse@secretary.polito.it','Giuse', 'Pina']
+                    // Add more entries as needed
+                ];
+
+                const stmt = db.prepare('INSERT INTO SECRETARY_CLERK (Email, Name, Surname) VALUES (?, ?, ?)');
+                secClerkData.forEach(sC => {
+                    stmt.run(sC, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                });
+                stmt.finalize();
+                
+            };
+
             // Call the function for each table
             insertDegreeData();
             insertDepartmentData();
@@ -574,6 +606,7 @@ const insertData = () => {
             insertApplicationData();
             insertExternalCosupervisorData();
             insertRequestData();
+            insertSecretaryClerkData();
 
             resolve();
         });

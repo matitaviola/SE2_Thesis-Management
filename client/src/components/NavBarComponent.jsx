@@ -23,14 +23,20 @@ function NavHeader(props) {
           }}
         >
           <Nav className="me-auto">
-            <Nav.Link href="/proposals" className={location.pathname === '/proposals' ? 'active' : ''}>Proposals</Nav.Link>
-            <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
+            {(loggedInUser.role == 'TEACHER' || loggedInUser.role == 'STUDENT')?
+              <>
+              <Nav.Link href="/proposals" className={location.pathname === '/proposals' ? 'active' : ''}>Proposals</Nav.Link>
+              <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
+              </>
+              :
+              null
+            }
             <Nav.Link href="/requests" className={location.pathname === '/requests' ? 'active' : ''}>Requests</Nav.Link>
           </Nav>
           {loggedInUser ?
             <div style={{ display: 'flex', alignItems: 'center' }}>
             <Navbar.Text className="view-text" style={{fontSize: '1.6rem', color:'#ffffffe3'}}>
-              {loggedInUser.role === 'TEACHER' ? 'Professor view' : 'Student view'}
+              {loggedInUser.role} view
             </Navbar.Text>
             <LogoutButton logout={props.handleLogout} user={loggedInUser} />
           </div>

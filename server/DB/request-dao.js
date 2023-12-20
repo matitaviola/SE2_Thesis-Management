@@ -170,3 +170,35 @@ exports.addRequest = async (requestData) => {
         throw err;
     }
 }
+
+exports.updateRequest = async (requestData) => {
+    try{
+        const studentData = await studDao.getStudentData(requestData.studentId);
+        const supervisorData = await supervDao.getSupervisorById(requestData.supervisorId);
+        if(studentData && supervisorData){
+            return await new Promise((resolve,reject)=>{
+                const sql = 'UPDATE REQUEST SET Title = ?, Student_Id = ?, Supervisor_Id = ?, Co_Supervisor = ?, Description = ?, Application_Id = ?, Approval_Date = ?, Status = ? WHERE Id = ?;';
+                db.run(sql,[
+                    requestData.title,
+                    requestData.studentId,
+                    requestData.supervisorId,
+                    requestData.coSupervisorId,
+                    requestData.description,
+                    requestData.applicationId,
+                    requestData.approvalDate,
+                    requestData.status,
+                    requestData.id
+                ],(err)=>{
+                    if(err){
+                        reject(err);
+                    }
+                    resolve({success:true});
+                })
+            })
+        }else{
+            throw new Error('Either request student or supervisor are not in the database');
+        }
+    }catch(err){
+        throw err;
+    }
+}

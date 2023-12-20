@@ -1,4 +1,4 @@
-const { getAllRequests, getAllRequestsForClerk, getRequestById, getActiveRequestBySupervisor, getActiveRequestByStudent, addRequest } = require('../DB/request-dao');
+const { getAllRequests, getAllRequestsForClerk, getRequestById, getActiveRequestBySupervisor, getActiveRequestByStudent, addRequest, updateRequest } = require('../DB/request-dao');
 const { db } = require('../DB/db');
 const supervDao = require('../DB/supervisors-dao');
 const studDao = require('../DB/students-dao');
@@ -630,4 +630,67 @@ describe('addRequest', () => {
   
       await expect(addRequest(requestData)).rejects.toEqual(expectedError);
     });
+});
+
+describe('updateRequest function', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should update request successfully', async () => {
+    // Mock data
+    const requestData = {
+      // Your request data for a successful update
+    };
+
+    supervDao.getSupervisorById.mockResolvedValueOnce({/* supervisor data */});
+    studDao.getStudentData.mockResolvedValueOnce({/* student data */});
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      callback(null); // Simulate a successful update
+    });
+
+    const result = await updateRequest(requestData);
+
+    expect(supervDao.getSupervisorById).toHaveBeenCalledWith(requestData.supervisorId);
+    expect(studDao.getStudentData).toHaveBeenCalledWith(requestData.studentId);
+    expect(db.run).toHaveBeenCalled();
+    expect(result).toEqual({ success: true });
+  });
+
+  it('should throw an error if either student or supervisor is not in the database', async () => {
+    // Mock data
+    const requestData = {
+      // Your request data for a case where either student or supervisor is not in the database
+    };
+
+    supervDao.getSupervisorById.mockResolvedValueOnce(null); // Simulate supervisor not in the database
+    studDao.getStudentData.mockResolvedValueOnce(null); // Simulate student not in the database
+
+    await expect(updateRequest(requestData)).rejects.toThrow(
+      'Either request student or supervisor are not in the database'
+    );
+
+    expect(supervDao.getSupervisorById).toHaveBeenCalledWith(requestData.supervisorId);
+    expect(studDao.getStudentData).toHaveBeenCalledWith(requestData.studentId);
+    expect(db.run).not.toHaveBeenCalled(); // Ensure that db.run is not called
+  });
+
+  it('should throw an error if the update operation fails', async () => {
+    // Mock data
+    const requestData = {
+      // Your request data for a case where the update operation fails
+    };
+
+    supervDao.getSupervisorById.mockResolvedValueOnce({/* supervisor data */});
+    studDao.getStudentData.mockResolvedValueOnce({/* student data */});
+    db.run.mockImplementationOnce((sql, values, callback) => {
+      callback(new Error('Update failed')); // Simulate a failed update
+    });
+
+    await expect(updateRequest(requestData)).rejects.toThrow('Update failed');
+
+    expect(supervDao.getSupervisorById).toHaveBeenCalledWith(requestData.supervisorId);
+    expect(studDao.getStudentData).toHaveBeenCalledWith(requestData.studentId);
+    expect(db.run).toHaveBeenCalled();
+  });
 });

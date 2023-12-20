@@ -89,7 +89,8 @@ app.post('/login/callback',
     //this is a passport-saml function used to save the session data
     req.logIn(req.user, function (err) {
       if (err) return next(err);
-      return res.redirect(FRONTEND + "proposals");
+      const destination = req.user.role=="CLERK"? "requests" : "proposals";
+      return res.redirect(FRONTEND + destination);
     });
   }
 );
@@ -170,7 +171,7 @@ app.get('/api/students',
 //#endregion
 
 //#region Teacher&Cosupervisors
-
+//gets all the cosupervisors, for a teacher
 app.get('/api/cosupervisors/:professorId', 
   isLoggedIn,
   checkTeacherRole,
@@ -188,6 +189,19 @@ app.get('/api/cosupervisors/:professorId',
       res.json(academicCoSup);
     }catch(err){
       console.log("Cosupervisor error: ",err);
+      res.status(500).json({ error: err });
+    }
+});
+//gets all the professors, for a student
+app.get('/api/cosupervisors', 
+  isLoggedIn,
+  checkStudentRole,
+  async (req,res)=>{
+    try{
+      const academicCoSup = await supervisorDao.getCoSupervisorsList('catch-all'); //returns all the teachers with id different from 'catch-all', a.k.a. all teachers
+      res.json(academicCoSup);
+    }catch(err){
+      console.log("Getting professors list error: ",err);
       res.status(500).json({ error: err });
     }
 });
@@ -978,6 +992,68 @@ app.post('/api/requests',
         await appDao.getApplicationById(reqData.applicationId);
       }
       const requests = await reqDao.addRequest(reqData);
+      res.json(requests);
+    } catch (err) {
+      console.log("Creating request error",err);
+      res.status(500).end();
+    }
+  }
+);
+
+//patches a request, it comes from anyone
+app.patch('/api/requests/:reqId',
+  isLoggedIn,
+  [
+    check('reqData').custom((value) => {
+      if (!value.id) {
+        throw new Error('Missing id');
+      }
+      if (!value.title) {
+        throw new Error('Invalid or missing title');
+      }
+      if (!(/s[0-9]{6}/.test(value.studentId))) {
+        throw new Error('Invalid or missing studentId');
+      }
+      if (!(/d[0-9]{6}/.test(value.supervisorId))) {
+        throw new Error('Invalid or missing teacherId');
+      }
+      if (!value.description) {
+        throw new Error('Invalid or missing decription');
+      }
+      return true;
+    })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try {
+      const reqData = req.body.reqData;
+      //check on cosupervisors
+      if(reqData.coSupervisorId?.length>0){
+        const coSupIds = reqData.coSupervisorId.trim().split(' ');
+        for(id of coSupIds){
+          if(/d[0-9]{6}/.test(id)){
+            const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
+            if (!coSup) {
+              throw new Error(`Invalid academic supervisor code: ${id} - not found`);
+            }
+          }else{
+            throw new Error(`Invalid academic supervisor code: ${id}`);
+          }
+        }
+      }
+      //check on applicationId
+      if(reqData.applicationId){
+        //if it founds nothing it will trhow an error
+        await appDao.getApplicationById(reqData.applicationId);
+      }
+      //if a professor is accepting it
+      if(reqData.status && reqData.status == "Approved" && !reqData.approvalDate){
+        reqData.approvalDate = dayjs().format("YYYY-MM-DD");
+      }
+      const requests = await reqDao.updateRequest(reqData);
       res.json(requests);
     } catch (err) {
       console.log("Creating request error",err);

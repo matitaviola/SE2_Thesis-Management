@@ -56,6 +56,28 @@ test('should resolve with teacher user when credentials include "docenti.polito"
   });
 });
 
+test('should resolve with teacher user when credentials include "secretary.polito"', async () => {
+  const credentials = 'doc@secretary.polito.com';
+  const mockRow = {
+    Email: 'doc@secretary.polito.com',
+    Surname: 'TeacherSurname',
+    Name: 'TeacherName',
+  };
+  db.get.mockImplementationOnce((query, params, callback) => {
+    callback(null, mockRow);
+  });
+
+  const result = await effectLogin(credentials);
+
+  expect(result).toEqual({
+    id: mockRow.Email,
+    role: 'CLERK',
+    email: mockRow.Email,
+    surname: mockRow.Surname,
+    name: mockRow.Name,
+  });
+});
+
 test('should reject with "Student not found" when student not found', async () => {
   const credentials = 'stud@studenti.polito.com';
   db.get.mockImplementationOnce((query, params, callback) => {
@@ -72,6 +94,15 @@ test('should reject with "Teacher not found" when teacher not found', async () =
   });
 
   await expect(effectLogin(credentials)).rejects.toEqual('Teacher not found');
+});
+
+test('should reject with "Secretary clerk not found" when clerk not found', async () => {
+  const credentials = 'doc@secretary.polito.com';
+  db.get.mockImplementationOnce((query, params, callback) => {
+    callback(null, undefined); // Simulate no matching teacher
+  });
+
+  await expect(effectLogin(credentials)).rejects.toEqual('Secretary clerk not found');
 });
 
 test('should reject with "Unexpected user role" for other credentials', async () => {
@@ -92,6 +123,16 @@ test('should reject with error when database query fails', async () => {
 
 test('should reject with database error for teacher query', async () => {
   const credentials = 'doc@docenti.polito.com';
+  const errorMessage = 'Database error';
+  db.get.mockImplementationOnce((query, params, callback) => {
+    callback(new Error(errorMessage));
+  });
+
+  await expect(effectLogin(credentials)).rejects.toEqual(new Error(errorMessage));
+});
+
+test('should reject with database error for secreatry query', async () => {
+  const credentials = 'doc@secretary.polito.com';
   const errorMessage = 'Database error';
   db.get.mockImplementationOnce((query, params, callback) => {
     callback(new Error(errorMessage));

@@ -16,6 +16,7 @@ import API from './API.js';
 import HomeComponent from './components/HomeComponent.jsx';
 import CancelledProposalMessage from './components/CancelledProposalComponent.jsx';
 import RequestsComponent from './components/RequestsComponent.jsx';
+import RequestInfo from './components/RequestInfoComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -88,12 +89,22 @@ useEffect(() => {
               element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
             <Route path='requests'
               element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
-              </>
+              <Route path='requests/:requestId'
+            element={<RequestInfo setErrorMessage={setErrorMessage}/>} />
+            </>
           }
-          <Route path='*' element={<NotFound />} />
+          { loggedIn && loggedIn.role == 'CLERK' &&
+           <>
+            <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
+            <Route path='requests/:requestId'
+            element={<RequestInfo setErrorMessage={setErrorMessage}/>} />
+          </>
+          }
           <Route path='/login' element={
-            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm />
-          } />
+            loggedIn ? <Navigate replace to={(loggedIn.role == 'CLERK')? '/requests':'/proposals'} /> : <LoginForm />
+          }/>
+          <Route path='*' element={<NotFound />} />
 
         </Route>
       </Routes>

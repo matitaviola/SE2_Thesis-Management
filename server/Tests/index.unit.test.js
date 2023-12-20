@@ -23,6 +23,7 @@ jest.mock('../DB/request-dao',()=>({
     getActiveRequestBySupervisor: jest.fn(),
     getActiveRequestByStudent: jest.fn(),
     addRequest: jest.fn(),
+    updateRequest: jest.fn(),
 }))
 // login check middleware
 const { isLoggedIn, checkTeacherRole, checkStudentRole} = require('../Middlewares/authorization-middleware');
@@ -211,7 +212,7 @@ describe('Request routes', () => {
         expect(response.status).toBe(500);
     });
 
-    // /api/requests
+    //POST /api/requests
     const validRequestBody = {
       reqData:{
         title: 'New Request',
@@ -278,6 +279,84 @@ describe('Request routes', () => {
     it('should respond with status 500 for POST /api/requests with some error', async () => {
         reqDao.addRequest.mockImplementationOnce(()=> {throw new Error('error')});
         const response = await request(app).post('/api/requests').send(validRequestBody);
+        expect(response.status).toBe(500);
+    });
+
+    //PATCH /api/requests/:reqId
+    const validRequestBodyPatch = {
+      reqData:{
+        id:1,
+        title: 'New Request',
+        studentId: 's200002',
+        supervisorId: 'd100001',
+        description: 'New Description',
+        applicationId: 4,
+        status: "Approved"
+      }
+    };
+    const invalidRequestBodyPatchCoSup = {
+      reqData:{
+        id:1,
+        title: 'New Request',
+        studentId: 's200002',
+        supervisorId: 'd100001',
+        coSupervisorId: 'd200002 2',//wrong format
+        description: 'New Description',
+        applicationId: 4
+      }
+    };
+    it('should respond with status 200 for PATCH /api/requests/:reqId', async () => {
+      appDao.getApplicationById.mockResolvedValueOnce({});
+      reqDao.updateRequest.mockResolvedValueOnce({success:true})
+      const response = await request(app).patch('/api/requests/1').send(validRequestBodyPatch);
+      expect(response.status).toBe(200);
+    });
+    it('should respond with status 422 for PATCH /api/requests/:reqId with some req fields error', async () => {
+      let invalidRequestBodyPatch = {
+        reqData:{
+          //missing id
+          title:'',
+          studentId: 1,
+          supervisorId: 2,
+          coSupervisorId: 3,
+          description: '',
+          applicationId: 4
+        }
+      };
+      //id
+      const responseId = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatch);
+      expect(responseId.status).toBe(422);
+      //title
+      invalidRequestBodyPatch.reqData.id = 1;
+      const responseTitle = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatch);
+      expect(responseTitle.status).toBe(422);
+      //studentId
+      invalidRequestBodyPatch.reqData.title = "Valid title";
+      const responseStudent = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatch);
+      expect(responseStudent.status).toBe(422);
+      //teacherId
+      invalidRequestBodyPatch.reqData.studentId = "s200002";
+      const responseTeacher = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatch);
+      expect(responseTeacher.status).toBe(422);
+      //description
+      invalidRequestBodyPatch.reqData.supervisorId = "d200002"
+      const responseDescription = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatch);
+      expect(responseDescription.status).toBe(422);
+    });
+    it('should respond with status 500 for PATCH /api/requests/:reqId with some error in the cosup or app', async () => {
+      //gets to '2' and it's not a valid format for id
+      supervisorDao.getSupervisorById.mockResolvedValueOnce({id:'valid'});
+      const response = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatchCoSup);
+      expect(response.status).toBe(500);
+
+      //fails to find the first cosupervisor, even though it has a valid format
+      supervisorDao.getSupervisorById.mockResolvedValueOnce(null);
+      const responseNotFound = await request(app).patch('/api/requests/1').send(invalidRequestBodyPatchCoSup);
+      expect(responseNotFound.status).toBe(500);
+    });
+    it('should respond with status 500 for PATCH /api/requests/:reqId with some error', async () => {
+        reqDao.updateRequest.mockImplementationOnce(()=> {throw new Error('error')});
+        const response = await request(app).patch('/api/requests/1').send(validRequestBodyPatch);
         expect(response.status).toBe(500);
     });
 });

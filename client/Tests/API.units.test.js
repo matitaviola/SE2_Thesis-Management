@@ -309,6 +309,70 @@ describe('getStudentData API', () => {
   });
 });
 
+describe('getAllSupervisorsList API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock user data
+  const teacherUser = { id: 1, role: 'STUDENT' };
+  const otherUser = { id: 3, role: 'SOMETHING_ELSE' };
+
+  // Mock response data
+  const coSupervisors = [
+    { id: 101, name: 'CoSupervisor 1', department: 'CS', group: 'Group X' },
+    { id: 102, name: 'CoSupervisor 2', department: 'ENG', group: 'Group Y' },
+  ];
+
+  // Mock fetch response for co-supervisors
+  const coSupervisorsResponse = {
+    ok: true,
+    json: async () => coSupervisors,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should get co-supervisors for a teacher', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    const result = await API.getAllSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual(coSupervisors);
+  });
+
+  it('should return empty array for teacher when no co-supervisors are found', async () => {
+    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
+
+    const result = await API.getAllSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getAllSupervisorsList(teacherUser)).rejects.toThrow(
+      'Error on getting the cosupervisors list: Error occurred'
+    );
+  });
+
+  it('should throw an error for unknown role', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    await expect(API.getAllSupervisorsList(otherUser)).rejects.toThrow(
+      'Error on getting the professors list: Invalid role'
+    );
+  });
+});
+
 describe('getCoSupervisorsList API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally
@@ -1417,5 +1481,89 @@ describe('getStudentActiveRequest API', () => {
     await expect(API.getStudentActiveRequest(studentId)).rejects.toThrow(
       'Error on getting the requests: Error occurred'
     );
+  });
+});
+
+describe('createRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  const proposal = {
+    // Your proposal data
+  };
+
+  const createRequestResponse = {
+    ok: true,
+    json: async () => ({ ok: true }),
+  };
+
+  it('should create a request successfully', async () => {
+    fetch.mockResolvedValueOnce(createRequestResponse);
+
+    const result = await API.createRequest(proposal);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests`, {
+      method: 'POST',
+      ...reqData,
+      body: JSON.stringify({ reqData: proposal }),
+    });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Error occurred' }) });
+
+    await expect(API.createRequest(proposal)).rejects.toThrow('Error occurred');
+  });
+});
+
+describe('updateRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  const request = {
+    id: 1,
+    // Your request data
+  };
+
+  const updateRequestResponse = {
+    ok: true,
+    json: async () => ({ ok: true }),
+  };
+
+  it('should update a request successfully', async () => {
+    fetch.mockResolvedValueOnce(updateRequestResponse);
+
+    const result = await API.updateRequest(request);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/${request.id}`, {
+      method: 'PATCH',
+      ...reqData,
+      body: JSON.stringify({ reqData: request }),
+    });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Error occurred' }) });
+
+    await expect(API.updateRequest(request)).rejects.toThrow('Something went wrong while updating the request');
   });
 });
