@@ -25,6 +25,7 @@ function NavHeader(props) {
           <Nav className="me-auto">
             <Nav.Link href="/proposals" className={location.pathname === '/proposals' ? 'active' : ''}>Proposals</Nav.Link>
             <Nav.Link href="/applications" className={location.pathname === '/applications' ? 'active' : ''}>Applications</Nav.Link>
+            <Nav.Link href="/requests" className={location.pathname === '/requests' ? 'active' : ''}>Requests</Nav.Link>
           </Nav>
           {loggedInUser ?
             <div style={{ display: 'flex', alignItems: 'center' }}>

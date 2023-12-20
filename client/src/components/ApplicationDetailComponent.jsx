@@ -18,6 +18,7 @@ function ApplicationDetailComponent(props) {
 }
 function TeacherApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
+    const [proposalData, setProposalData] = useState({id:-1, expiration:"YYYY-MM-DD"});
     const { proposalId, studentId } = useParams();
     const navigate = useNavigate();
 
@@ -34,6 +35,19 @@ function TeacherApplicationDetail(props){
             }
         };
         getStudentData();
+    }, []);
+
+    useEffect(() => {
+        const getProposalData = async () => {
+            try {
+                const retrievedProposalData = await API.getSingleProposal(proposalId);
+                setProposalData(retrievedProposalData);
+            } catch (err) {
+                //should use toast instead
+                props.setErrorMessage(`${err}`);
+            }
+        };
+        getProposalData();
     }, []);
 
     const acceptApplication = () => {

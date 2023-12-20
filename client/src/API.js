@@ -292,7 +292,7 @@ const getResumee = async (applicationId) => {
 
 //#endregion
 
-//#region
+//#region TimeTravel
 //takes the date to go to
 const boardTardis = async (destination) =>{
   const response = await fetch(SERVER_URL + `/api/timetravel`, {
@@ -309,11 +309,47 @@ const boardTardis = async (destination) =>{
 }
 //#endregion
 
+//#region Request
+
+const getRequests = async (user) =>{
+  let response, requestsJson;
+  if(user.role == 'TEACHER'){
+    response = await fetch(SERVER_URL + `/api/requests/teacher/${user.id}`, { credentials: 'include'});
+    requestsJson = await response.json();
+  } else if(user.role == 'CLERK'){
+    response = await fetch(SERVER_URL + `/api/requests/`, { credentials: 'include'});
+    requestsJson = await response.json();
+  }
+   else{
+    throw new Error("Error on getting the proposals: Invalid role");
+  }
+  if(response.ok) {
+    return(requestsJson);
+  }
+  else{
+    throw new Error("Error on getting the proposals: "+requestsJson);
+  }
+}
+const getStudentActiveRequest = async (studentId) =>{
+
+  const response = await fetch(SERVER_URL + `/api/requests/student/${studentId}`, { credentials: 'include'});
+  const requestsJson = await response.json();
+  if(response.ok) {
+    return(requestsJson);
+  }
+  else{
+    throw new Error("Error on getting the proposals: "+requestsJson);
+  }
+}
+//#endregion
+
 const API = {getUserInfo, logout,
   getCoSupervisorsList, getCoSupervisorByProposal,
   getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, updateProposal, getStudentProposals,
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
   addApplication, getDegrees, getResumee,
-  boardTardis
+  boardTardis,
+  getRequests, 
+  getStudentActiveRequest
 };
 export default API;

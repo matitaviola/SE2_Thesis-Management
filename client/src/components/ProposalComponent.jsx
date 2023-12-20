@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Modal, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal} from 'react-bootstrap';
 import API from '../API';
 import { FileUploadComponent } from './FileUploadComponent';
 import Swal from 'sweetalert2';
