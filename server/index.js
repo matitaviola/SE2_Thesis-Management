@@ -42,7 +42,7 @@ async function runAutoArchive(destination) {
 }
 //we run it one time at the starting of the system, to be sure everything is up-to-date
 runAutoArchive().then(async () => {await timely.timelyDeArchive(dayjs()); console.log("System succesfully time-stabilized");}).catch((error) => {console.error('Error in first runAutoArchive:', error);});;
-const interval = setInterval(()=>{
+setInterval(()=>{
   runAutoArchive()
   .catch((error) => {console.error('Error in runAutoArchive:', error);});
 }, 86400000); //runs every 24h
