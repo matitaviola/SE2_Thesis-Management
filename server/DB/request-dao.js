@@ -21,13 +21,39 @@ async function requestFormat(r){
         coSupervisorNames: r.Co_Supervisor ? await propDao.getCoSupervisorNames(r.Co_Supervisor) : "",
         description: r.Description,
         applicationId: r.Application_Id? r.Application_Id : null,
-        approvalDate: r.Approval_Date
+        approvalDate: r.Approval_Date,
+        status: r.Status
     }
 }
 
 exports.getAllRequests = async () => {
     try{
         const sql = 'SELECT * FROM REQUEST';
+        const rows = await new Promise((dbResolve, dbReject) => {
+            db.all(sql, [], (err, rows) => {
+                if (err) {
+                    dbReject(err);
+                } else{
+                    dbResolve(rows);
+                }
+            });
+        });
+        if (rows === undefined || rows.length === 0) {
+            return []; // if no applications yet for that 
+        } else {
+            const requests = await Promise.all(rows.map(async r => {
+                return await requestFormat(r);
+            }));
+            return requests;
+        }
+    }catch(err){
+        throw err;
+    }
+}
+
+exports.getAllRequestsForClerk = async () => {
+    try{
+        const sql = 'SELECT * FROM REQUEST WHERE Status="Created"';
         const rows = await new Promise((dbResolve, dbReject) => {
             db.all(sql, [], (err, rows) => {
                 if (err) {
@@ -69,9 +95,9 @@ exports.getRequestById = async (reqId) => {
     }
 }
 
-exports.getRequestBySupervisor = async (supervisorId) => {
+exports.getActiveRequestBySupervisor = async (supervisorId) => {
     try{
-        const sql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ?';
+        const sql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ? AND Status = "SEC_Approved"';
         const rows = await new Promise((dbResolve, dbReject) => {
             db.all(sql, [supervisorId], (err, rows) => {
                 if (err) {
@@ -94,13 +120,33 @@ exports.getRequestBySupervisor = async (supervisorId) => {
     }
 }
 
+exports.getActiveRequestByStudent = async (studentId) => {
+    try{
+        const sql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+        const row = await new Promise((dbResolve, dbReject) => {
+            db.get(sql, [studentId], (err, row) => {
+                if (err) {
+                    dbReject(err);
+                } else if(row){
+                    dbResolve(row);
+                }
+                //If I don't found any, I return an empty object
+                dbResolve();
+            });
+        });
+        return row? await requestFormat(row):{};
+    }catch(err){
+        throw err;
+    }
+}
+
 exports.addRequest = async (requestData) => {
     try{
         const studentData = await studDao.getStudentData(requestData.studentId);
         const supervisorData = await supervDao.getSupervisorById(requestData.supervisorId);
         if(studentData && supervisorData){
             return await new Promise((resolve,reject)=>{
-                const sql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date) VALUES(?,?,?,?,?,?, ?)';
+                const sql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date, Status) VALUES(?,?,?,?,?,?,?,?)';
                 db.run(sql,[
                     requestData.title,
                     requestData.studentId,
@@ -109,6 +155,7 @@ exports.addRequest = async (requestData) => {
                     requestData.description,
                     requestData.applicationId? requestData.applicationId : null,
                     null,
+                    "Created"
                 ],(err)=>{
                     if(err){
                         reject(err);

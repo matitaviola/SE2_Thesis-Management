@@ -15,6 +15,7 @@ import ApplicationDetailComponent from './components/ApplicationDetailComponent.
 import API from './API.js';
 import HomeComponent from './components/HomeComponent.jsx';
 import CancelledProposalMessage from './components/CancelledProposalComponent.jsx';
+import RequestsComponent from './components/RequestsComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -68,8 +69,10 @@ useEffect(() => {
               element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications/null'
               element={<CancelledProposalMessage  setErrorMessage={setErrorMessage}/>} />
-              </>
-              }
+              <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
+            </>
+          }
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent  setErrorMessage={setErrorMessage}/>} />
@@ -83,8 +86,10 @@ useEffect(() => {
               element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>}/>
           <Route path='application/:proposalId/:studentId'
               element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
+            <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
               </>
-              }
+          }
           <Route path='*' element={<NotFound />} />
           <Route path='/login' element={
             loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm />

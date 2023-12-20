@@ -860,7 +860,7 @@ app.get('/api/requests',
   isLoggedIn,
   async (req, res) => {
     try {
-      const requests = await reqDao.getAllRequests();
+      const requests = await reqDao.getAllRequestsForClerk();
       res.json(requests);
     } catch (err) {
       res.status(500).end();
@@ -888,7 +888,7 @@ app.get('/api/requests/:reqId',
   }
 );
 
-//gets all the requests of a specific supervisor
+//gets all the active requests of a specific supervisor
 app.get('/api/requests/teacher/:professorId',
   isLoggedIn,
   checkTeacherRole,
@@ -901,7 +901,28 @@ app.get('/api/requests/teacher/:professorId',
       return res.status(422).json({ error: errors.array().join(", ") });
     }
     try {
-      const requests = await reqDao.getRequestBySupervisor(req.params.professorId);
+      const requests = await reqDao.getActiveRequestBySupervisor(req.params.professorId);
+      res.json(requests);
+    } catch (err) {
+      res.status(500).end();
+    }
+  }
+);
+
+//gets the only active request of a student
+app.get('/api/requests/student/:studentId',
+  isLoggedIn,
+  checkStudentRole,
+  [
+    check('studentId').not().isEmpty().matches(/s[0-9]{6}/)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req).formatWith(errorFormatter); //format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+    try {
+      const requests = await reqDao.getActiveRequestByStudent(req.params.studentId);
       res.json(requests);
     } catch (err) {
       res.status(500).end();
@@ -944,7 +965,7 @@ app.post('/api/requests',
           if(/d[0-9]{6}/.test(id)){
             const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
             if (!coSup) {
-              throw new Error(`Invalid academic supervisor code: ${id}`);
+              throw new Error(`Invalid academic supervisor code: ${id} - not found`);
             }
           }else{
             throw new Error(`Invalid academic supervisor code: ${id}`);

@@ -1,10 +1,22 @@
 //#region imports and mocks
+// supervisorDao
+const supervisorDao = require('../DB/supervisors-dao');
+jest.mock('../DB/supervisors-dao',()=>({
+    getSupervisorById: jest.fn(),
+}))
+// applicationDao
+const appDao = require('../DB/applications-dao');
+jest.mock('../DB/applications-dao',()=>({
+    getApplicationById: jest.fn(),
+}))
 // reqdao
 const reqDao = require('../DB/request-dao');
 jest.mock('../DB/request-dao',()=>({
     getAllRequests: jest.fn(),
+    getAllRequestsForClerk: jest.fn(),
     getRequestById: jest.fn(),
-    getRequestBySupervisor: jest.fn(),
+    getActiveRequestBySupervisor: jest.fn(),
+    getActiveRequestByStudent: jest.fn(),
     addRequest: jest.fn(),
 }))
 // login check middleware
@@ -33,6 +45,7 @@ jest.spyOn(global, 'setInterval').mockImplementation((callback, interval) => {
 });
 //#endregion
 //app imports
+const dayjs = require('dayjs');
 const sinon = require('sinon');
 const request = require('supertest');
 const express = require('express');
@@ -86,16 +99,28 @@ describe('Logout route', () => {
 */
 //#endregion
 
+//#region TimeTravel
+describe('TimeTravel routes', () => {
+  const validBody={destination:dayjs()};
+  it('should respond with status 200 for PATCH /api/timetravel', async () => {
+    timely.timelyDeArchive.mockResolvedValueOnce({success:true});
+    timely.timelyExpiringEmails.mockResolvedValueOnce({success:true});
+    timely.timelyArchive.mockResolvedValueOnce({success:true});
+    const response = (await request(app).patch('/api/timetravel').send(validBody));
+    expect(response.status).toBe(200);
+  });
+});
+//#endregion
 //#region Request
 describe('Request routes', () => {
     // /api/requests
     it('should respond with status 200 for GET /api/requests', async () => {
-        reqDao.getAllRequests.mockResolvedValueOnce({data:"aaa"})
+        reqDao.getAllRequestsForClerk.mockResolvedValueOnce({data:"aaa"})
         const response = await request(app).get('/api/requests');
         expect(response.status).toBe(200);
     });
     it('should respond with status 500 for GET /api/requests with some error', async () => {
-        reqDao.getAllRequests.mockImplementationOnce(()=> {throw new Error('error')});
+        reqDao.getAllRequestsForClerk.mockImplementationOnce(()=> {throw new Error('error')});
         const response = await request(app).get('/api/requests');
         expect(response.status).toBe(500);
     });
@@ -106,13 +131,115 @@ describe('Request routes', () => {
         const response = await request(app).get('/api/requests/1');
         expect(response.status).toBe(200);
     });
-    it('should respond with status 422 for GET /api/requests with some error', async () => {
+    it('should respond with status 422 for GET /api/requests with some req fields error', async () => {
         const response = await request(app).get('/api/requests/nan');
         expect(response.status).toBe(422);
     });
     it('should respond with status 500 for GET /api/requests with some error', async () => {
         reqDao.getRequestById.mockImplementationOnce(()=> {throw new Error('error')});
         const response = await request(app).get('/api/requests/1');
+        expect(response.status).toBe(500);
+    });
+
+    // api/requests/teacher/:professorId
+    it('should respond with status 200 for GET /api/requests/teacher/:professorId', async () => {
+      reqDao.getActiveRequestBySupervisor.mockResolvedValueOnce({data:"aaa"})
+      const response = await request(app).get('/api/requests/teacher/d100001');
+      expect(response.status).toBe(200);
+    });
+    it('should respond with status 422 for GET /api/requests/teacher/:professorId with some req fields error', async () => {
+        const response = await request(app).get('/api/requests/teacher/s100001');
+        expect(response.status).toBe(422);
+    });
+    it('should respond with status 500 for GET /api/requests/teacher/:professorId with some error', async () => {
+        reqDao.getActiveRequestBySupervisor.mockImplementationOnce(()=> {throw new Error('error')});
+        const response = await request(app).get('/api/requests/teacher/d100001');
+        expect(response.status).toBe(500);
+    });
+
+    // api/requests/student/:studentId
+    it('should respond with status 200 for GET /api/requests/student/:studentId', async () => {
+      reqDao.getActiveRequestByStudent.mockResolvedValueOnce({data:"aaa"})
+      const response = await request(app).get('/api/requests/student/s100001');
+      expect(response.status).toBe(200);
+    });
+    it('should respond with status 422 for GET /api/requests/student/:studentId with some req fields error', async () => {
+        const response = await request(app).get('/api/requests/student/d100001');
+        expect(response.status).toBe(422);
+    });
+    it('should respond with status 500 for GET /api/requests/student/:studentId with some error', async () => {
+        reqDao.getActiveRequestByStudent.mockImplementationOnce(()=> {throw new Error('error')});
+        const response = await request(app).get('/api/requests/student/s100001');
+        expect(response.status).toBe(500);
+    });
+
+    // /api/requests
+    const validRequestBody = {
+      reqData:{
+        title: 'New Request',
+        studentId: 's200002',
+        supervisorId: 'd100001',
+        description: 'New Description',
+        applicationId: 4
+      }
+    };
+    const invalidRequestBodyCoSup = {
+      reqData:{
+        title: 'New Request',
+        studentId: 's200002',
+        supervisorId: 'd100001',
+        coSupervisorId: 'd200002 2',//wrong format
+        description: 'New Description',
+        applicationId: 4
+      }
+    };
+    it('should respond with status 200 for POST /api/requests', async () => {
+      appDao.getApplicationById.mockResolvedValueOnce({});
+      reqDao.addRequest.mockResolvedValueOnce({success:true})
+      const response = await request(app).post('/api/requests').send(validRequestBody);
+      expect(response.status).toBe(200);
+    });
+    it('should respond with status 422 for POST /api/requests with some req fields error', async () => {
+      let invalidRequestBody = {
+        reqData:{
+          //missing title
+          studentId: 1,
+          supervisorId: 2,
+          coSupervisorId: 3,
+          description: '',
+          applicationId: 4
+        }
+      };
+      //title
+      const responseTitle = await request(app).post('/api/requests').send(invalidRequestBody);
+      expect(responseTitle.status).toBe(422);
+      //studentId
+      invalidRequestBody.reqData.title = "Valid title";
+      const responseStudent = await request(app).post('/api/requests').send(invalidRequestBody);
+      expect(responseStudent.status).toBe(422);
+      //teacherId
+      invalidRequestBody.reqData.studentId = "s200002";
+      const responseTeacher = await request(app).post('/api/requests').send(invalidRequestBody);
+      expect(responseTeacher.status).toBe(422);
+      //description
+      invalidRequestBody.reqData.supervisorId = "d200002"
+      const responseDescription = await request(app).post('/api/requests').send(invalidRequestBody);
+      expect(responseDescription.status).toBe(422);
+    });
+    it('should respond with status 500 for POST /api/requests with some error in the cosup or app', async () => {
+      //gets to '2' and it's not a valid format for id
+      supervisorDao.getSupervisorById.mockResolvedValueOnce({id:'valid'});
+      const response = await request(app).post('/api/requests').send(invalidRequestBodyCoSup);
+      expect(response.status).toBe(500);
+
+      //fails to find the first cosupervisor, even though it has a valid format
+      supervisorDao.getSupervisorById.mockResolvedValueOnce(null);
+      const responseNotFound = await request(app).post('/api/requests').send(invalidRequestBodyCoSup);
+      expect(responseNotFound.status).toBe(500);
+    });
+    it('should respond with status 500 for POST /api/requests with some error', async () => {
+        reqDao.addRequest.mockImplementationOnce(()=> {throw new Error('error')});
+        const response = await request(app).post('/api/requests').send(validRequestBody);
         expect(response.status).toBe(500);
     });
 });

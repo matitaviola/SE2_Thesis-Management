@@ -160,7 +160,8 @@ const createTables = () => {
                 resolve();
             });
 
-            //EXTERNAL-COSUPERVISOR
+            //REQUEST
+            //The status are: Created -> SEC_Approved -> Approved (-> Accepted?)
             db.run(`CREATE TABLE IF NOT EXISTS REQUEST (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 Title TEXT NOT NULL,
@@ -170,6 +171,7 @@ const createTables = () => {
                 Description TEXT NOT NULL,
                 Application_Id TEXT,
                 Approval_Date TEXT,
+                Status TEXT,
                 FOREIGN KEY(Student_Id) REFERENCES STUDENT(ID),
                 FOREIGN KEY(Supervisor_Id) REFERENCES TEACHER(ID),
                 FOREIGN KEY(Application_Id) REFERENCES APPLICATION(Id) ON DELETE SET NULL
@@ -547,10 +549,10 @@ const insertData = () => {
 
             const insertRequestData = () => {
                 requestData = [
-                    [1, "Technical Misteries of bio-automatics","s200000","d100001",null, "An interesting investigation on the possibilities of a newborn field.", null, null],
-                    [2, "Pushing Boundaries in AI, Machine Learning, and Robotics","s200009","d100001",'d100003', "Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.", 21, null]
+                    [1, "Technical Misteries of bio-automatics","s200000","d100001",null, "An interesting investigation on the possibilities of a newborn field.", null, null, "Created"],
+                    [2, "Pushing Boundaries in AI, Machine Learning, and Robotics","s200009","d100001",'d100003', "Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.", 21, null, "Created"]
                 ];
-                const stmt = db.prepare('INSERT INTO REQUEST (Id,Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date) VALUES(?,?,?,?,?,?,?, ?)');
+                const stmt = db.prepare('INSERT INTO REQUEST (Id,Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date, Status) VALUES(?,?,?,?,?,?,?,?,?)');
                 requestData.forEach(req => {
                     stmt.run(req, (err) => {
                         if (err) {

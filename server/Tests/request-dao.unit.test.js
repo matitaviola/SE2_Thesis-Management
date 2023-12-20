@@ -1,4 +1,4 @@
-const { getAllRequests, getRequestById, getRequestBySupervisor, addRequest } = require('../DB/request-dao');
+const { getAllRequests, getAllRequestsForClerk, getRequestById, getActiveRequestBySupervisor, getActiveRequestByStudent, addRequest } = require('../DB/request-dao');
 const { db } = require('../DB/db');
 const supervDao = require('../DB/supervisors-dao');
 const studDao = require('../DB/students-dao');
@@ -26,13 +26,13 @@ jest.mock('../DB/proposals-dao', () => ({
     getCoSupervisorNames: jest.fn()
 }));
 
-describe('getAllRequests', () => {
+describe('getAllRequestsForClerk', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
   
     it('should resolve with an empty array if there are no requests in the database', async () => {
-      const expectedSql = 'SELECT * FROM REQUEST';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Status="Created"';
       const mockedRows = [];
       db.all.mockImplementation((sql, params, callback) => {
         expect(sql).toBe(expectedSql);
@@ -40,12 +40,12 @@ describe('getAllRequests', () => {
         callback(null, mockedRows);
       });
   
-      const result = await getAllRequests();
+      const result = await getAllRequestsForClerk();
       expect(result).toEqual([]);
     });
   
     it('should resolve with an array of requests with supervisor and student data when requests are found in the database', async () => {
-      const expectedSql = 'SELECT * FROM REQUEST';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Status="Created"';
       const mockedRows = [
         {
           Id: 1,
@@ -98,12 +98,12 @@ describe('getAllRequests', () => {
         callback(null, mockedRows);
       });
   
-      const result = await getAllRequests();
+      const result = await getAllRequestsForClerk();
       expect(result).toEqual(await Promise.all(expectedRequests));
     });
   
     it('should reject with an error if an error occurs during database retrieval', async () => {
-      const expectedSql = 'SELECT * FROM REQUEST';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Status="Created"';
       const expectedError = 'Database error occurred';
       db.all.mockImplementation((sql, params, callback) => {
         expect(sql).toBe(expectedSql);
@@ -111,8 +111,97 @@ describe('getAllRequests', () => {
         callback(expectedError, null);
       });
   
-      await expect(getAllRequests()).rejects.toEqual(expectedError);
+      await expect(getAllRequestsForClerk()).rejects.toEqual(expectedError);
     });
+});
+
+describe('getAllRequests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with an empty array if there are no requests in the database', async () => {
+    const expectedSql = 'SELECT * FROM REQUEST';
+    const mockedRows = [];
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, mockedRows);
+    });
+
+    const result = await getAllRequests();
+    expect(result).toEqual([]);
+  });
+
+  it('should resolve with an array of requests with supervisor and student data when requests are found in the database', async () => {
+    const expectedSql = 'SELECT * FROM REQUEST';
+    const mockedRows = [
+      {
+        Id: 1,
+        Title: 'Request 1',
+        Student_Id: 1,
+        Supervisor_Id: 2,
+        Co_Supervisor: 3,
+        Description: 'Description 1',
+        Application_Id: 4,
+        Approval_Date: '2023-01-01'
+      },
+      {
+          Id: 2,
+          Title: 'Request 2',
+          Student_Id: 2,
+          Supervisor_Id: 2,
+          Description: 'Description 2',
+          Approval_Date: '2023-01-01'
+      }
+      // Add more sample request data as needed
+    ];
+
+    const supervisorData = { NAME: 'Supervisor', SURNAME: 'SupervisorSurname' };
+    const studentData = { name: 'Student', surname: 'StudentSurname' };
+    const coSupervisorNames = 'CoSupervisor1, CoSupervisor2';
+
+    supervDao.getSupervisorById.mockResolvedValue(supervisorData);
+    studDao.getStudentData.mockResolvedValue(studentData);
+    propDao.getCoSupervisorNames.mockResolvedValue(coSupervisorNames);
+
+    const expectedRequests = mockedRows.map(async (r) => ({
+      id: r.Id,
+      title: r.Title,
+      studentId: r.Student_Id,
+      studentName: studentData.name,
+      studentSurname: studentData.surname,
+      supervisorId: r.Supervisor_Id,
+      supervisorName: supervisorData.NAME,
+      supervisorSurname: supervisorData.SURNAME,
+      coSupervisorId: r.Co_Supervisor,
+      coSupervisorNames: r.Co_Supervisor ? await propDao.getCoSupervisorNames(r.Co_Supervisor) : "",
+      description: r.Description,
+      applicationId: r.Application_Id ? r.Application_Id : null,
+      approvalDate: r.Approval_Date
+    }));
+
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(null, mockedRows);
+    });
+
+    const result = await getAllRequests();
+    expect(result).toEqual(await Promise.all(expectedRequests));
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const expectedSql = 'SELECT * FROM REQUEST';
+    const expectedError = 'Database error occurred';
+    db.all.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([]);
+      callback(expectedError, null);
+    });
+
+    await expect(getAllRequests()).rejects.toEqual(expectedError);
+  });
 });
 
 describe('getRequestById', () => {
@@ -245,14 +334,14 @@ describe('getRequestById', () => {
     });
 });
 
-describe('getRequestBySupervisor', () => {
+describe('getActiveRequestBySupervisor', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
   
     it('should resolve with an empty array if there are no requests for the given supervisor', async () => {
       const supervisorId = 1;
-      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ?';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ? AND Status = "SEC_Approved"';
       const mockedRows = [];
       db.all.mockImplementation((sql, params, callback) => {
         expect(sql).toBe(expectedSql);
@@ -260,13 +349,13 @@ describe('getRequestBySupervisor', () => {
         callback(null, mockedRows);
       });
   
-      const result = await getRequestBySupervisor(supervisorId);
+      const result = await getActiveRequestBySupervisor(supervisorId);
       expect(result).toEqual([]);
     });
   
     it('should resolve with an array of requests with supervisor and student data when requests are found for the given supervisor', async () => {
       const supervisorId = 2;
-      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ?';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ? AND Status = "SEC_Approved"';
       const mockedRows = [
         {
           Id: 1,
@@ -319,13 +408,13 @@ describe('getRequestBySupervisor', () => {
         approvalDate: r.Approval_Date
       }));
   
-      const result = await getRequestBySupervisor(supervisorId);
+      const result = await getActiveRequestBySupervisor(supervisorId);
       expect(result).toEqual(await Promise.all(expectedRequests));
     });
   
     it('should reject with an error if an error occurs during database retrieval', async () => {
       const supervisorId = 3;
-      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ?';
+      const expectedSql = 'SELECT * FROM REQUEST WHERE Supervisor_Id = ? AND Status = "SEC_Approved"';
       const expectedError = 'Database error occurred';
   
       db.all.mockImplementation((sql, params, callback) => {
@@ -334,8 +423,90 @@ describe('getRequestBySupervisor', () => {
         callback(expectedError, null);
       });
   
-      await expect(getRequestBySupervisor(supervisorId)).rejects.toEqual(expectedError);
+      await expect(getActiveRequestBySupervisor(supervisorId)).rejects.toEqual(expectedError);
     });
+});
+
+describe('getActiveRequestByStudent', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should resolve with an empty array if there are no requests for the given supervisor', async () => {
+    const studentId = 1;
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const mockedRows = null;
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRows);
+    });
+
+    const result = await getActiveRequestByStudent(studentId);
+    expect(result).toEqual({});
+  });
+
+  it('should resolve with an request with supervisor and student data when a requests is found for the given student', async () => {
+    const studentId = 2;
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const mockedRow = 
+    {
+        Id: 2,
+        Title: 'Request 2',
+        Student_Id: 2,
+        Supervisor_Id: 2,
+        Description: 'Description 2',
+        Approval_Date: '2023-01-01'
+    };
+
+    const supervisorData = { NAME: 'Supervisor', SURNAME: 'SupervisorSurname' };
+    const studentData = { name: 'Student', surname: 'StudentSurname' };
+    const coSupervisorNames = 'CoSupervisor1, CoSupervisor2';
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(null, mockedRow);
+    });
+
+    supervDao.getSupervisorById.mockResolvedValue(supervisorData);
+    studDao.getStudentData.mockResolvedValue(studentData);
+    propDao.getCoSupervisorNames.mockResolvedValue(coSupervisorNames);
+
+    const expectedRequests = {
+      id: mockedRow.Id,
+      title: mockedRow.Title,
+      studentId: mockedRow.Student_Id,
+      studentName: studentData.name,
+      studentSurname: studentData.surname,
+      supervisorId: mockedRow.Supervisor_Id,
+      supervisorName: supervisorData.NAME,
+      supervisorSurname: supervisorData.SURNAME,
+      coSupervisorId: mockedRow.Co_Supervisor,
+      coSupervisorNames: mockedRow.Co_Supervisor ? await propDao.getCoSupervisorNames(mockedRow.Co_Supervisor) : "",
+      description: mockedRow.Description,
+      applicationId: mockedRow.Application_Id ? mockedRow.Application_Id : null,
+      approvalDate: mockedRow.Approval_Date
+    };
+
+    const result = await getActiveRequestByStudent(studentId);
+    expect(result).toEqual(expectedRequests);
+  });
+
+  it('should reject with an error if an error occurs during database retrieval', async () => {
+    const studentId = 3;
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const expectedError = 'Database error occurred';
+
+    db.get.mockImplementation((sql, params, callback) => {
+      expect(sql).toBe(expectedSql);
+      expect(params).toEqual([studentId]);
+      callback(expectedError, null);
+    });
+
+    await expect(getActiveRequestByStudent(studentId)).rejects.toEqual(expectedError);
+  });
+
 });
   
 describe('addRequest', () => {
@@ -359,7 +530,7 @@ describe('addRequest', () => {
       studDao.getStudentData.mockResolvedValue(studentData);
       supervDao.getSupervisorById.mockResolvedValue(supervisorData);
   
-      const expectedSql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date) VALUES(?,?,?,?,?,?, ?)';
+      const expectedSql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date, Status) VALUES(?,?,?,?,?,?,?,?)';
       const expectedParams = [
         requestData.title,
         requestData.studentId,
@@ -367,7 +538,8 @@ describe('addRequest', () => {
         requestData.coSupervisorId,
         requestData.description,
         requestData.applicationId,
-        null
+        null,
+        "Created"
       ];
   
       db.run.mockImplementation((sql, params, callback) => {
@@ -394,7 +566,7 @@ describe('addRequest', () => {
         studDao.getStudentData.mockResolvedValue(studentData);
         supervDao.getSupervisorById.mockResolvedValue(supervisorData);
     
-        const expectedSql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date) VALUES(?,?,?,?,?,?, ?)';
+        const expectedSql = 'INSERT INTO REQUEST (Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date, Status) VALUES(?,?,?,?,?,?,?,?)';
         const expectedParams = [
           requestData.title,
           requestData.studentId,
@@ -402,7 +574,8 @@ describe('addRequest', () => {
           null,
           requestData.description,
           null,
-          null
+          null,
+          "Created"
         ];
     
         db.run.mockImplementation((sql, params, callback) => {
