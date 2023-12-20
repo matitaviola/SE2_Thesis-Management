@@ -20,11 +20,6 @@ exports.effectLogin = (credentials) => {
                 if(err){
                     reject(err);
                 }else if ( typeof row !== 'undefined'){
-                    user.id = row.ID;
-                    user.role = "STUDENT";
-                    user.email = row.EMAIL;
-                    user.surname = row.SURNAME;
-                    user.name = row.NAME;
                     resolve(userFormatter(row, "STUDENT"));
                 }
                 reject("Student not found");
@@ -35,11 +30,6 @@ exports.effectLogin = (credentials) => {
                 if(err){
                     reject(err);
                 }else if ( typeof row !== 'undefined'){
-                    user.id = row.ID;
-                    user.role = "TEACHER";
-                    user.email = row.EMAIL;
-                    user.surname = row.SURNAME;
-                    user.name = row.NAME;
                     resolve(userFormatter(row, "TEACHER"));
                 }
                 reject("Teacher not found");
@@ -49,11 +39,6 @@ exports.effectLogin = (credentials) => {
                 if(err){
                     reject(err);
                 }else if ( typeof row !== 'undefined'){
-                    user.id = row.Email;
-                    user.role = "CLERK";
-                    user.email = row.Email;
-                    user.surname = row.Surname;
-                    user.name = row.Name;
                     resolve(userFormatter(row, "CLERK"));
                 }
                 reject("Secretary clerk not found");
