@@ -24,7 +24,7 @@ export default function RequestInfo(props){
             icon: 'warning',
             showCancelButton: true,
             cancelButtonText: 'NO',
-            confirmButtonText: 'Yes, create!',
+            confirmButtonText: 'Yes, Accept!',
             cancelButtonColor: "red",
             confirmButtonColor: "#449d44",
             reverseButtons: false,
