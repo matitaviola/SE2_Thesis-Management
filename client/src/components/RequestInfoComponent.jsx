@@ -19,12 +19,12 @@ export default function RequestInfo(props){
     const handleAccept = async () => {
         const swalText =  loggedInUser.role == "CLERK"? 'pass the request to the appointed Supervisor' : 'allow the student to stark working on it'
         Swal.fire({
-            title: 'Accept Request?',
+            title: 'Approve Request?',
             text: 'This operation will '+swalText,
             icon: 'warning',
             showCancelButton: true,
             cancelButtonText: 'NO',
-            confirmButtonText: 'Yes, Accept!',
+            confirmButtonText: 'Yes, Approve!',
             cancelButtonColor: "red",
             confirmButtonColor: "#449d44",
             reverseButtons: false,
