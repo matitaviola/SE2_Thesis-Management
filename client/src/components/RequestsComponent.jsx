@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Button, Modal} from 'react-bootstrap';
+import { Container, Row, Col, Table, Button, Modal} from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import NotFound from "./NotFoundComponent.jsx";
 import API from "../API";
@@ -14,7 +14,7 @@ export default function RequestsComponent(props){
         return (<RequestStudent studentId={loggedInUser.id} setErrorMessage={props.setErrorMessage}/>);
     }
     if (loggedInUser && (loggedInUser.role == 'TEACHER' || loggedInUser.role == 'CLERK')) {
-        return (<RequestsTable teacherId={loggedInUser.role == 'TEACHER'? loggedInUser.id : null}setErrorMessage={props.setErrorMessage} />);
+        return (<RequestsTable user={loggedInUser} setErrorMessage={props.setErrorMessage} />);
     }
     return (
         <NotFound></NotFound>
@@ -22,6 +22,53 @@ export default function RequestsComponent(props){
 }
 
 function RequestsTable(props){
+    const [requests, setRequests] = useState([]);
+    const user = props.user;
+
+    useEffect(() => {
+        const fetchRequests = async () => {
+          try{
+            let requestsResponse = await API.getRequests(user);
+            setRequests(requestsResponse);
+          }catch(err){
+            props.setErrorMessage(`${err}`);
+          }
+        }
+        fetchRequests()
+      }, []);
+
+    return (
+        <div className="proposal-table">
+          <h1>Requests to evaluate</h1>
+          <Row>
+            <Table striped hover responsive border={1}>
+              <thead>
+                <tr>
+                  <th className="text-nowrap">Title</th>
+                  <th className="text-nowrap">Supervisor </th>
+                  <th className="text-nowrap">Co-Supervisors </th>
+                  <th className='text-nowrap'>Student</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map(r => {
+                  {
+                    return <tr key={r.id}>
+                      <td className="grades-table-td">{r.title}</td>
+                      <td className="grades-table-td">{r.supervisorName} {r.supervisorSurname}</td>
+                      <td className="grades-table-td">{r.coSupervisorNames}</td>
+                      <td className="grades-table-td">{r.studentName} {r.studentSurname}</td>
+                      <td><Link to={`/requests/${r.id}`} state= {{ request: r}} ><Button className="btn-secondary">View</Button></Link></td>
+                    </tr>
+                  }
+                })}
+              </tbody>
+            </Table>
+          </Row>
+    
+        </div>
+    )
 
 }
 

@@ -1,4 +1,3 @@
-// Assume getApplications is defined in a file named 'api.js'
 import API from '../src/API';
 const SERVER_URL = 'http://localhost:3001';
 import axios from 'axios';
@@ -1303,6 +1302,120 @@ describe('boardTardis API', () => {
   
     await expect(API.boardTardis(destination)).rejects.toThrow(
       'Something went wrong during the TARDIS landing'
+    );
+  });
+});
+
+describe('getRequests API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = { credentials: 'include' };
+
+  // Mock user data
+  const teacherUser = { id: 1, role: 'TEACHER' };
+  const clerkUser = { id: 2, role: 'CLERK' };
+  const studentUser = { id: 3, role: 'STUDENT' };
+
+  // Mock response data
+  const requestsData = [
+    {
+      id: 1,
+      title: 'Request 1',
+      status: 'Pending',
+      // other fields...
+    },
+    {
+      id: 2,
+      title: 'Request 2',
+      status: 'Approved',
+      // other fields...
+    },
+  ];
+
+  const requestsResponse = {
+    ok: true,
+    json: async () => requestsData,
+  };
+
+  it('should get requests for a teacher', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    const result = await API.getRequests(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/teacher/1`, reqData);
+    expect(result).toEqual(requestsData);
+  });
+
+  it('should get requests for a clerk', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    const result = await API.getRequests(clerkUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/`, reqData);
+    expect(result).toEqual(requestsData);
+  });
+
+  it('should throw an error for unknown role', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    await expect(API.getRequests(studentUser)).rejects.toThrow(
+      'Error on getting the requests: Invalid role'
+    );
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => 'Error occurred' });
+
+    await expect(API.getRequests(teacherUser)).rejects.toThrow(
+      'Error on getting the requests: Error occurred'
+    );
+  });
+});
+
+describe('getStudentActiveRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = { credentials: 'include' };
+
+  // Mock user data
+  const studentId = 3;
+
+  // Mock response data
+  const studentActiveRequestData = {
+    id: 1,
+    title: 'Student Active Request',
+    status: 'Active',
+    // other fields...
+  };
+
+  const studentActiveRequestResponse = {
+    ok: true,
+    json: async () => studentActiveRequestData,
+  };
+
+  it('should get the active request for a student', async () => {
+    fetch.mockResolvedValueOnce(studentActiveRequestResponse);
+
+    const result = await API.getStudentActiveRequest(studentId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/student/3`, reqData);
+    expect(result).toEqual(studentActiveRequestData);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => 'Error occurred' });
+
+    await expect(API.getStudentActiveRequest(studentId)).rejects.toThrow(
+      'Error on getting the requests: Error occurred'
     );
   });
 });

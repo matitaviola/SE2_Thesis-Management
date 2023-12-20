@@ -321,13 +321,13 @@ const getRequests = async (user) =>{
     requestsJson = await response.json();
   }
    else{
-    throw new Error("Error on getting the proposals: Invalid role");
+    throw new Error("Error on getting the requests: Invalid role");
   }
   if(response.ok) {
     return(requestsJson);
   }
   else{
-    throw new Error("Error on getting the proposals: "+requestsJson);
+    throw new Error("Error on getting the requests: "+requestsJson);
   }
 }
 const getStudentActiveRequest = async (studentId) =>{
@@ -338,7 +338,7 @@ const getStudentActiveRequest = async (studentId) =>{
     return(requestsJson);
   }
   else{
-    throw new Error("Error on getting the proposals: "+requestsJson);
+    throw new Error("Error on getting the requests: "+requestsJson);
   }
 }
 //#endregion
