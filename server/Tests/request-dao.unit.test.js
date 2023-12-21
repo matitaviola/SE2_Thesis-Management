@@ -11,17 +11,17 @@ jest.mock('../DB/db', () => {
     };
     return { db: mockedDB };
 });
-// Mock supervisor DAO
+//Mock supervisor DAO
 jest.mock('../DB/supervisors-dao', () => ({
     getSupervisorById: jest.fn()
 }));
 
-// Mock student DAO
+//Mock student DAO
 jest.mock('../DB/students-dao', () => ({
     getStudentData: jest.fn()
 }));
 
-// Mock proposal DAO
+//Mock proposal DAO
 jest.mock('../DB/proposals-dao', () => ({
     getCoSupervisorNames: jest.fn()
 }));
@@ -65,7 +65,7 @@ describe('getAllRequestsForClerk', () => {
             Description: 'Description 2',
             Approval_Date: '2023-01-01'
         }
-        // Add more sample request data as needed
+        //Add more sample request data as needed
       ];
   
       const supervisorData = { NAME: 'Supervisor', SURNAME: 'SupervisorSurname' };
@@ -154,7 +154,7 @@ describe('getAllRequests', () => {
           Description: 'Description 2',
           Approval_Date: '2023-01-01'
       }
-      // Add more sample request data as needed
+      //Add more sample request data as needed
     ];
 
     const supervisorData = { NAME: 'Supervisor', SURNAME: 'SupervisorSurname' };
@@ -375,7 +375,7 @@ describe('getActiveRequestBySupervisor', () => {
             Description: 'Description 2',
             Approval_Date: '2023-01-01'
         }
-        // Add more sample request data as needed
+        //Add more sample request data as needed
       ];
   
       const supervisorData = { NAME: 'Supervisor', SURNAME: 'SupervisorSurname' };
@@ -434,7 +434,7 @@ describe('getActiveRequestByStudent', () => {
 
   it('should resolve with an empty array if there are no requests for the given supervisor', async () => {
     const studentId = 1;
-    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ? AND Status!="Rejected"';
     const mockedRows = null;
     db.get.mockImplementation((sql, params, callback) => {
       expect(sql).toBe(expectedSql);
@@ -448,7 +448,7 @@ describe('getActiveRequestByStudent', () => {
 
   it('should resolve with an request with supervisor and student data when a requests is found for the given student', async () => {
     const studentId = 2;
-    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ? AND Status!="Rejected"';
     const mockedRow = 
     {
         Id: 2,
@@ -495,7 +495,7 @@ describe('getActiveRequestByStudent', () => {
 
   it('should reject with an error if an error occurs during database retrieval', async () => {
     const studentId = 3;
-    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+    const expectedSql = 'SELECT * FROM REQUEST WHERE Student_Id = ? AND Status!="Rejected"';
     const expectedError = 'Database error occurred';
 
     db.get.mockImplementation((sql, params, callback) => {
@@ -632,21 +632,21 @@ describe('addRequest', () => {
     });
 });
 
-describe('updateRequest function', () => {
+describe('updateRequest', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should update request successfully', async () => {
-    // Mock data
+    //Mock data
     const requestData = {
-      // Your request data for a successful update
+      //We'll put here the request data for a successful update, but they shouldn't realy need
     };
 
     supervDao.getSupervisorById.mockResolvedValueOnce({/* supervisor data */});
     studDao.getStudentData.mockResolvedValueOnce({/* student data */});
     db.run.mockImplementationOnce((sql, values, callback) => {
-      callback(null); // Simulate a successful update
+      callback(null); //Simulate a successful update
     });
 
     const result = await updateRequest(requestData);
@@ -658,13 +658,13 @@ describe('updateRequest function', () => {
   });
 
   it('should throw an error if either student or supervisor is not in the database', async () => {
-    // Mock data
+    //Mock data
     const requestData = {
-      // Your request data for a case where either student or supervisor is not in the database
+      //We'll put here the request data for a case where either student or supervisor is not in the database
     };
 
-    supervDao.getSupervisorById.mockResolvedValueOnce(null); // Simulate supervisor not in the database
-    studDao.getStudentData.mockResolvedValueOnce(null); // Simulate student not in the database
+    supervDao.getSupervisorById.mockResolvedValueOnce(null); //Simulate supervisor not in the database
+    studDao.getStudentData.mockResolvedValueOnce(null); //Simulate student not in the database
 
     await expect(updateRequest(requestData)).rejects.toThrow(
       'Either request student or supervisor are not in the database'
@@ -672,19 +672,19 @@ describe('updateRequest function', () => {
 
     expect(supervDao.getSupervisorById).toHaveBeenCalledWith(requestData.supervisorId);
     expect(studDao.getStudentData).toHaveBeenCalledWith(requestData.studentId);
-    expect(db.run).not.toHaveBeenCalled(); // Ensure that db.run is not called
+    expect(db.run).not.toHaveBeenCalled(); //Ensure that db.run is not called
   });
 
   it('should throw an error if the update operation fails', async () => {
-    // Mock data
+    //Mock data
     const requestData = {
-      // Your request data for a case where the update operation fails
+      //Your request data for a case where the update operation fails
     };
 
     supervDao.getSupervisorById.mockResolvedValueOnce({/* supervisor data */});
     studDao.getStudentData.mockResolvedValueOnce({/* student data */});
     db.run.mockImplementationOnce((sql, values, callback) => {
-      callback(new Error('Update failed')); // Simulate a failed update
+      callback(new Error('Update failed')); //Simulate a failed update
     });
 
     await expect(updateRequest(requestData)).rejects.toThrow('Update failed');

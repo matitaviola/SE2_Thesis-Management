@@ -1,6 +1,7 @@
 import {useLocation, useNavigate} from 'react-router-dom';
-import { Container, Row, Col, Button} from 'react-bootstrap';
-import { useContext} from "react";
+import { Container, Row, Col, Button, Form} from 'react-bootstrap';
+import { useContext, useState} from "react";
+import { AiOutlineFileText} from "react-icons/ai";
 import { AuthContext } from "../App.jsx";
 import Swal from 'sweetalert2';
 import API from "../API";
@@ -41,6 +42,62 @@ export default function RequestInfo(props){
         }
         });
     }
+    const handleReject = async () => {
+       Swal.fire({
+            title: 'Reject Request?',
+            text: 'This operation will irrevrsibly reject the request',
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'NO',
+            confirmButtonText: 'Yes, REJECT!',
+            cancelButtonColor: "red",
+            confirmButtonColor: "#449d44",
+            reverseButtons: false,
+        }).then(async (result) => {
+                if (result.isConfirmed) { 
+                try {
+                    request.status = 'Rejected';
+                    await API.updateRequest(request);
+                    navigate('/requests');
+                    Swal.fire('Request Rejected!', 'The request will NOT pass to the next phase', 'success');
+                } catch (err) {
+                    props.setErrorMessage(`${err}`);
+                }
+        }
+        });
+    }
+    const handleRequestChange = async () => {
+        if(request.requiredChanges?.length > 0)
+            Swal.fire({
+                title: 'Request changes?',
+                text: 'This will inform the student on the required changes to perform',
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'NO',
+                confirmButtonText: 'Yes, request!',
+                cancelButtonColor: "red",
+                confirmButtonColor: "#449d44",
+                reverseButtons: false,
+            }).then(async (result) => {
+                    if (result.isConfirmed) { 
+                    try {
+                        await API.updateRequest(request);
+                        navigate('/requests');
+                        Swal.fire('Changes requestes!', "Now it is the student's turn", 'success');
+                    } catch (err) {
+                        props.setErrorMessage(`${err}`);
+                    }
+            }
+        });
+        else{
+            console.log("Must fill field")
+        }
+    }
+    const handleUpdateChanges = (newChanges) => {
+        // Update the request.requiredChanges in the parent component
+       request.requiredChanges = newChanges;
+       console.log(request);
+    };
 
     return(
         <Container>
@@ -76,13 +133,46 @@ export default function RequestInfo(props){
 					</Row>
 				</Row>
 			</Container>
-            {loggedInUser.role == "STUDENT"?
-                null
-                :
+            {loggedInUser.role == "TEACHER"?
                 <Row>
-                    <Col>
-                        <Button variant="success" type="submit" className="mt-3" style={{color:"white", marginRight:"10px"}} onClick={()=>handleAccept()}>
+                    <Col xs={12} className="text-center">
+                        <EditableTextArea
+                        initialText={request.requiredChanges || ''}
+                        onUpdateText={handleUpdateChanges}
+                        handleRequestChange={handleRequestChange}
+                        />
+                    </Col>
+                </Row>
+                :
+                null
+            }
+            {loggedInUser.role == "STUDENT"?
+                request.requiredChanges?
+                    <Row>
+                        <p className='proposal-field-title' style={{color:'white', backgroundColor:'red'}}><strong>Required Changes:</strong></p>
+                        <Row className='proposal-show-field' style={{marginTop:'0px', borderColor:'red'}}>
+                        <p> {request.requiredChanges}</p>
+                        </Row>
+                        <Row className="float-right" style={{ marginTop: '-1.5rem', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+                            <Col xs={9}/>
+                            <Col xs={3} style={{marginRight:'0px'}}>
+                            <Button className="float-right" style={{ border:'none', backgroundColor:'red',width:'100%', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+                            <strong>EFFECT CHANGES</strong>
+                            </Button>
+                            </Col>
+                        </Row>
+                    </Row>
+                    : null
+                :
+                <Row className="justify-content-center">
+                    <Col xs={6} className="text-center">
+                        <Button variant="success" type="submit" className="mt-3" style={{ color: "white", fontSize: 'large', width: '100%' }} onClick={() => handleAccept()}>
                             ACCEPT
+                        </Button>
+                    </Col>
+                    <Col xs={6} className="text-center">
+                        <Button variant="danger" type="submit" className="mt-3" style={{ color: "white", fontSize: 'large', width: '100%' }} onClick={() => handleReject()}>
+                            REJECT
                         </Button>
                     </Col>
                 </Row>
@@ -90,3 +180,39 @@ export default function RequestInfo(props){
         </Container>
     )
 }
+
+const EditableTextArea = (props) => {
+    const [text, setText] = useState(props.initialText);
+  
+    const handleChange = (event) => {
+      const newText = event.target.value;
+      setText(newText);
+      props.onUpdateText(newText);
+    };
+  
+    return (
+        <Form.Group controlId="editableTextArea" style={{ textAlign: 'left', marginBottom: '2rem' }}>
+            <Form.Label>
+                <AiOutlineFileText />
+                <strong style={{ marginLeft: '5px' }}>Edit Required Changes:</strong>
+            </Form.Label>
+            <Form.Control
+                as="textarea"
+                rows={5}
+                value={text}
+                onChange={handleChange}
+                className="proposal-show-field"
+                style={{ marginTop: '0rem', marginBottom: '0px' }}
+            />
+            <Row className="float-right" style={{ marginTop: '-1rem', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+                <Col xs={9}/>
+                <Col xs={3}>
+                <Button className="float-right" style={{ border:'none', backgroundColor:'#ebaf0e',width:'100%', marginBottom: '0px', color: "white", fontSize: 'large' }} onClick={() => props.handleRequestChange()}>
+                <strong>REQUEST CHANGE</strong>
+                </Button>
+                </Col>
+            </Row>
+            
+        </Form.Group>
+    );
+  };

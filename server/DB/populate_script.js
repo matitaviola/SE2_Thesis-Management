@@ -185,6 +185,7 @@ const createTables = () => {
                 Application_Id TEXT,
                 Approval_Date TEXT,
                 Status TEXT,
+                Required_Changes TEXT,
                 FOREIGN KEY(Student_Id) REFERENCES STUDENT(ID),
                 FOREIGN KEY(Supervisor_Id) REFERENCES TEACHER(ID),
                 FOREIGN KEY(Application_Id) REFERENCES APPLICATION(Id) ON DELETE SET NULL

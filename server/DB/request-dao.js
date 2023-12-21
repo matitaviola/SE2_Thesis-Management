@@ -2,6 +2,7 @@
 const supervDao = require('./supervisors-dao');
 const propDao = require('./proposals-dao');
 const studDao = require('./students-dao');
+const {sendMail} = require('../utils/mail-server');
 const { db } = require('./db');
 const { request } = require('express');
 
@@ -22,7 +23,8 @@ async function requestFormat(r){
         description: r.Description,
         applicationId: r.Application_Id? r.Application_Id : null,
         approvalDate: r.Approval_Date,
-        status: r.Status
+        status: r.Status,
+        requiredChanges: r.Required_Changes
     }
 }
 
@@ -122,7 +124,7 @@ exports.getActiveRequestBySupervisor = async (supervisorId) => {
 
 exports.getActiveRequestByStudent = async (studentId) => {
     try{
-        const sql = 'SELECT * FROM REQUEST WHERE Student_Id = ?';
+        const sql = 'SELECT * FROM REQUEST WHERE Student_Id = ? AND Status!="Rejected"';
         const row = await new Promise((dbResolve, dbReject) => {
             db.get(sql, [studentId], (err, row) => {
                 if (err) {
@@ -160,6 +162,11 @@ exports.addRequest = async (requestData) => {
                     if(err){
                         reject(err);
                     }
+                    sendMail(requestData.supervisorId, 'REQUEST', {
+                        title:requestData.title, 
+                        submitter:requestData.studentId, 
+                        description:requestData.description
+                    })
                     resolve({success:true});
                 })
             })
@@ -177,7 +184,7 @@ exports.updateRequest = async (requestData) => {
         const supervisorData = await supervDao.getSupervisorById(requestData.supervisorId);
         if(studentData && supervisorData){
             return await new Promise((resolve,reject)=>{
-                const sql = 'UPDATE REQUEST SET Title = ?, Student_Id = ?, Supervisor_Id = ?, Co_Supervisor = ?, Description = ?, Application_Id = ?, Approval_Date = ?, Status = ? WHERE Id = ?;';
+                const sql = 'UPDATE REQUEST SET Title = ?, Student_Id = ?, Supervisor_Id = ?, Co_Supervisor = ?, Description = ?, Application_Id = ?, Approval_Date = ?, Status = ?, Required_Changes = ? WHERE Id = ?;';
                 db.run(sql,[
                     requestData.title,
                     requestData.studentId,
@@ -187,6 +194,7 @@ exports.updateRequest = async (requestData) => {
                     requestData.applicationId,
                     requestData.approvalDate,
                     requestData.status,
+                    requestData.requiredChanges,
                     requestData.id
                 ],(err)=>{
                     if(err){
