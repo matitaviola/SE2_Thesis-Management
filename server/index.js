@@ -239,7 +239,7 @@ app.get('/api/proposals/:proposalId',
 });
 
 //gets a proposal's list of cosupervisors (name, surmane, id/mail for academic/external)
-//GET /api/proposals/:proposalId
+//GET /api/proposals/:proposalId/cosupervisors
 app.get('/api/proposals/:proposalId/cosupervisors',
   isLoggedIn,
   checkTeacherRole,

@@ -76,7 +76,9 @@ exports.getAndAddExternalCoSupervisor = async (name, surname, email) => {
 
 exports.getCoSupervisorByProposal = async (proposalId) => {
     try{
-        const proposal = await this.getProposalById(proposalId);
+        let proposal = await this.getProposalById(proposalId);
+        if(proposal == null || !proposal || proposal == undefined)
+            proposal = await this.getArchivedProposalById(proposalId);
         const coSupervisors = proposal? proposal.coSupervisor : null;
         let externalCoSupervisors = [];
         let academicCoSupervisors = [];

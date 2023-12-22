@@ -164,7 +164,9 @@ describe('getCoSupervisorByProposal Function Tests', () => {
   it('should return empty arrays when proposalId does not exist', async () => {
     const nonExistentProposalId = 'nonexistentid';
     const getProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getProposalById');
+    const getArchivedProposalByIdMock = jest.spyOn(require('../DB/proposals-dao'), 'getArchivedProposalById');
     getProposalByIdMock.mockResolvedValueOnce(null);
+    getArchivedProposalByIdMock.mockResolvedValueOnce(null);
     db.get.mockImplementation((sql, params, callback) => {
       callback(null,null)
     });

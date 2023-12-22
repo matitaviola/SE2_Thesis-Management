@@ -31,7 +31,7 @@ function NavHeader(props) {
               :
               null
             }
-            <Nav.Link href="/requests" className={location.pathname === '/requests' ? 'active' : ''}>Requests</Nav.Link>
+            <Nav.Link href="/requests" className={location.pathname === '/requests' ? 'active' : ''}>Request{loggedInUser.role!='STUDENT'? 's':null}</Nav.Link>
           </Nav>
           {loggedInUser ?
             <div style={{ display: 'flex', alignItems: 'center' }}>
