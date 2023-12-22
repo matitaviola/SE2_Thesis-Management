@@ -247,6 +247,22 @@ export function StudentProposalComponent(props) {
 		}
 	};
 
+	useEffect(()=>{
+		const fetchProposalCoSupervisors = async () => {
+			try {
+				const response = await API.getCoSupervisorByProposal(proposal.id);
+				console.log(response)
+				const formattedAcademics = response.academic? response.academic.map(ac => ac.name+" "+ac.surname).join(",") : "";
+				const formattedExternals = response.external? response.external.map(ex => ex.name+" "+ex.surname).join(",") :"";
+				proposal.coSupervisorNames = formattedAcademics + ((formattedAcademics.length>0 && formattedExternals.length>0)? ", ":"") + formattedExternals;
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
+		if(!proposal.coSupervisorNames || proposal.coSupervisorNames.length<1)
+			fetchProposalCoSupervisors();
+	}, [])
+
 	return (
 		<Container>
 			<Row className='proposal-show-field text-center' style={{padding:'2px'}}>

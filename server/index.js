@@ -242,7 +242,6 @@ app.get('/api/proposals/:proposalId',
 //GET /api/proposals/:proposalId/cosupervisors
 app.get('/api/proposals/:proposalId/cosupervisors',
   isLoggedIn,
-  checkTeacherRole,
   [
     check('proposalId').not().isEmpty().isInt()
   ],
