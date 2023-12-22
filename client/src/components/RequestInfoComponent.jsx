@@ -129,7 +129,11 @@ export default function RequestInfo(props){
                 <Row>
 					<p className='proposal-field-title'><strong>Status:</strong></p>
 					<Row className='proposal-show-field' style={{marginTop:'0px'}}>
-					<p> {status}</p>
+					<p> {request.status == "Approved"?
+                        <strong>{status}</strong>
+                        :
+                        status
+                    }</p>
 					</Row>
 				</Row>
 			</Container>
@@ -147,7 +151,7 @@ export default function RequestInfo(props){
                 null
             }
             {loggedInUser.role == "STUDENT"?
-                request.requiredChanges?
+                (request.requiredChanges && request.status!="Approved")?
                     <Row>
                         <p className='proposal-field-title' style={{color:'white', backgroundColor:'red'}}><strong>Required Changes:</strong></p>
                         <Row className='proposal-show-field' style={{marginTop:'0px', borderColor:'red'}}>
