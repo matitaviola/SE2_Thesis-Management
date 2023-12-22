@@ -73,6 +73,10 @@ jest.spyOn(global, 'setInterval').mockImplementation((callback, interval) => {
     // Your other logic for interval if needed
     return mockInterval;
 });
+
+//CONSOLE.LOG and error to avoid printing the errors while testing
+jest.spyOn(console, 'log').mockImplementation(()=>{});
+jest.spyOn(console, 'error').mockImplementation(()=>{});
 //#endregion
 //app imports
 const dayjs = require('dayjs');
@@ -81,8 +85,6 @@ const sinon = require('sinon');
 const request = require('supertest');
 const express = require('express');
 const {app, server} = require('../index.js'); // Replace with the actual path to your server file
-
-//const consoleLogSpy = jest.spyOn(console, 'log');
 
 afterAll((done) => {
     // Close the server to release the handle

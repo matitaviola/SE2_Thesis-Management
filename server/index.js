@@ -188,7 +188,7 @@ app.get('/api/cosupervisors/:professorId',
       const academicCoSup = await supervisorDao.getCoSupervisorsList(req.params.professorId);
       res.json(academicCoSup);
     }catch(err){
-      console.log("Cosupervisor error: ",err);
+      console.error("Cosupervisor error: ",err);
       res.status(500).json({ error: err });
     }
 });
@@ -201,7 +201,7 @@ app.get('/api/cosupervisors',
       const academicCoSup = await supervisorDao.getCoSupervisorsList('catch-all'); //returns all the teachers with id different from 'catch-all', a.k.a. all teachers
       res.json(academicCoSup);
     }catch(err){
-      console.log("Getting professors list error: ",err);
+      console.error("Getting professors list error: ",err);
       res.status(500).json({ error: err });
     }
 });
@@ -233,7 +233,7 @@ app.get('/api/proposals/:proposalId',
       }
       throw new Error('Missing Proposal');
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500).json({ error: err });
     }
 });
@@ -260,7 +260,7 @@ app.get('/api/proposals/:proposalId/cosupervisors',
       }
       throw new Error('No such Proposal: ', req.params.proposalId);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500).json({ error: err });
     }
 });
@@ -285,7 +285,7 @@ app.get('/api/proposals/teacher/:professorId',
       const proposals = await propDao.getActiveProposalsByProfessor(req.params.professorId);
       res.json(proposals);
     } catch (err) {
-      console.log("professor's active proposals:",err);
+      console.error("professor's active proposals:",err);
       res.status(500).json({ error: err });
     }
 });
@@ -368,7 +368,7 @@ app.get('/api/proposals/students/:studentId',
 
       res.json(proposals);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500).end();
     }
 });
@@ -653,7 +653,7 @@ app.get('/api/applications/teacher/:professorId',
         return {...a, resumeeExists: true}
       }));
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500).json({ error: `An error occurred while retrieving the applications for the professor ${req.params.professorId}` });
     }
   });
@@ -677,7 +677,7 @@ app.get('/api/applications/student/:studentId',
       const applications = await appDao.getApplicationsByStudent(req.params.studentId);
       res.json(applications);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       res.status(500).end();
     }
   });
@@ -728,7 +728,7 @@ app.post('/api/applications',
         if (file) {
           fs.unlinkSync(file.path);
         }
-        console.log("Error length")
+        console.error("Error length")
         return res.status(500).json({ error: `Student ${req.body.studentId} already has a pending application` });
       } const application = await appDao.createApplication(req.body.proposalId, req.body.studentId);
 
@@ -741,7 +741,7 @@ app.post('/api/applications',
       if (file) {
         fs.unlinkSync(file.path);
       }
-      console.log(err);
+      console.error(err);
       return res.status(500).json({ error: 'An error occurred while creating the application' });
     }
   });
@@ -993,7 +993,7 @@ app.post('/api/requests',
       const requests = await reqDao.addRequest(reqData);
       res.json(requests);
     } catch (err) {
-      console.log("Creating request error",err);
+      console.error("Creating request error",err);
       res.status(500).end();
     }
   }
@@ -1055,7 +1055,7 @@ app.patch('/api/requests/:reqId',
       const requests = await reqDao.updateRequest(reqData);
       res.json(requests);
     } catch (err) {
-      console.log("Creating request error",err);
+      console.error("Creating request error",err);
       res.status(500).end();
     }
   }
