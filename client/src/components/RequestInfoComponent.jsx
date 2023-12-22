@@ -157,6 +157,7 @@ export default function RequestInfo(props){
                         <Row className='proposal-show-field' style={{marginTop:'0px', borderColor:'red'}}>
                         <p> {request.requiredChanges}</p>
                         </Row>
+                        {/*
                         <Row className="float-right" style={{ marginTop: '-1.5rem', marginBottom: '0px', color: "white", fontSize: 'large' }}>
                             <Col xs={9}/>
                             <Col xs={3} style={{marginRight:'0px'}}>
@@ -165,6 +166,7 @@ export default function RequestInfo(props){
                             </Button>
                             </Col>
                         </Row>
+                        */}
                     </Row>
                     : null
                 :
