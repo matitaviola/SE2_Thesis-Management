@@ -201,7 +201,8 @@ export function StudentProposalComponent(props) {
 
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { proposal, studentId, comingFromApp } = location.state;
+	const { studentId, comingFromApp } = location.state;
+	const [proposal, setProposal] = useState(location.state.proposal);
 	const [showUpdateModal, setShowUpdateModal] = useState(false);
 	const [selectedProposal, setSelectedProposal] = useState({ title: "", id: -1 });
 	const [file, setFile] = useState(null);
@@ -254,7 +255,8 @@ export function StudentProposalComponent(props) {
 				console.log(response)
 				const formattedAcademics = response.academic? response.academic.map(ac => ac.name+" "+ac.surname).join(",") : "";
 				const formattedExternals = response.external? response.external.map(ex => ex.name+" "+ex.surname).join(",") :"";
-				proposal.coSupervisorNames = formattedAcademics + ((formattedAcademics.length>0 && formattedExternals.length>0)? ", ":"") + formattedExternals;
+				const coSupervisorNames = formattedAcademics + ((formattedAcademics.length>0 && formattedExternals.length>0)? ", ":"") + formattedExternals;
+				setProposal({...proposal, coSupervisorNames: coSupervisorNames});
 			} catch (err) {
 				props.setErrorMessage(`${err}`);
 			}

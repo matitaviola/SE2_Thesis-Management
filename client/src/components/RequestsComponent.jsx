@@ -1,4 +1,4 @@
-import { Link} from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import { useContext, useState, useEffect } from "react";
 import { Container, Row, Col, Table, Button, Form} from 'react-bootstrap';
@@ -105,16 +105,11 @@ function RequestStudent(props){
 }
 
 function RequestForm(props){
-
+    const { state } = useLocation();
+    const startingRequest = props.request || state?.request? state.request : {};
     const loggedInUser = useContext(AuthContext);
     //we'll use the props when creating one starting from the Application
-    const [request, setRequest] = useState({
-        title:props.request? props.request.title : "",
-        studentId: props.request? props.request.student : "",
-        supervisorId: props.request? props.request.supervisor : "",
-        coSupervisorId: props.request? props.request.coSupervisorId : "",//a list of dXXXXXX (only academics) separated by blank spaces e.g.: "d100001 d221100"
-        description: props.request? props.request.description : "",
-    });
+    const [request, setRequest] = useState(startingRequest);
     const [coSupervisorsList, setCoSupervisorList] = useState([{
         id:"", name:"", surname:""
     }]);
@@ -134,6 +129,11 @@ function RequestForm(props){
           try {
             const response = await API.getAllSupervisorsList(loggedInUser);
             setCoSupervisorList(response);
+            //if getting here from application
+            if(request.coSupervisorId?.length>0 && response){
+              const existingCosup = request.coSupervisorId.map((cosupId) => response.find(ac=> ac.id==cosupId));
+              setCoSupervisors(existingCosup)
+            }
           } catch (err) {
             props.setErrorMessage(`${err}`);
           }
@@ -150,7 +150,6 @@ function RequestForm(props){
             setCoSupervisors(coSupervisors => coSupervisors.filter(ac => ac.id!=value));
         }
     }
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         request.studentId = loggedInUser.id;

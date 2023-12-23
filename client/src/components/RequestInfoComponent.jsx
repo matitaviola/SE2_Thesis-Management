@@ -15,7 +15,6 @@ export default function RequestInfo(props){
     if(status == "Created") status = "Awaiting acceptance from secretary";
     else if(status == "SEC_Approved") status = "Awaiting acceptance from supervisor";
     else if(status == "Approved") status = "Thesis started on "+request.approvalDate;
-    console.log(request)
 
     const handleAccept = async () => {
         const swalText =  loggedInUser.role == "CLERK"? 'pass the request to the appointed Supervisor' : 'allow the student to stark working on it'
