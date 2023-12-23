@@ -11,7 +11,8 @@ jest.mock('../DB/proposals-dao',()=>({
     getAndAddExternalCoSupervisor: jest.fn(),
     updateProposal: jest.fn(),
     deleteProposal: jest.fn(),
-    archiveProposalWithoutApplication: jest.fn()
+    archiveProposalWithoutApplication: jest.fn(),
+    archiveProposal: jest.fn()
 }))
 //studDao
 const studDao = require('../DB/students-dao');
@@ -31,6 +32,12 @@ const appDao = require('../DB/applications-dao');
 jest.mock('../DB/applications-dao',()=>({
     getApplicationById: jest.fn(),
     getApplicationsByStudent: jest.fn(),
+    getActiveProposalsByProfessor: jest.fn(),
+    getActiveApplicationsByProposal: jest.fn(),
+    createApplication: jest.fn(),
+    getLastId: jest.fn(),
+    setApplicationStatus: jest.fn(),
+    isApplication: jest.fn(),
 }))
 // degreeDao
 const degreeDao = require('../DB/degrees-dao');
@@ -56,6 +63,9 @@ jest.mock('../Middlewares/authorization-middleware',()=>({
     checkTeacherRole: jest.fn(async (req, res, next) => next()),
     checkStudentRole: jest.fn(async (req, res, next) => next()),
 }))
+// mail middleware
+const mailServer = require('../utils/mail-server');
+jest.mock('../utils/mail-server');
 //timely
 const timely = require('../utils/timely-functions');
 jest.mock('../utils/timely-functions',()=>({
@@ -73,7 +83,14 @@ jest.spyOn(global, 'setInterval').mockImplementation((callback, interval) => {
     // Your other logic for interval if needed
     return mockInterval;
 });
-
+//
+const path = require('path');
+const multer = require('multer');
+//fs
+const fs = require('fs')
+const filePathSpy = jest.spyOn(fs, 'existsSync');
+const fileUnlink = jest.spyOn(fs, 'unlinkSync');
+const fileReadStream = jest.spyOn(fs, 'createReadStream');
 //CONSOLE.LOG and error to avoid printing the errors while testing
 jest.spyOn(console, 'log').mockImplementation(()=>{});
 jest.spyOn(console, 'error').mockImplementation(()=>{});
@@ -84,54 +101,16 @@ const moment = require('moment');
 const sinon = require('sinon');
 const request = require('supertest');
 const express = require('express');
+const passport = require('../utils/saml-config');
 const {app, server} = require('../index.js'); // Replace with the actual path to your server file
-
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 afterAll((done) => {
     // Close the server to release the handle
     server.close(done);
 });
   
-//#region login/out/session
-/*
-describe('Logout route', () => {
-    beforeEach(function() {
-        //Mock Passport's authenticate to bypass actual SAML authentication
-        sinon.stub(passport, 'authenticate').callsFake((strategy, options, callback) => {
-          return function(req, res, next) {
-            req.user = {};
-            req.isAuthenticated = () => true; // Mock isAuthenticated to return true
-            callback(null, req.user, null);
-          };
-        });
-      });
-    
-      afterEach(function() {
-        // Restore the original authenticate function after each test
-        passport.authenticate.restore();
-      });
-    it('should respond with status 200 and message if user is authenticated', async () => {
-        const response = await request(app).get('/logout').set('credentials', 'include');
-
-        expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Successfully logged out');
-    });
-  
-    it('should respond with status 401 if user is not authenticated', async () => {
-      const response = await request(app).get('/logout');
-  
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Unauthorized');
-    });
-  
-    it('should respond with status 500 if an error occurs during logout', async () => {
-        const response = await request(app).get('/logout');
-    
-        expect(response.status).toBe(500);
-        expect(response.body.message).toBe('Internal Server Error');
-    });
-});
-*/
-//#endregion
 //#region Student
 describe('Student routes', () => {
   // GET /api/application/:proposalId/:studentId
@@ -312,7 +291,7 @@ describe('Proposal routes', () => {
     const response = await request(app).get('/api/proposals/students/invalidStudentId');
     
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 500 if there is an error in the server', async () => {
     const studentId = 's123456'; // Replace with a valid student ID
@@ -321,7 +300,7 @@ describe('Proposal routes', () => {
     const response = await request(app).get(`/api/proposals/students/${studentId}`);
 
     expect(response.status).toBe(500);
-    // Add more assertions based on your expectations for error handling, logging, etc.
+    
   });
 
   //POST /api/proposals
@@ -401,7 +380,7 @@ describe('Proposal routes', () => {
       .send(invalidRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for invalid supervisor', async () => {
     // Mock data and setup for a request with an invalid supervisor
@@ -425,7 +404,7 @@ describe('Proposal routes', () => {
       .send(invalidSupervisorRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for invalid date', async () => {
     // Mock data and setup for a request with an invalid supervisor
@@ -446,7 +425,7 @@ describe('Proposal routes', () => {
       .send(invalidDateRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
@@ -560,7 +539,7 @@ describe('Proposal routes', () => {
       .send(invalidRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for invalid degree', async () => {
     // Mock data and setup for a request with an invalid supervisor
@@ -584,7 +563,7 @@ describe('Proposal routes', () => {
       .send(invalidSupervisorRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for invalid date', async () => {
     // Mock data and setup for a request with an invalid supervisor
@@ -605,7 +584,7 @@ describe('Proposal routes', () => {
       .send(invalidDateRequestData);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
@@ -673,7 +652,7 @@ describe('Proposal routes', () => {
     const response = await request(app).delete(`/api/proposals/${validProposalId}`);
 
     expect(response.status).toBe(200);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 404 for a proposalId that does not exist', async () => {
     // Mock data and setup for a request with a non-existent proposalId
@@ -683,7 +662,7 @@ describe('Proposal routes', () => {
     const response = await request(app).delete(`/api/proposals/${nonExistentProposalId}`);
 
     expect(response.status).toBe(404);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for an invalid proposalId', async () => {
     // Mock data and setup for a request with an invalid proposalId
@@ -693,7 +672,7 @@ describe('Proposal routes', () => {
     const response = await request(app).delete(`/api/proposals/${invalidProposalId}`);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
@@ -704,7 +683,7 @@ describe('Proposal routes', () => {
     const response = await request(app).delete(`/api/proposals/${validProposalId}`);
 
     expect(response.status).toBe(500);
-    // Add more assertions based on your expectations for error handling, logging, etc.
+    
   });
 
   //PATCH /api/proposals/:proposalId/archive
@@ -718,7 +697,7 @@ describe('Proposal routes', () => {
     const response = await request(app).patch(`/api/proposals/${validProposalId}/archive`);
 
     expect(response.status).toBe(200);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 400 for a proposalId that does not exist', async () => {
     // Mock data and setup for a request with a non-existent proposalId
@@ -729,7 +708,7 @@ describe('Proposal routes', () => {
     const response = await request(app).patch(`/api/proposals/${nonExistentProposalId}/archive`);
 
     expect(response.status).toBe(400);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 422 for an invalid proposalId', async () => {
     // Mock data and setup for a request with an invalid proposalId
@@ -739,7 +718,7 @@ describe('Proposal routes', () => {
     const response = await request(app).patch(`/api/proposals/${invalidProposalId}/archive`);
 
     expect(response.status).toBe(422);
-    // Add more assertions based on your expectations for the response body, etc.
+    
   });
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
@@ -766,7 +745,333 @@ describe('Proposal routes', () => {
 
 });
 //#endregion
+//#region Application
+describe('Application routes', () => {
+  //GET /api/applications/teacher/:professorId
+  it('should respond with status 200 and return applications for a valid professorId', async () => {
+    // Mock data and setup for a valid request
+    const validProfessorId = 'd123456'; // Replace with a valid professorId
+    const mockProposals = [{ /* Mocked proposal data */ }];
+    const mockApplications = [{ /* Mocked application data */ }];
+    propDao.getActiveProposalsByProfessor.mockResolvedValueOnce(mockProposals);
+    appDao.getActiveApplicationsByProposal.mockResolvedValueOnce(mockApplications);
 
+    // Make the request
+    const response = await request(app).get(`/api/applications/teacher/${validProfessorId}`);
+
+    expect(response.status).toBe(200);
+    
+  });
+  it('should respond with status 200 and indicate resume existence for applications with valid resume files', async () => {
+    // Mock data and setup for a valid request with a resume file
+    const validProfessorId = 'd123456'; // Replace with a valid professorId
+    const mockProposals = [{ /* Mocked proposal data */ }];
+    const mockApplications = [{ id: 1 /* Mocked application data */, resumeeExists: true }];
+    propDao.getActiveProposalsByProfessor.mockResolvedValueOnce(mockProposals);
+    appDao.getActiveApplicationsByProposal.mockResolvedValueOnce(mockApplications);
+    // Mocking the existence of the resume file
+    filePathSpy.mockReturnValueOnce(true);
+    // Make the request
+    const response = await request(app).get(`/api/applications/teacher/${validProfessorId}`);
+  
+    expect(response.status).toBe(200);
+    expect(response.body[0].resumeeExists).toBe(true);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 422 for an invalid professorId', async () => {
+    // Mock data and setup for a request with an invalid professorId
+    const invalidProfessorId = 'invalidId'; // Replace with an invalid professorId
+
+    // Make the request
+    const response = await request(app).get(`/api/applications/teacher/${invalidProfessorId}`);
+
+    expect(response.status).toBe(422);
+    
+  });
+  it('should respond with status 500 if there is an error in the server', async () => {
+    // Mock data and setup for a request where the server encounters an error
+    const validProfessorId = 'd123456'; // Replace with a valid professorId
+    propDao.getActiveProposalsByProfessor.mockRejectedValueOnce(new Error('Test error'));
+
+    // Make the request
+    const response = await request(app).get(`/api/applications/teacher/${validProfessorId}`);
+
+    expect(response.status).toBe(500);
+    
+  });
+
+  //GET /api/applications/student/:studentId
+  it('should respond with status 200 and return applications for a valid studentId', async () => {
+    // Mock data and setup for a valid request
+    const validStudentId = 's123456'; // Replace with a valid studentId
+    const mockApplications = [{ /* Mocked application data */ }];
+    appDao.getApplicationsByStudent.mockResolvedValueOnce(mockApplications);
+    // Make the request
+    const response = await request(app).get(`/api/applications/student/${validStudentId}`);
+    expect(response.status).toBe(200);
+  });
+  it('should respond with status 422 for an invalid studentId', async () => {
+    // Mock data and setup for a request with an invalid studentId
+    const invalidStudentId = 'invalidId'; // Replace with an invalid studentId
+
+    // Make the request
+    const response = await request(app).get(`/api/applications/student/${invalidStudentId}`);
+
+    expect(response.status).toBe(422);
+    
+  });
+  it('should respond with status 500 if there is an error in the server', async () => {
+    // Mock data and setup for a request where the server encounters an error
+    const validStudentId = 's123456'; // Replace with a valid studentId
+    appDao.getApplicationsByStudent.mockRejectedValueOnce(new Error('Test error'));
+
+    // Make the request
+    const response = await request(app).get(`/api/applications/student/${validStudentId}`);
+
+    expect(response.status).toBe(500);
+    
+  });
+
+  //POST /api/applications'
+  // Mock data and setup for a valid request
+  const validProposalId = 1; // Replace with a valid proposalId
+  const validStudentId = 's123456'; // Replace with a valid studentId
+  const mockProposal = { id:-1};
+  const mockApplication = { /* Mocked application data */ };
+  const mockFile = {
+    originalname: 'test.pdf',
+    path: '/path/to/test.pdf',
+  };
+  it('should respond with status 200 and create an application for a valid request', async () => {
+    // Set up mocks for a valid request
+    appDao.getLastId.mockResolvedValueOnce(-1);
+    propDao.getProposalById.mockResolvedValueOnce(mockProposal);
+    appDao.getApplicationsByStudent.mockResolvedValueOnce([]);
+    appDao.createApplication.mockResolvedValueOnce(mockApplication);
+    mailServer.sendMail.mockResolvedValueOnce({});
+
+    // Create a temporary file for the test
+    // Create the temporary directory if it doesn't exist
+    const tempDirPath = path.join(__dirname, 'temp');
+    if (!fs.existsSync(tempDirPath)) {
+      fs.mkdirSync(tempDirPath);
+    }
+    const tempFilePath = path.join(__dirname, 'temp', 'test.pdf');
+    fs.writeFileSync(tempFilePath, 'Test file content');
+
+    // Make the request with the file
+    const response = await request(app)
+      .post('/api/applications')
+      .field('proposalId', validProposalId)
+      .field('studentId', validStudentId)
+      .attach('file', tempFilePath, 'test.pdf');
+
+    // Remove the temporary file after the test
+    fs.unlinkSync(tempFilePath);
+
+    expect(response.status).toBe(200);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 500 for invalid file format', async () => {
+    // Set up mocks for a request with a pending application
+    appDao.getLastId.mockResolvedValueOnce(-1);
+    appDao.getApplicationsByStudent.mockResolvedValueOnce([{ status: 'Pending' }]);
+  
+    // Create a temporary file (you can use an empty file or a dummy file)
+    const tempFilePath = path.join(__dirname, 'temp', 'dummy.txt');
+    fs.writeFileSync(tempFilePath, 'Dummy file content');
+  
+    // Make the request with the dummy file
+    const response = await request(app)
+      .post('/api/applications')
+      .field('proposalId', validProposalId)
+      .field('studentId', validStudentId)
+      .attach('file', tempFilePath, 'dummy.txt');
+  
+    // Remove the temporary file after the test
+    fs.unlinkSync(tempFilePath);
+  
+    expect(response.status).toBe(500);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 500 if the student already has a pending application', async () => {
+    // Set up mocks for a request with a pending application
+    appDao.getLastId.mockResolvedValueOnce(-1);
+    appDao.getApplicationsByStudent.mockResolvedValueOnce([{ status: 'Pending' }]);
+    fileUnlink.mockImplementationOnce(() => {}); // Mock the file deletion
+  
+    // Create a temporary file (you can use an empty file or a dummy file)
+    const tempFilePath = path.join(__dirname, 'temp', 'dummy.pdf');
+    fs.writeFileSync(tempFilePath, 'Dummy file content');
+  
+    // Make the request with the dummy file
+    const response = await request(app)
+      .post('/api/applications')
+      .field('proposalId', validProposalId)
+      .field('studentId', validStudentId)
+      .attach('file', tempFilePath, 'dummy.pdf');
+  
+    // Remove the temporary file after the test
+    fs.unlinkSync(tempFilePath);
+  
+    expect(response.status).toBe(500);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 500 if there is an error in the server', async () => {
+    // Set up mocks for a request where the server encounters an error
+    appDao.getLastId.mockResolvedValueOnce(-1);
+    appDao.getApplicationsByStudent.mockRejectedValueOnce(new Error('Test error'));
+    fileUnlink.mockImplementationOnce(() => {}); // Mock the file deletion
+  
+    // Create a temporary file (you can use an empty file or a dummy file)
+    const tempFilePath = path.join(__dirname, 'temp', 'dummy.pdf');
+    fs.writeFileSync(tempFilePath, 'Dummy file content');
+  
+    // Make the request with the dummy file
+    const response = await request(app)
+      .post('/api/applications')
+      .field('proposalId', validProposalId)
+      .field('studentId', validStudentId)
+      .attach('file', tempFilePath, 'dummy.pdf');
+  
+    // Remove the temporary file after the test
+    fs.unlinkSync(tempFilePath);
+    //removes the created file for the tests
+    fs.unlinkSync(path.join(__dirname, '../uploads/', 'APP_0.pdf'))
+  
+    expect(response.status).toBe(500);
+    
+  });
+
+
+  //PATCH /api/application/:proposalId/:studentId
+  // Mock data
+  const mockProposalId = 1;
+  const mockStudentId = 's123456';
+  const mockStatus = 'Accepted';
+  mockProposal.title= 'Mock Proposal'; 
+  it('should respond with status 200 and archive the proposal for Accepted status', async () => {
+    // Set up mocks for a valid request with Accepted status
+    propDao.getProposalById.mockResolvedValueOnce(mockProposal);
+    propDao.archiveProposal.mockResolvedValueOnce({ success: true });
+    mailServer.sendMail.mockResolvedValueOnce({});
+    
+    // Make the request
+    const response = await request(app)
+      .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+      .send({ status: mockStatus });
+
+    expect(response.status).toBe(200);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 200 and update the application status for Rejected status', async () => {
+    // Set up mocks for a valid request with Rejected status
+    propDao.getProposalById.mockResolvedValueOnce(mockProposal);
+    appDao.setApplicationStatus.mockResolvedValueOnce({ success: true });
+    mailServer.sendMail.mockResolvedValueOnce({});
+
+    // Make the request
+    const response = await request(app)
+      .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+      .send({ status: 'Rejected' });
+
+    expect(response.status).toBe(200);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 422 if a parameter is wrong', async () => {
+    // Set up mocks for a valid request with Rejected status
+    mailServer.sendMail.mockResolvedValueOnce({});
+
+    // Make the request
+    const response = await request(app)
+      .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+      .send({ status: 'arborea' });
+
+    expect(response.status).toBe(422);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 400 if the proposal is not found', async () => {
+    // Set up mocks for a request with a non-existent proposal
+    propDao.getProposalById.mockResolvedValueOnce(null);
+
+    // Make the request
+    const response = await request(app)
+      .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+      .send({ status: mockStatus });
+
+    expect(response.status).toBe(400);
+    // Add more assertions based on your expectations for the response body, etc.
+  });
+  it('should respond with status 500 if there is an error in the server', async () => {
+    // Set up mocks for a request where the server encounters an error
+    propDao.getProposalById.mockRejectedValueOnce(new Error('Test error'));
+    // Make the request
+    const response = await request(app)
+      .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+      .send({ status: mockStatus });
+    expect(response.status).toBe(500);
+
+    //archiversult fail
+     // Set up mocks for a request where the server encounters an error
+     propDao.getProposalById.mockResolvedValueOnce({prop:"osal"});
+     propDao.archiveProposal.mockResolvedValue({success:false});
+     // Make the request
+     const responseA = await request(app)
+       .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+       .send({ status: mockStatus });
+     expect(responseA.status).toBe(500);
+
+     //result fail
+     // Set up mocks for a request where the server encounters an error
+     propDao.getProposalById.mockResolvedValueOnce({prop:"osal"});
+     appDao.setApplicationStatus.mockResolvedValue({success:false});
+     // Make the request
+     const responseR = await request(app)
+       .patch(`/api/application/${mockProposalId}/${mockStudentId}`)
+       .send({ status: "Rejected" });
+     expect(responseR.status).toBe(500);
+    
+  });
+
+  //GET /api/files/resumees/:applicationId
+  const mockUser = { id: 'd123456'}; // Mock teacher user ID
+  const mockApplicationId = 1;
+  mockApplication.id = mockApplicationId;
+  const setUserMiddleware = (req, res, next) => {
+    console.warn("I'm in the middle", req);
+    req.user = mockUser;
+    next();
+  };
+  beforeEach(function() {
+    //Mock Passport's authenticate to bypass actual SAML authentication
+    sinon.stub(passport, 'authenticate').callsFake((strategy, options, callback) => {
+      return function(req, res, next) {
+        req.user = mockUser;
+        req.isAuthenticated = () => true; // Mock isAuthenticated to return true
+        callback(null, req.user, null);
+      };
+    });
+  });
+
+  afterEach(function() {
+    // Restore the original authenticate function after each test
+    passport.authenticate.restore();
+  });
+  it('should respond with status 422 for invalid parameters', async () => {
+    const response = await request(app)
+      .get('/api/files/resumees/invalidId')
+      .expect(422);
+
+    expect(response.body).toHaveProperty('error');
+  });
+  it('should respond with status 500 for generic errors inside', async () => {
+    const response = await request(app)
+      .get('/api/files/resumees/0')
+      .expect(500);
+  });
+
+});
+//#endregion
 //#region Degrees
 describe('Degrees routes', () => {
   it('should respond with status 200 for GET /api/degrees', async () => {

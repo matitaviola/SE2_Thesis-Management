@@ -646,7 +646,6 @@ app.get('/api/applications/teacher/:professorId',
       //return json w/o empty results of all the proposals
       res.json(applications.filter(value => Object.keys(value).length !== 0).flat().map(a => {
         const path = `uploads/APP_${a.id}.pdf`;
-    
         if (!fs.existsSync(path)) {
           return {...a, resumeeExists: false};
         }
@@ -656,7 +655,7 @@ app.get('/api/applications/teacher/:professorId',
       console.error(err);
       res.status(500).json({ error: `An error occurred while retrieving the applications for the professor ${req.params.professorId}` });
     }
-  });
+});
 
 //GET /api/applications/student/:studentId
 app.get('/api/applications/student/:studentId',
@@ -680,7 +679,7 @@ app.get('/api/applications/student/:studentId',
       console.error(err);
       res.status(500).end();
     }
-  });
+});
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -744,7 +743,7 @@ app.post('/api/applications',
       console.error(err);
       return res.status(500).json({ error: 'An error occurred while creating the application' });
     }
-  });
+});
 
 //PATCH /api/application/:proposalId/:studentId
 app.patch('/api/application/:proposalId/:studentId',
@@ -768,7 +767,6 @@ app.patch('/api/application/:proposalId/:studentId',
         if (req.body.status === "Accepted") {
           //Archives the proposal
           const archiveResult = await propDao.archiveProposal(req.params.proposalId, req.params.studentId);
-
           if (!archiveResult.success) {
             throw new Error('An error occurred while archiving the proposal');
           }
@@ -789,13 +787,16 @@ app.patch('/api/application/:proposalId/:studentId',
     } catch (err) {
       res.status(500).json({ error: 'An error occurred while updating application status' });
     }
-  });
+});
 
+//GET /api/files/resumees/:applicationId
 app.get('/api/files/resumees/:applicationId',   
-isLoggedIn, checkTeacherRole,
+isLoggedIn, 
+checkTeacherRole,
 [
   check('applicationId').isInt()
-], async (req, res) => {
+],
+async (req, res) => {
 
   const errors = validationResult(req).formatWith(errorFormatter); //format error message
   if (!errors.isEmpty()) {
@@ -804,7 +805,6 @@ isLoggedIn, checkTeacherRole,
 
   try {
     const application = await appDao.isApplication(req.user.id, req.params.applicationId);
-
     if(!application){
       res.status(400).json({ error: 'Application not found' });
       return;
@@ -815,7 +815,6 @@ isLoggedIn, checkTeacherRole,
       res.status(400).json({ error: 'Application not found' });
       return;
     }
-
     res.contentType("application/pdf");
     fs.createReadStream(path).pipe(res);
 
