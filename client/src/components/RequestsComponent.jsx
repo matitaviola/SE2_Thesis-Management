@@ -1,7 +1,7 @@
 import { Link, useLocation} from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Table, Button, Form} from 'react-bootstrap';
+import { Container, Row, Col, Table, Button, Form, Tab, Tabs} from 'react-bootstrap';
 import { AiOutlineUser, AiOutlineTeam, AiOutlineFileText, AiOutlineInfoCircle } from "react-icons/ai";
 import Swal from 'sweetalert2';
 import NotFound from "./NotFoundComponent.jsx";
@@ -25,13 +25,15 @@ export default function RequestsComponent(props){
 
 function RequestsTable(props){
     const [requests, setRequests] = useState([]);
+    const [otherRequests, setOtherRequests] = useState([]); //used for the second tab that appears for the clerks
     const user = props.user;
 
     useEffect(() => {
         const fetchRequests = async () => {
           try{
             let requestsResponse = await API.getRequests(user);
-            setRequests(requestsResponse);
+            setRequests(requestsResponse.toEvaluate? requestsResponse.toEvaluate : requestsResponse);
+            setOtherRequests(requestsResponse.evaluated? requestsResponse.evaluated : []);
           }catch(err){
             props.setErrorMessage(`${err}`);
           }
@@ -41,34 +43,72 @@ function RequestsTable(props){
 
     return (
         <div className="proposal-table">
-          <h1>Requests to evaluate</h1>
+        <Tabs
+            defaultActiveKey="toEvaluate"
+            id="clerks-tab"
+            className="mb-3"
+        >
+          <Tab eventKey="toEvaluate" title="Requests to evaluate">
+            <Row>
+              <Table striped hover responsive border={1}>
+                <thead>
+                  <tr>
+                    <th className="text-nowrap">Title</th>
+                    <th className="text-nowrap">Supervisor </th>
+                    <th className="text-nowrap">Co-Supervisors </th>
+                    <th className='text-nowrap'>Student</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requests.map(r => {
+                    {
+                      return <tr key={r.id}>
+                        <td className="grades-table-td">{r.title}</td>
+                        <td className="grades-table-td">{r.supervisorName} {r.supervisorSurname}</td>
+                        <td className="grades-table-td">{r.coSupervisorNames}</td>
+                        <td className="grades-table-td">{r.studentName} {r.studentSurname}</td>
+                        <td><Link to={`/requests/${r.id}`} state= {{ request: r}} ><Button className="btn-secondary">View</Button></Link></td>
+                      </tr>
+                    }
+                  })}
+                </tbody>
+              </Table>
+            </Row>
+          </Tab>
+          {otherRequests.length>0?
+          <Tab eventKey="evaluated" title="Evaluated Requests">
           <Row>
-            <Table striped hover responsive border={1}>
-              <thead>
-                <tr>
-                  <th className="text-nowrap">Title</th>
-                  <th className="text-nowrap">Supervisor </th>
-                  <th className="text-nowrap">Co-Supervisors </th>
-                  <th className='text-nowrap'>Student</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.map(r => {
-                  {
-                    return <tr key={r.id}>
-                      <td className="grades-table-td">{r.title}</td>
-                      <td className="grades-table-td">{r.supervisorName} {r.supervisorSurname}</td>
-                      <td className="grades-table-td">{r.coSupervisorNames}</td>
-                      <td className="grades-table-td">{r.studentName} {r.studentSurname}</td>
-                      <td><Link to={`/requests/${r.id}`} state= {{ request: r}} ><Button className="btn-secondary">View</Button></Link></td>
-                    </tr>
-                  }
-                })}
-              </tbody>
-            </Table>
-          </Row>
-    
+              <Table striped hover responsive border={1}>
+                <thead>
+                  <tr>
+                    <th className="text-nowrap">Title</th>
+                    <th className="text-nowrap">Supervisor </th>
+                    <th className="text-nowrap">Co-Supervisors </th>
+                    <th className='text-nowrap'>Student</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {otherRequests.map(r => {
+                    {
+                      return <tr key={r.id}>
+                        <td className="grades-table-td">{r.title}</td>
+                        <td className="grades-table-td">{r.supervisorName} {r.supervisorSurname}</td>
+                        <td className="grades-table-td">{r.coSupervisorNames}</td>
+                        <td className="grades-table-td">{r.studentName} {r.studentSurname}</td>
+                        <td><Link to={`/requests/${r.id}`} state= {{ request: r}} ><Button className="btn-secondary">View</Button></Link></td>
+                      </tr>
+                    }
+                  })}
+                </tbody>
+              </Table>
+            </Row>
+          </Tab>
+          :
+          null
+          }
+        </Tabs>
         </div>
     )
 

@@ -872,8 +872,10 @@ app.get('/api/requests',
   isLoggedIn,
   async (req, res) => {
     try {
-      const requests = await reqDao.getAllRequestsForClerk();
-      res.json(requests);
+      const toEvaluate = await reqDao.getAllRequestsForClerk();
+      let evaluated = await reqDao.getAllRequests();
+      evaluated = evaluated.filter(ev => ev.status != 'Created'); //removing all the requests that still have to be avaluated
+      res.json({toEvaluate:toEvaluate, evaluated:evaluated});
     } catch (err) {
       res.status(500).end();
     }

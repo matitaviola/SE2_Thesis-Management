@@ -95,7 +95,6 @@ export default function RequestInfo(props){
     const handleUpdateChanges = (newChanges) => {
         // Update the request.requiredChanges in the parent component
        request.requiredChanges = newChanges;
-       console.log(request);
     };
 
     return(
@@ -149,7 +148,7 @@ export default function RequestInfo(props){
                 :
                 null
             }
-            {loggedInUser.role == "STUDENT"?
+            {loggedInUser.role == "STUDENT" || (loggedInUser.role == "CLERK" && request.status!="Created")?
                 (request.requiredChanges && request.status!="Approved")?
                     <Row>
                         <p className='proposal-field-title' style={{color:'white', backgroundColor:'red'}}><strong>Required Changes:</strong></p>

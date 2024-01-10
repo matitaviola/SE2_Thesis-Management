@@ -430,14 +430,15 @@ describe('Proposal routes', () => {
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
     const errorRequestData = {
-      title: 'Error Proposal',
+      title: 'Valid Proposal',
       keywords: 'Keyword1, Keyword2',
       type: 'Type',
       description: 'Proposal Description',
-      expiration: '2023-12-31',
+      expiration: '2223-12-31',
       level: 'BSc',
       supervisor: 'validSupervisorId',
       cds: 'validDegreeCode1 validDegreeCode2',
+      coSupervisor: 'd100001,Enzo_Renzo Mica_Male er@mail.com'
     };
 
     // Mock the supervisorDao.getSupervisorById to resolve with a supervisor
@@ -589,14 +590,15 @@ describe('Proposal routes', () => {
   it('should respond with status 500 if there is an error in the server', async () => {
     // Mock data and setup for a request where the server encounters an error
     const errorRequestData = {
-      title: 'Error Proposal',
+      title: 'Valid Proposal',
       keywords: 'Keyword1, Keyword2',
       type: 'Type',
       description: 'Proposal Description',
-      expiration: '2023-12-31',
+      expiration: '2223-12-31',
       level: 'BSc',
       supervisor: 'validSupervisorId',
       cds: 'validDegreeCode1 validDegreeCode2',
+      coSupervisor: 'd100001,Enzo_Renzo Mica_Male er@mail.com'
     };
     
     // Mock the propDao.addProposal to reject with an error
@@ -1120,7 +1122,8 @@ describe('TimeTravel routes', () => {
 describe('Request routes', () => {
     // /api/requests
     it('should respond with status 200 for GET /api/requests', async () => {
-        reqDao.getAllRequestsForClerk.mockResolvedValueOnce({data:"aaa"})
+        reqDao.getAllRequestsForClerk.mockResolvedValueOnce([{data:"aaa"}]);
+        reqDao.getAllRequests.mockResolvedValueOnce([{data:"aaa"}]);
         const response = await request(app).get('/api/requests');
         expect(response.status).toBe(200);
     });
