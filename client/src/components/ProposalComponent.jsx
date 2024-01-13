@@ -307,7 +307,7 @@ export function StudentProposalComponent(props) {
 			<Row className='my-30 d-flex justify-content-center' style={{marginTop:'0px', marginBottom:'5%'}}>
 				<Button
 					variant="secondary"
-					style={{fontSize:'x-large', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
+					style={{fontSize:'19px', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
 					disabled={proposal.applicationExists}
 					onClick={() => handleShowUpdateModal(proposal)}
 				>
