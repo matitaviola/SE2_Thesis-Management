@@ -166,6 +166,55 @@ exports.getActiveProposalsByProfessor = async (professorId) => {
     }
 };
 
+exports.getArchivedProposalsByProfessor = async (professorId, filter) => {
+    try{
+        let sql = `SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM ARCHIVED_PROPOSAL P, TEACHER T WHERE T.ID=P.Supervisor AND T.ID= ?`;
+        
+        const dep = [professorId];
+
+        const rows = await new Promise((resolve, reject) => {
+            db.all(sql, dep, (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+        if (rows === undefined || rows.length === 0) {
+            return [];
+        }
+        let proposals = await Promise.all(rows.map(async r => {
+            const prop = new Proposal(r.pID, r.Title, r.Supervisor, r.tName, r.tSurname, r.Co_supervisor, r.Keywords, r.Type, r.Groups, r.Description, r.Req_knowledge, r.Notes, r.Expiration, r.Level, r.CdS, r.TITLE_DEGREE);
+            prop.coSupervisorNames = r.Co_supervisor ? await this.getCoSupervisorNames(r.Co_supervisor) : "";
+            prop.coSupervisorNames = prop.coSupervisorNames? prop.coSupervisorNames : "";
+            return prop;
+        }));
+        //supervisor filter is done
+
+        if(filter!== ''){
+            filter = filter.toUpperCase();
+            proposals = proposals.filter(pr => 
+                (pr.coSupervisorNames && pr.coSupervisorNames.toUpperCase().includes(filter)) ||
+                (pr.title && pr.title.toUpperCase().includes(filter)) ||
+                (pr.keywords && pr.keywords.toUpperCase().includes(filter)) ||
+                (pr.types && pr.types.toUpperCase().includes(filter)) ||
+                (pr.groups && pr.groups.toUpperCase().includes(filter)) ||
+                (pr.description && pr.description.toUpperCase().includes(filter)) ||
+                (pr.reqKnowledge && pr.title.toUpperCase().includes(filter)) ||
+                (pr.notes && pr.notes.toUpperCase().includes(filter)) ||
+                (pr.level && pr.level.toUpperCase().includes(filter)) ||
+                (pr.cdsId && pr.cdsId.toUpperCase().includes(filter)) ||
+                (pr.expiration && pr.expiration.toString().includes(filter))
+                );
+            }
+
+        return proposals;
+    }catch(err){
+        throw err;
+    };
+};
+
 exports.archiveProposal = (proposalId, studentId) => {
     return new Promise((resolve, reject) => {
         // Step 1: Retrieve data from PROPOSAL table

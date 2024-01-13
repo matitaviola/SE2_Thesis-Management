@@ -30,17 +30,15 @@ function TeacherProposalsTableComponent(props) {
 	const loggedInUser = useContext(AuthContext);
   const [timeTravelled, setTimeTravelled] = useState(false);
 
-
 	useEffect(() => {
-    const getProposals = async () => {
-      try {
-        await API.getProposals(loggedInUser);
-        const retrievedProposals2 = await API.getProposals(loggedInUser);
-        setProposals(retrievedProposals2);
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
-      }
-    };
+		const getProposals = async () => {
+			try {
+        const retrievedProposals = await API.getProposals(loggedInUser);
+				setProposals(retrievedProposals);
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
 		getProposals();
 	}, []);
 
@@ -62,10 +60,23 @@ function TeacherProposalsTableComponent(props) {
 	return (
 		<div className="proposal-table">
 			<h1>Active Proposals Table</h1>
-        <TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
-        <Link to="/proposals/new">
-          <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
-        </Link>
+      <Row>
+        <Col><TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/></Col>
+      </Row>
+      <Row className="mb-2" >
+
+      <Col>
+      <Link to="/proposals/new">
+        <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
+      </Link>
+        </Col>     
+        <Col className="d-flex justify-content-end">
+        <Link to="/proposals/archived">
+        <Button variant="secondary" style={{ marginBottom: '10px' , color: 'white'}}>View Archived Proposals</Button>
+      </Link>
+        </Col>   
+      </Row>
+
 			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
