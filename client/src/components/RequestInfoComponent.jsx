@@ -156,10 +156,10 @@ export default function RequestInfo(props){
                         <p> {request.requiredChanges}</p>
                         </Row>
                         {/*
-                        <Row className="float-right" style={{ marginTop: '-1.5rem', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+                        <Row className="float-right" style={{ marginTop: '-1.5rem', marginBottom: '0px', color: "white", fontSize: '14px' }}>
                             <Col xs={9}/>
                             <Col xs={3} style={{marginRight:'0px'}}>
-                            <Button className="float-right" style={{ border:'none', backgroundColor:'red',width:'100%', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+                            <Button className="float-right" style={{ border:'none', backgroundColor:'red',width:'100%', marginBottom: '0px', color: "white", fontSize: '14px' }}>
                             <strong>EFFECT CHANGES</strong>
                             </Button>
                             </Col>
@@ -170,12 +170,12 @@ export default function RequestInfo(props){
                 :
                 <Row className="justify-content-center">
                     <Col xs={6} className="text-center">
-                        <Button variant="success" type="submit" className="mt-3" style={{ color: "white", fontSize: 'large', width: '100%' }} onClick={() => handleAccept()}>
+                        <Button variant="success" type="submit" className="mt-3" style={{ color: "white", fontSize: '14px', width: '100%' }} onClick={() => handleAccept()}>
                             ACCEPT
                         </Button>
                     </Col>
                     <Col xs={6} className="text-center">
-                        <Button variant="danger" type="submit" className="mt-3" style={{ color: "white", fontSize: 'large', width: '100%' }} onClick={() => handleReject()}>
+                        <Button variant="danger" type="submit" className="mt-3" style={{ color: "white", fontSize: '14px', width: '100%' }} onClick={() => handleReject()}>
                             REJECT
                         </Button>
                     </Col>
@@ -208,10 +208,10 @@ const EditableTextArea = (props) => {
                 className="proposal-show-field"
                 style={{ marginTop: '0rem', marginBottom: '0px' }}
             />
-            <Row className="float-right" style={{ marginTop: '-1rem', marginBottom: '0px', color: "white", fontSize: 'large' }}>
+            <Row className="float-right" style={{ marginTop: '-1rem', marginBottom: '0px', color: "white", fontSize: '14px' }}>
                 <Col xs={9}/>
                 <Col xs={3}>
-                <Button className="float-right" style={{ border:'none', backgroundColor:'#ebaf0e',width:'100%', marginBottom: '0px', color: "white", fontSize: 'large' }} onClick={() => props.handleRequestChange()}>
+                <Button className="float-right" style={{ border:'none', backgroundColor:'#ebaf0e',width:'100%', marginBottom: '0px', color: "white", fontSize: '14px' }} onClick={() => props.handleRequestChange()}>
                 <strong>REQUEST CHANGE</strong>
                 </Button>
                 </Col>

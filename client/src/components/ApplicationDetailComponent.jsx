@@ -263,7 +263,7 @@ function StudentApplicationDetail(props){
                         applicationId: application.id
                     }
                         }}>
-                            <Button className="btn-primary" style={{color:'white', backgroundColor:'green', borderColor:'green', fontSize:'large'}}>THESIS REQUEST</Button>
+                            <Button className="btn-primary" style={{color:'white', backgroundColor:'green', borderColor:'green', fontSize:'14px'}}>THESIS REQUEST</Button>
                     </Link>
                 </Row>
                 :
