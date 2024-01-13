@@ -204,8 +204,8 @@ exports.getArchivedProposalsByProfessor = async (professorId, filter) => {
                 (pr.reqKnowledge && pr.title.toUpperCase().includes(filter)) ||
                 (pr.notes && pr.notes.toUpperCase().includes(filter)) ||
                 (pr.level && pr.level.toUpperCase().includes(filter)) ||
-                (pr.cdsId && pr.cdsId.toUpperCase().includes(filter)) ||
-                (pr.expiration && pr.expiration.toString().includes(filter))
+                (pr.expiration && pr.expiration.toString().includes(filter)) ||
+                (pr.cdsId && pr.cdsId.toUpperCase().includes(filter)) 
                 );
             }
 
