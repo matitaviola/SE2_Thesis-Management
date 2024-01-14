@@ -23,9 +23,11 @@ export default function ArchivedProposalsTableComponent(props) {
 		getProposals();
 	}, [filter]);
 
-	return (
-		<div className="proposal-table">
-			<h1>Archived Proposals</h1>
+  if(proposals.length===0){
+    return <p>No archived thesis proposals</p> 
+  }
+	return(
+      <div className="proposal-table">
 
             <Row className="mb-4 mt-4" >              
               <Col><SearchBarComponent filter={filter} setFilter={setFilter}></SearchBarComponent></Col>  

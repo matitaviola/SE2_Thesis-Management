@@ -78,8 +78,6 @@ useEffect(() => {
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent  setErrorMessage={setErrorMessage}/>} />
-              <Route path='proposals/archived'
-              element={<ArchivedProposalsTableComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/new'
