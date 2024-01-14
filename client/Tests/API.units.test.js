@@ -1643,6 +1643,13 @@ describe('getArchivedProposals API', () => {
     json: async () => 'Error occurred',
   };
 
+  it('should throw an error if the user is not a teacher', async () => {
+    // Call the function under test
+    await expect(API.getArchivedProposals({ user: 'STUDENT' })).rejects.toThrowError(
+      'Error on getting the proposals: Invalid role'
+    );
+  });
+
   it('should get proposals for a teacher', async () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
@@ -1668,18 +1675,16 @@ describe('getArchivedProposals API', () => {
   });
 
   it('should throw an error on failed request', async () => {
-    fetch.mockResolvedValueOnce(errorResponse);
-
-    await expect(API.getProposals(teacherUser)).rejects.toThrow(
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500, // Set an appropriate status code for a failed response
+      json: () => Promise.resolve('Error occurred'), // Simulate the response JSON
+    });
+  
+    // Make the function call and expect it to throw an error
+    await expect(API.getArchivedProposals(teacherUser)).rejects.toThrow(
       'Error on getting the proposals: Error occurred'
     );
   });
 
-  it('should throw an error for unknown role', async () => {
-    fetch.mockResolvedValueOnce(teacherResponse);
-
-    await expect(API.getProposals(otherUser)).rejects.toThrow(
-      'Error on getting the proposals: Invalid role'
-    );
-  });
 });

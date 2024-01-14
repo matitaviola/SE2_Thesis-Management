@@ -6,6 +6,7 @@ jest.mock('../DB/proposals-dao',()=>({
     getArchivedProposalById: jest.fn(),
     getCoSupervisorByProposal: jest.fn(),
     getActiveProposalsByProfessor: jest.fn(),
+    getArchivedProposalsByProfessor: jest.fn(),
     getAvailableProposals: jest.fn(),
     addProposal: jest.fn(),
     getAndAddExternalCoSupervisor: jest.fn(),
@@ -247,6 +248,24 @@ describe('Proposal routes', () => {
       //not finding it anywere
       propDao.getActiveProposalsByProfessor.mockImplementationOnce(() => {throw new Error('error')});
       const responseCareer = await request(app).get('/api/proposals/teacher/d200002');
+      expect(responseCareer.status).toBe(500);
+  });
+
+  //GET /api/proposals/teacher/:professorId/archived
+  it('should respond with status 200 for GET /api/proposals/teacher/:professorId/archived', async () => {
+    //finding it in the active proposals
+    propDao.getArchivedProposalsByProfessor.mockResolvedValueOnce({data:'abba'});
+    const response = await request(app).get('/api/proposals/teacher/d200002/archived').query({ filter: 'prova' });;
+    expect(response.status).toBe(200);
+  });
+  it('should respond with status 422 for GET /api/teacher/:professorId/archived with professor id not valid', async () => {
+    const responseProp = await request(app).get('/api/proposals/teacher/:professorId/archived');
+    expect(responseProp.status).toBe(422);
+  });
+  it('should respond with status 500 for GET /api/proposals/teacher/:professorId/archived with some error', async () => {
+      //not finding it anywere
+      propDao.getArchivedProposalsByProfessor.mockImplementationOnce(() => {throw new Error('error')});
+      const responseCareer = await request(app).get('/api/proposals/teacher/d200002/archived');
       expect(responseCareer.status).toBe(500);
   });
 
