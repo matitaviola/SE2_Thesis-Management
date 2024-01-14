@@ -341,5 +341,22 @@ Please note that each of the following test is written to be executed on a fresh
 - The "Open Resumee" button should not be visible
 ```
 
+## Story #17 - Add Academic Co-Supervisor:
+- Should add co-supervisors to a thesis proposal:
+```
+- Login as usr:michael@docenti.polito.com psw:d100001
+- Should be visible the Proposals page
+- Click on the 'View' button in the first row of the Active Proposal Table, in order to open the proposal ["Exploring Advanced Programming Paradigms"].
+- Click on the "UPDATE" button
+- Should be visible a modal to confirm or cancel the decision to update the current proposal
+- Click on "Yes, update it!" button
+- Should be visible a form with all the current data of the proposal
+- Click on the Academic Co-Supervisor field and select two co-supervisors: Emily Brown and Wei Chen
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the decision to update the current proposal
+- Click on "Yes, update it!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the proposals table, where the proposal ["Exploring Advanced Programming Paradigms"] has now two co-supervisors: Emily Brown and Wei Chen
+```
 
 
