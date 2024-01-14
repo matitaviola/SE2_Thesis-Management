@@ -341,5 +341,19 @@ Please note that each of the following test is written to be executed on a fresh
 - The "Open Resumee" button should not be visible
 ```
 
+## Story #26 - Insert Student Request:
+- Should create a new thesis start request:
+```
+- Login as usr:alice@studenti.polito.com psw:s200001
+- Click on the "Request" tab
+- Enter the mandatory fields in the form: Title, Supervisor, Description. 
+(Academic Co-Supervisors field is optional).
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the submission of the thesis request
+- Click on "Yes, create!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the request page and show and show the details of the submitted thesis request and its status (Awaiting acceptance from secretary).
+```
+
 
 
