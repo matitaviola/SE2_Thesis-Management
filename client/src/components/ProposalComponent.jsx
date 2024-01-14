@@ -41,7 +41,7 @@ export function ProposalComponent(props) {
 
 
 	const location = useLocation();
-	const { proposal } = location.state;
+	const { proposal, archived } = location.state;
 	const expirationDate = new Date(proposal.expiration);
 	const currentDate = new Date();
 
@@ -101,7 +101,8 @@ export function ProposalComponent(props) {
 					</Row>
 				</Row>
 			</Container>
-
+			{archived? <></>:
+			<>
 			<button 
                 onClick={() => routeChangeUpdate()}
                 className="update-button"
@@ -193,6 +194,7 @@ export function ProposalComponent(props) {
             >
                 ARCHIVE
             </button>
+			</>}
 
 	  </Container>
 	);
