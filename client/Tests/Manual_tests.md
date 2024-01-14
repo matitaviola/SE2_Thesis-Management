@@ -144,8 +144,8 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see a table with Title: "Title" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
-- Click on the "Evaluate" button in the row of s200013's application
-- Should be visible the student's data [Isabella Gonzalez s200013] and the career, with 1 exam
+- Click on the "Evaluate" button in the row of s200001's application
+- Should be visible the student's data [Alice Smith s200001] and the career, with 1 exam
 - Should be visible a modal to confirm or cancel the submission of the acceptance
 - Click on the "ACCEPT" button
 - Confirm the choice pressing "Yes, accept it!"
@@ -339,6 +339,25 @@ Please note that each of the following test is written to be executed on a fresh
 - Click on the "Applications" tab
 - Open the Isabella Gonzalez's application detail with the "Evaluate" button
 - The "Open Resumee" button should not be visible
+```
+
+## Story #30 - Student Request from Application:
+- Should create a new thesis start request starting from an approved application:
+```
+- Login as usr:david@docenti.polito.com psw:d100003
+- Accept Alice Smith's application following the story #5 second test
+- Login as usr:alice@studenti.polito.com psw:s200001
+- Click on the "Applications" tab
+- Should see the accepted application ["Architectural Innovation in Software Development"]
+- Click on the "REVIEW APPLICATION" button
+- Should see all the details of the application
+- Click on the "THESIS REQUEST" button
+- Should be visible the thesis request form with the fields pre-filled from the accepted application
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the submission of the thesis request
+- Click on "Yes, create!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the request page and show the details of the submitted thesis request and its status (Awaiting acceptance from secretary)
 ```
 
 ## Story #26 - Insert Student Request:
