@@ -6,6 +6,7 @@ import { Container, Row, Alert } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
 import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
+import ArchivedProposalsTableComponent from './components/ArchivedProposalTableComponent.jsx';
 import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';

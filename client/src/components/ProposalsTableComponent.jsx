@@ -1,11 +1,12 @@
 import { useContext, useState, useEffect } from "react";
-import { Container, Row, Col, Table, Form, Button, Dropdown } from "react-bootstrap";
+import { Container, Row, Col, Table, Form, Button, Dropdown, Tab, Tabs } from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 import NotFound from "./NotFoundComponent.jsx";
 import { Link } from 'react-router-dom';
 import TimeTravelComponent from "./TimeTravel.jsx";
 import API from "../API";
+import ArchivedProposalsTableComponent from "./ArchivedProposalTableComponent.jsx";
 
 export default function ProposalsTableComponent(props) {
 
@@ -26,21 +27,42 @@ export default function ProposalsTableComponent(props) {
 }
 
 function TeacherProposalsTableComponent(props) {
+  return(
+    <div className="proposal-table">
+      <h1>Thesis Proposals</h1>
+
+    <Tabs
+        defaultActiveKey="active"
+        id="clerks-tab"
+        className="mb-3"
+    >
+      <Tab eventKey="active" title="Active">
+        <TeacherActiveProposalsTableComponent setErrorMessage={props.setErrorMessage}></TeacherActiveProposalsTableComponent>
+      </Tab>
+
+      <Tab eventKey="archived" title="Archived">
+        <ArchivedProposalsTableComponent setErrorMessage={props.setErrorMessage}/>
+      </Tab>
+    </Tabs>
+    </div>
+  )
+}
+
+
+function TeacherActiveProposalsTableComponent(props) {
 	const [proposals, setProposals] = useState([]);
 	const loggedInUser = useContext(AuthContext);
   const [timeTravelled, setTimeTravelled] = useState(false);
 
-
 	useEffect(() => {
-    const getProposals = async () => {
-      try {
-        await API.getProposals(loggedInUser);
-        const retrievedProposals2 = await API.getProposals(loggedInUser);
-        setProposals(retrievedProposals2);
-      } catch (err) {
-        props.setErrorMessage(`${err}`);
-      }
-    };
+		const getProposals = async () => {
+			try {
+        const retrievedProposals = await API.getProposals(loggedInUser);
+				setProposals(retrievedProposals);
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
 		getProposals();
 	}, []);
 
@@ -61,11 +83,17 @@ function TeacherProposalsTableComponent(props) {
 
 	return (
 		<div className="proposal-table">
-			<h1>Active Proposals Table</h1>
-        <TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/>
-        <Link to="/proposals/new">
-          <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
-        </Link>
+      <Row mt-2>
+        <Col><TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/></Col>
+      </Row>
+      <Row className="mb-2" >
+      <Col>
+      <Link to="/proposals/new">
+        <button className="btn btn-success" style={{ marginBottom: '10px' , color: 'white'}}>Add New Proposal</button>
+      </Link>
+        </Col>     
+      </Row>
+
 			<Table striped border={1} responsive hover>
                 <thead>
                     <tr className="proposal-thead">
