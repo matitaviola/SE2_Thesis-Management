@@ -275,6 +275,43 @@ app.get('/api/proposals/teacher/:professorId',
     }
 });
 
+//gets all active proposals for a professor
+//GET /api/proposals/teacher/:professorId/archived
+app.get('/api/proposals/teacher/:professorId/archived',
+  isLoggedIn,
+  checkTeacherRole,
+  [
+    check('professorId').not().isEmpty().matches(/d[0-9]{6}/)
+  ],
+  async (req, res) => {
+    //validation rejected 
+    const errors = validationResult(req).formatWith(errorFormatter); // format error message
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ error: errors.array().join(", ") });
+    }
+
+    try {
+      //implementing basic flitering by keyword
+
+      //validation 
+
+      let filter = '';
+      if (req.query.filter && typeof req.query.filter === 'string') {
+        filter = req.query.filter;
+      }
+
+      let proposals = await propDao.getArchivedProposalsByProfessor(req.params.professorId, filter);
+
+      res.json(proposals);
+    } catch (err) {
+      console.log(err);
+      res.status(500).end();
+    }
+});
+
+
+
+
 //gets all proposals available for a student
 //GET /api/proposals
 app.get('/api/proposals/students/:studentId',

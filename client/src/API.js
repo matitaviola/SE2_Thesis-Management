@@ -109,13 +109,35 @@ const getProposals = async (user) =>{
   }
 }
 
+const getArchivedProposals = async (user, filter) =>{
+  if(user.role !== 'TEACHER'){
+    throw new Error("Error on getting the proposals: Invalid role");
+  }
+
+  let path = '';
+  if(filter){
+    path = `?filter=${filter}`
+  }
+
+  let response = await fetch(SERVER_URL + `/api/proposals/teacher/${user.id}/archived${path}`, { credentials: 'include'});
+  let responseJson = await response.json();
+
+
+  if(response.ok) {
+    return(responseJson);
+  }
+  else{
+    throw new Error("Error on getting the proposals: "+responseJson);
+  }
+}
+
 const getStudentProposals = async (studentId, filter, order) =>{
 
   let path = '?';
   Object.keys(filter).filter(k => filter[k]).forEach(k =>{
     path = path.concat(`${k}=${filter[k]}&`);
   });
-  path = !order?path:`${path}ordField=${order.field}&dir=${order.direction}&`;
+  path = (!order)? path : `${path}ordField=${order.field}&dir=${order.direction}&`;
 
   path = path.slice(0, -1);
 
@@ -313,7 +335,7 @@ const API = {getUserInfo, logout,
   getCoSupervisorsList, getCoSupervisorByProposal,
   getSingleProposal, getProposals, createProposal, deleteProposal, archiveProposal, updateProposal, getStudentProposals,
   getApplications, getStudentData, getStudents, updateApplicationStatus, 
-  addApplication, getDegrees, getResumee,
+  addApplication, getDegrees, getResumee, getArchivedProposals,
   boardTardis
 };
 export default API;

@@ -41,7 +41,7 @@ export function ProposalComponent(props) {
 
 
 	const location = useLocation();
-	const { proposal } = location.state;
+	const { proposal, archived } = location.state;
 	const expirationDate = new Date(proposal.expiration);
 	const currentDate = new Date();
 
@@ -101,7 +101,8 @@ export function ProposalComponent(props) {
 					</Row>
 				</Row>
 			</Container>
-
+			{archived? <></>:
+			<>
 			<button 
                 onClick={() => routeChangeUpdate()}
                 className="update-button"
@@ -193,6 +194,7 @@ export function ProposalComponent(props) {
             >
                 ARCHIVE
             </button>
+			</>}
 
 	  </Container>
 	);
@@ -305,7 +307,7 @@ export function StudentProposalComponent(props) {
 			<Row className='my-30 d-flex justify-content-center' style={{marginTop:'0px', marginBottom:'5%'}}>
 				<Button
 					variant="secondary"
-					style={{fontSize:'x-large', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
+					style={{fontSize:'19px', width:'fit-content', paddingLeft:'5%', paddingRight:'5%'}}
 					disabled={proposal.applicationExists}
 					onClick={() => handleShowUpdateModal(proposal)}
 				>
