@@ -1,3 +1,19 @@
+## Disclaimer:
+The content of this repository is under __Creative Commons licence 'CC BY-NC-SA-4.0'__.  
+You are free to:
+```
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material
+```
+__under the following terms__:
+```
+Attribution — You must give appropriate credit , provide a link to the license, and indicate if changes were made . You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+NonCommercial — You may not use the material for commercial purposes .
+
+ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+```
+
 # SE2_Thesis-Management
 
 ## Project Setup Guide
@@ -74,3 +90,6 @@ npm run coverage
 - usr:david@docenti.polito.com psw:d100003 (5 proposals)
 - usr:emma@docenti.polito.com psw:d100011 (1 proposal)
 - usr:doc_docenti.polito@libero.it psw:d100000 (1 proposal)
+
+### Secretary Clerk
+- user:sergio@secretary.polito.it psw:secretary
