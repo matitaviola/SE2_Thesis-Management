@@ -9,14 +9,14 @@
 - Student Elmo Ross:
     - In app:
         - mail: mta_studenti.polito@libero.it 
-        - psw: s100000
+        - psw: s000001
     - Libero:
         - mail: mta_studenti.polito@libero.it 
         - psw: Group_06
 - Student Bryan Woods:
     - In app:
         - mail: mtr_studenti.polito@libero.it 
-        - psw: s100001
+        - psw: s000002
     - Libero:
         - mail: mtr_studenti.polito@libero.it 
         - psw: Group_06
