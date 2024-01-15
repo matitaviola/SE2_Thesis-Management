@@ -367,6 +367,28 @@ Please note that each of the following test is written to be executed on a fresh
 - The application should return to the request page and show and show the details of the submitted thesis request and its status (Awaiting acceptance from secretary).
 ```
 
+## Story #27 - Secretary Approve Student requests:
+- Should approve/reject a student request:
+```
+- Login as sergio@secretary.polito.it psw: secretary
+- Click on the "View" button of the chosen request
+- Press Accept/Reject to approve or deny a request
+- Click on "Yes, Approve!" or "Yes, reject!" to approve or deny
+- The request should be sent to the "Evaluated Requests" tab
+- The status on the request should be changed to "Awaiting acceptance from supervisor" or "Rejected".
+```
+## Story #28 - Professor Approve Student requests:
+- Should approve/reject a student request (after the secretary accepted):
+```
+- Login as michael@docenti.polito.com psw: d100001
+- Click on the "Request" tab
+- Click on the "View" button of the chosen request
+- Press Accept/Reject to approve or deny a request
+- Click on "Yes, Approve!" or "Yes, reject!" to approve or deny
+- The request should not be in the "Request" tab anymore 
+- If accepted the status on the request should be changed to "Thesis started on yyyy/mm/dd".
+```
+
 ## Story #30 - Student Request from Application:
 - Should create a new thesis start request starting from an approved application:
 ```
