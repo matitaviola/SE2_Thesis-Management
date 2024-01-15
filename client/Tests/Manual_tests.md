@@ -337,6 +337,32 @@ Please note that each of the following test is written to be executed on a fresh
 - The "Open Resumee" button should not be visible
 ```
 
+## Story #16 - Serach Archive:
+- Should see 2 proposals and their data
+```
+- Login as usr:michael@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see 2 proposals for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics, Advancing Environmental Sustainability and Climate Studies)
+- Clicking on the "View" button of each row should display a page showing the data of the respective proposal with no button at the bottom
+```
+
+- Should see 1 proposal and its data after filtering
+```
+- Login as usr:michael@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see 2 proposals for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics | Advancing Environmental Sustainability and Climate Studies)
+- Type "Advanced" in the search bar
+- Should see 1 proposal for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics)
+- Clicking on the "View" button of each row should display a page showing the data of the respective proposal with no button at the bottom
+```
+
+- Should see no proposals
+```
+- Login as usr:david@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see no proposals, and the "No archived thesis proposals" message
+```
+
 ## Story #17 - Add Academic Co-Supervisor:
 - Should add co-supervisors to a thesis proposal:
 ```
