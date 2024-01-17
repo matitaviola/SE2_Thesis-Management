@@ -1,5 +1,9 @@
+html {
+  font-size: 80%;
+}
+
 body {
-  font-size: large; /* You can adjust the size as needed */
+  font-size: calc(18px * 0.8);
 }
 
 /*Navbar*/
@@ -110,11 +114,11 @@ body {
 
 .evaluate-button{
   color: white;
-  font-size: large;
+  font-size: calc(18px * 0.8);
 }
 
 .application-info {
-  font-size: 20px;
+  font-size: calc(20px * 0.8);
 }
 
 .title {
@@ -131,7 +135,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-right: 15px;
   transform: scale(1.1);
@@ -144,7 +148,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-right: 15px;
   transform: scale(1.1);
@@ -157,7 +161,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-left: 15px;
   transform: scale(1.1);
@@ -170,7 +174,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-left: 15px;
   transform: scale(1.1);
@@ -183,7 +187,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-right: 15px;
   transform: scale(1.1);
@@ -196,7 +200,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 15px;
+  font-size: calc(15px * 0.8);
   cursor: pointer;
   margin-right: 15px;
   margin-bottom: 15px;
@@ -261,7 +265,7 @@ body {
 }
 
 .view-text{
-  font-size: 30px;
+  font-size: calc(30px * 0.8);
   margin-right: 20px;
 }
 
@@ -288,12 +292,12 @@ body {
   background-color: rgb(255, 255, 255);
   border: 1px solid #212529;
   border-radius: 10px;
-  font-size: large;
+  font-size: calc(18px * 0.8);
 }
 .add-option-button:hover{
   background-color: rgb(252, 137, 43);
   border-radius: 10px;
-  font-size: large;
+  font-size: calc(18px * 0.8);
 }
 .remove-option-button{
   background-color: rgb(255, 255, 255);
