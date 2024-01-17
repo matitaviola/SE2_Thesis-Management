@@ -193,11 +193,10 @@ exports.getArchivedProposalsByProfessor = async (professorId, filter) => {
             return prop;
         }));
         //supervisor filter is done
-
         if(filter!== ''){
             filter = filter.toUpperCase();
             proposals = proposals.filter(pr => 
-                (pr.coSupervisorNames && pr.coSupervisorNames.toUpperCase().includes(filter)) ||
+                (pr.coSupervisorNames?.toUpperCase().includes(filter)) ||
                 (pr.title && pr.title.toUpperCase().includes(filter)) ||
                 (pr.keywords && pr.keywords.toUpperCase().includes(filter)) ||
                 (pr.types && pr.types.toUpperCase().includes(filter)) ||
@@ -602,14 +601,16 @@ exports.deleteProposal = (proposalId) => {
 
 exports.getProposalById = (proposalId) => {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D WHERE P.ID=?";
-      db.get(sql, [proposalId], (err, row) => {
+      const sql = "SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D WHERE P.ID=? AND P.Supervisor=T.ID";
+      db.get(sql, [proposalId], async (err, row) => {
         if (err) reject(err);
         else if (row === undefined || row.length === 0) {
           resolve();
         } else {
-          resolve(new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE)
-          );
+            const proposal = new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE);
+            const cosup = await this.getCoSupervisorNames(proposal.coSupervisor? proposal.coSupervisor : '');
+            proposal.coSupervisorNames = cosup;
+            resolve(proposal);
         }
       });
     });
@@ -617,14 +618,16 @@ exports.getProposalById = (proposalId) => {
 
 exports.getArchivedProposalById = (proposalId) => {
     return new Promise((resolve, reject) => {
-      const sql = "SELECT *, AP.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM ARCHIVED_PROPOSAL AP, TEACHER T, DEGREE D WHERE AP.ID=?";
-      db.get(sql, [proposalId], (err, row) => {
+      const sql = "SELECT *, AP.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM ARCHIVED_PROPOSAL AP, TEACHER T, DEGREE D WHERE AP.ID=? AND AP.Supervisor=T.ID";
+      db.get(sql, [proposalId], async (err, row) => {
         if (err) reject(err);
         else if (row === undefined || row.length === 0) {
           resolve();
         } else {
-          resolve(new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE)
-          );
+          const proposal = new Proposal(row.pID, row.Title, row.Supervisor, row.tName, row.tSurname, row.Co_supervisor, row.Keywords, row.Type, row.Groups, row.Description, row.Req_knowledge, row.Notes, row.Expiration, row.Level, row.CdS, row.TITLE_DEGREE)
+          const cosup = await this.getCoSupervisorNames(proposal.coSupervisor? proposal.coSupervisor : '');
+            proposal.coSupervisorNames = cosup;
+            resolve(proposal);
         }
       });
     });
