@@ -16,6 +16,8 @@ import ApplicationDetailComponent from './components/ApplicationDetailComponent.
 import API from './API.js';
 import HomeComponent from './components/HomeComponent.jsx';
 import CancelledProposalMessage from './components/CancelledProposalComponent.jsx';
+import RequestsComponent from './components/RequestsComponent.jsx';
+import RequestInfo from './components/RequestInfoComponent.jsx';
 
 export const AuthContext = createContext(null);
 
@@ -69,13 +71,13 @@ useEffect(() => {
               element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
               <Route path='applications/null'
               element={<CancelledProposalMessage  setErrorMessage={setErrorMessage}/>} />
-              </>
-              }
+              <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
+            </>
+          }
           { loggedIn && loggedIn.role == 'TEACHER' &&
            <><Route path='proposals'
               element={<ProposalsTableComponent  setErrorMessage={setErrorMessage}/>} />
-              <Route path='proposals/archived'
-              element={<ArchivedProposalsTableComponent setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/:proposalsId'
               element={<ProposalComponent  setErrorMessage={setErrorMessage}/>} />
           <Route path='proposals/new'
@@ -86,12 +88,24 @@ useEffect(() => {
               element={<ApplicationsTable  setErrorMessage={setErrorMessage}/>}/>
           <Route path='application/:proposalId/:studentId'
               element={<ApplicationDetailComponent  setErrorMessage={setErrorMessage}/>} />
-              </>
-              }
-          <Route path='*' element={<NotFound />} />
+            <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
+              <Route path='requests/:requestId'
+            element={<RequestInfo setErrorMessage={setErrorMessage}/>} />
+            </>
+          }
+          { loggedIn && loggedIn.role == 'CLERK' &&
+           <>
+            <Route path='requests'
+              element={<RequestsComponent setErrorMessage={setErrorMessage}/>} />
+            <Route path='requests/:requestId'
+            element={<RequestInfo setErrorMessage={setErrorMessage}/>} />
+          </>
+          }
           <Route path='/login' element={
-            loggedIn ? <Navigate replace to='/proposals' /> : <LoginForm />
-          } />
+            loggedIn ? <Navigate replace to={(loggedIn.role == 'CLERK')? '/requests':'/proposals'} /> : <LoginForm />
+          }/>
+          <Route path='*' element={<NotFound />} />
 
         </Route>
       </Routes>

@@ -36,13 +36,23 @@ const applicationTeacherMailData = async (professorId, options) => {
   return { to, subject, text };
 };
 
+const requestTeacherMailData = async (professorId, options) => {
+  const teacher = await supervisorDao.getSupervisorById(professorId);
+  const to = teacher.EMAIL;
+  const subject =`New Thesis Request: "${options.title}"`;
+  let text = `You received a new thesis request from the student with id: ${options.submitter}.\nRequest description:\n${options.description}\n\nYou will be able to approve or reject the request if it passes the evaluation from the secretary`;
+  return { to, subject, text };
+};
+
 exports.sendMail = async (receiverId, scope, options) => {
   let to, subject, text;
-  if (scope === 'APPLICATION' || scope === 'EXPIRATION') {
+  if (scope === 'APPLICATION' || scope === 'EXPIRATION' || scope === 'REQUEST') {
     if(options.status) //only for students
       ({to, subject, text} = await applicationStudentMailData(receiverId, options));
-    else //for teachers getting a new application
+    else if (options.proposal)//for teachers getting a new application
       ({to, subject, text} = await applicationTeacherMailData(receiverId, options));
+    else //for teachers getting a new request
+      ({to, subject, text} = await requestTeacherMailData(receiverId, options));
     const transporter = nodemailer.createTransport(emailConfig);
     try {
       await transporter.sendMail({
@@ -53,7 +63,6 @@ exports.sendMail = async (receiverId, scope, options) => {
       });
       return { success: true, message: 'Email sent successfully.' };
     } catch (error) {
-      console.log(error)
       return { success: false, message: error };
     }
   }

@@ -1,4 +1,3 @@
-// Assume getApplications is defined in a file named 'api.js'
 import API from '../src/API';
 const SERVER_URL = 'http://localhost:3001';
 import axios from 'axios';
@@ -306,6 +305,70 @@ describe('getStudentData API', () => {
 
     await expect(API.getStudentData(proposalId, -1)).rejects.toThrow(
       'Error on getting the studentsData: Error occurred'
+    );
+  });
+});
+
+describe('getAllSupervisorsList API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  // Mock user data
+  const teacherUser = { id: 1, role: 'STUDENT' };
+  const otherUser = { id: 3, role: 'SOMETHING_ELSE' };
+
+  // Mock response data
+  const coSupervisors = [
+    { id: 101, name: 'CoSupervisor 1', department: 'CS', group: 'Group X' },
+    { id: 102, name: 'CoSupervisor 2', department: 'ENG', group: 'Group Y' },
+  ];
+
+  // Mock fetch response for co-supervisors
+  const coSupervisorsResponse = {
+    ok: true,
+    json: async () => coSupervisors,
+  };
+
+  // Mock fetch error response
+  const errorResponse = {
+    ok: false,
+    json: async () => 'Error occurred',
+  };
+
+  it('should get co-supervisors for a teacher', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    const result = await API.getAllSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual(coSupervisors);
+  });
+
+  it('should return empty array for teacher when no co-supervisors are found', async () => {
+    fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
+
+    const result = await API.getAllSupervisorsList(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/cosupervisors`, { credentials: 'include' });
+    expect(result).toEqual([]);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce(errorResponse);
+
+    await expect(API.getAllSupervisorsList(teacherUser)).rejects.toThrow(
+      'Error on getting the cosupervisors list: Error occurred'
+    );
+  });
+
+  it('should throw an error for unknown role', async () => {
+    fetch.mockResolvedValueOnce(coSupervisorsResponse);
+
+    await expect(API.getAllSupervisorsList(otherUser)).rejects.toThrow(
+      'Error on getting the professors list: Invalid role'
     );
   });
 });
@@ -1307,6 +1370,204 @@ describe('boardTardis API', () => {
   });
 });
 
+describe('getRequests API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = { credentials: 'include' };
+
+  // Mock user data
+  const teacherUser = { id: 1, role: 'TEACHER' };
+  const clerkUser = { id: 2, role: 'CLERK' };
+  const studentUser = { id: 3, role: 'STUDENT' };
+
+  // Mock response data
+  const requestsData = [
+    {
+      id: 1,
+      title: 'Request 1',
+      status: 'Pending',
+      // other fields...
+    },
+    {
+      id: 2,
+      title: 'Request 2',
+      status: 'Approved',
+      // other fields...
+    },
+  ];
+
+  const requestsResponse = {
+    ok: true,
+    json: async () => requestsData,
+  };
+
+  it('should get requests for a teacher', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    const result = await API.getRequests(teacherUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/teacher/1`, reqData);
+    expect(result).toEqual(requestsData);
+  });
+
+  it('should get requests for a clerk', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    const result = await API.getRequests(clerkUser);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/`, reqData);
+    expect(result).toEqual(requestsData);
+  });
+
+  it('should throw an error for unknown role', async () => {
+    fetch.mockResolvedValueOnce(requestsResponse);
+
+    await expect(API.getRequests(studentUser)).rejects.toThrow(
+      'Error on getting the requests: Invalid role'
+    );
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => 'Error occurred' });
+
+    await expect(API.getRequests(teacherUser)).rejects.toThrow(
+      'Error on getting the requests: Error occurred'
+    );
+  });
+});
+
+describe('getStudentActiveRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = { credentials: 'include' };
+
+  // Mock user data
+  const studentId = 3;
+
+  // Mock response data
+  const studentActiveRequestData = {
+    id: 1,
+    title: 'Student Active Request',
+    status: 'Active',
+    // other fields...
+  };
+
+  const studentActiveRequestResponse = {
+    ok: true,
+    json: async () => studentActiveRequestData,
+  };
+
+  it('should get the active request for a student', async () => {
+    fetch.mockResolvedValueOnce(studentActiveRequestResponse);
+
+    const result = await API.getStudentActiveRequest(studentId);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/student/3`, reqData);
+    expect(result).toEqual(studentActiveRequestData);
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => 'Error occurred' });
+
+    await expect(API.getStudentActiveRequest(studentId)).rejects.toThrow(
+      'Error on getting the requests: Error occurred'
+    );
+  });
+});
+
+describe('createRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  const proposal = {
+    // Your proposal data
+  };
+
+  const createRequestResponse = {
+    ok: true,
+    json: async () => ({ ok: true }),
+  };
+
+  it('should create a request successfully', async () => {
+    fetch.mockResolvedValueOnce(createRequestResponse);
+
+    const result = await API.createRequest(proposal);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests`, {
+      method: 'POST',
+      ...reqData,
+      body: JSON.stringify({ reqData: proposal }),
+    });
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Error occurred' }) });
+
+    await expect(API.createRequest(proposal)).rejects.toThrow('Error occurred');
+  });
+});
+
+describe('updateRequest API', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(); // Mocking fetch globally
+  });
+
+  afterEach(() => {
+    global.fetch.mockRestore(); // Restore fetch after each test
+  });
+
+  const reqData = {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  const request = {
+    id: 1,
+    // Your request data
+  };
+
+  const updateRequestResponse = {
+    ok: true,
+    json: async () => ({ ok: true }),
+  };
+
+  it('should update a request successfully', async () => {
+    fetch.mockResolvedValueOnce(updateRequestResponse);
+
+    const result = await API.updateRequest(request);
+    expect(fetch).toHaveBeenCalledWith(`${SERVER_URL}/api/requests/${request.id}`, {
+      method: 'PATCH',
+      ...reqData,
+      body: JSON.stringify({ reqData: request }),
+    });
+  });
+
+  it('should throw an error on failed request', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'Error occurred' }) });
+
+    await expect(API.updateRequest(request)).rejects.toThrow('Something went wrong while updating the request');
+  });
+});
+
 describe('getArchivedProposals API', () => {
   beforeEach(() => {
     global.fetch = jest.fn(); // Mocking fetch globally
@@ -1382,6 +1643,13 @@ describe('getArchivedProposals API', () => {
     json: async () => 'Error occurred',
   };
 
+  it('should throw an error if the user is not a teacher', async () => {
+    // Call the function under test
+    await expect(API.getArchivedProposals({ user: 'STUDENT' })).rejects.toThrowError(
+      'Error on getting the proposals: Invalid role'
+    );
+  });
+
   it('should get proposals for a teacher', async () => {
     fetch.mockResolvedValueOnce(teacherResponse);
 
@@ -1407,19 +1675,16 @@ describe('getArchivedProposals API', () => {
   });
 
   it('should throw an error on failed request', async () => {
-    fetch.mockResolvedValueOnce(errorResponse);
-
-    await expect(API.getProposals(teacherUser)).rejects.toThrow(
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500, // Set an appropriate status code for a failed response
+      json: () => Promise.resolve('Error occurred'), // Simulate the response JSON
+    });
+  
+    // Make the function call and expect it to throw an error
+    await expect(API.getArchivedProposals(teacherUser)).rejects.toThrow(
       'Error on getting the proposals: Error occurred'
     );
   });
 
-  it('should throw an error for unknown role', async () => {
-    fetch.mockResolvedValueOnce(teacherResponse);
-
-    await expect(API.getProposals(otherUser)).rejects.toThrow(
-      'Error on getting the proposals: Invalid role'
-    );
-  });
 });
-

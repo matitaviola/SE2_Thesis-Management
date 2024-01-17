@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Modal, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal} from 'react-bootstrap';
 import API from '../API';
 import { FileUploadComponent } from './FileUploadComponent';
 import Swal from 'sweetalert2';
@@ -203,7 +203,8 @@ export function StudentProposalComponent(props) {
 
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { proposal, studentId, comingFromApp } = location.state;
+	const { studentId, comingFromApp } = location.state;
+	const [proposal, setProposal] = useState(location.state.proposal);
 	const [showUpdateModal, setShowUpdateModal] = useState(false);
 	const [selectedProposal, setSelectedProposal] = useState({ title: "", id: -1 });
 	const [file, setFile] = useState(null);
@@ -248,6 +249,23 @@ export function StudentProposalComponent(props) {
 			props.setErrorMessage(`${err}`);
 		}
 	};
+
+	useEffect(()=>{
+		const fetchProposalCoSupervisors = async () => {
+			try {
+				const response = await API.getCoSupervisorByProposal(proposal.id);
+				console.log(response)
+				const formattedAcademics = response.academic? response.academic.map(ac => ac.name+" "+ac.surname).join(",") : "";
+				const formattedExternals = response.external? response.external.map(ex => ex.name+" "+ex.surname).join(",") :"";
+				const coSupervisorNames = formattedAcademics + ((formattedAcademics.length>0 && formattedExternals.length>0)? ", ":"") + formattedExternals;
+				setProposal({...proposal, coSupervisorNames: coSupervisorNames});
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
+		if(!proposal.coSupervisorNames || proposal.coSupervisorNames.length<1)
+			fetchProposalCoSupervisors();
+	}, [])
 
 	return (
 		<Container>

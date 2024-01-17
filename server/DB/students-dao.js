@@ -7,10 +7,7 @@ exports.getStudentData = (studentId) => {
         db.get(sql, [studentId], (err, row) => {
             if (err)
                 reject(err);
-            else if (row === undefined) {
-                resolve({}); 
-            }
-            else {
+            else if(row){
                 const studentData = {
                         studentId:row.ID,
                         surname: row.SURNAME,
@@ -20,8 +17,10 @@ exports.getStudentData = (studentId) => {
                         email: row.EMAIL,
                         code_degree: row.CODE_DEGREE,
                         enrollment: row.ENROLLMENT_YEAR
-                };
+                }
                 resolve(studentData);
+            }else{
+                reject(new Error(`No such student with id:${studentId}`)); 
             }
         });
     });

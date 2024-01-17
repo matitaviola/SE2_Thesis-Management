@@ -233,7 +233,7 @@ describe('Mail Server', () => {
     expect(nodemailer.createTransport().sendMail).toHaveBeenCalledTimes(1);
   });
 
-  it('should not send email for scope other than APPLICATION', async () => {
+  it('should not send email for scope other than APPLICATION, REQUEST or EXPIRATION', async () => {
     const receiverId = 'testStudentId';
     const scope = 'OTHER_SCOPE';
     const options = {};

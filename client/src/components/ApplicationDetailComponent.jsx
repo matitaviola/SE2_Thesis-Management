@@ -18,6 +18,7 @@ function ApplicationDetailComponent(props) {
 }
 function TeacherApplicationDetail(props){
     const [studentData, setStudentData] = useState(null);
+    const [proposalData, setProposalData] = useState({id:-1, expiration:"YYYY-MM-DD"});
     const { proposalId, studentId } = useParams();
     const navigate = useNavigate();
 
@@ -34,6 +35,19 @@ function TeacherApplicationDetail(props){
             }
         };
         getStudentData();
+    }, []);
+
+    useEffect(() => {
+        const getProposalData = async () => {
+            try {
+                const retrievedProposalData = await API.getSingleProposal(proposalId);
+                setProposalData(retrievedProposalData);
+            } catch (err) {
+                //should use toast instead
+                props.setErrorMessage(`${err}`);
+            }
+        };
+        getProposalData();
     }, []);
 
     const acceptApplication = () => {
@@ -238,6 +252,23 @@ function StudentApplicationDetail(props){
                     </h1>
                 </Row>
             </Row>
+            {application.status=="Accepted"?
+                <Row style={{marginTop:'10px', marginBottom:'10px'}} className="text-center">
+                    <Link to={`/requests`} state= {{ request: {
+                        title:proposalData.title,
+                        studentId: studentId,
+                        supervisorId: proposalData.supervisorId,
+                        coSupervisorId: proposalData.coSupervisor? proposalData.coSupervisor.split(" ").filter(s => /d[0-9]{6}/.test(s)) : [],//a list of dXXXXXX (only academics) separated by blank spaces e.g.: "d100001 d221100"
+                        description: proposalData.description,
+                        applicationId: application.id
+                    }
+                        }}>
+                            <Button className="btn-primary" style={{color:'white', backgroundColor:'green', borderColor:'green', fontSize:'14px'}}>THESIS REQUEST</Button>
+                    </Link>
+                </Row>
+                :
+                null
+            }
 
             <h4>A <i>{proposalData.Type}</i> thesis for the <i>{proposalData.groups}</i> group</h4>
             <h4>Expires on <b>{proposalData.expiration.substring(0,10)}</b></h4>

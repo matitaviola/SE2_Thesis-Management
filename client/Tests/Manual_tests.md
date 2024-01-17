@@ -144,8 +144,8 @@ Please note that each of the following test is written to be executed on a fresh
 - Login as usr:david@docenti.polito.com psw:d100003
 - Go to "Applications" tab
 - Should see a table with Title: "Title" Student Anagraphic: "Name Surname" StudentID: sxxxxxx
-- Click on the "Evaluate" button in the row of s200013's application
-- Should be visible the student's data [Isabella Gonzalez s200013] and the career, with 1 exam
+- Click on the "Evaluate" button in the row of s200001's application
+- Should be visible the student's data [Alice Smith s200001] and the career, with 1 exam
 - Should be visible a modal to confirm or cancel the submission of the acceptance
 - Click on the "ACCEPT" button
 - Confirm the choice pressing "Yes, accept it!"
@@ -211,8 +211,6 @@ Please note that each of the following test is written to be executed on a fresh
     Requested knowledge: Knowledge about medical research
     Notes: Critical information
 - Click on the "UPDATE" button
-- Should be visible a modal to confirm or cancel the decision to update the current proposal
-- Click on "Yes, update it!" button
 - Should be visible a form with all the current data of the proposal
 - Change the title of the proposal to ["Renamed Proposal"]
 - Click on the "SUBMIT" button
@@ -237,8 +235,6 @@ Please note that each of the following test is written to be executed on a fresh
     Requested knowledge: Knowledge about medical research
     Notes: Critical information
 - Click on the "UPDATE" button
-- Should be visible a modal to confirm or cancel the decision to update the current proposal
-- Click on "Yes, update it!" button
 - Should be visible a form with all the current data of the proposal
 - Change the title of the proposal to ["Renamed Proposal"]
 - Click on the "CANCEL" button
@@ -341,5 +337,100 @@ Please note that each of the following test is written to be executed on a fresh
 - The "Open Resumee" button should not be visible
 ```
 
+## Story #16 - Serach Archive:
+- Should see 2 proposals and their data
+```
+- Login as usr:michael@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see 2 proposals for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics, Advancing Environmental Sustainability and Climate Studies)
+- Clicking on the "View" button of each row should display a page showing the data of the respective proposal with no button at the bottom
+```
 
+- Should see 1 proposal and its data after filtering
+```
+- Login as usr:michael@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see 2 proposals for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics | Advancing Environmental Sustainability and Climate Studies)
+- Type "Advanced" in the search bar
+- Should see 1 proposal for this teacher (Pushing Boundaries in AI, Machine Learning, and Robotics)
+- Clicking on the "View" button of each row should display a page showing the data of the respective proposal with no button at the bottom
+```
+
+- Should see no proposals
+```
+- Login as usr:david@docenti.polito.com psw:d100003
+- Click in the tab "Archived"
+- Should see no proposals, and the "No archived thesis proposals" message
+```
+
+## Story #17 - Add Academic Co-Supervisor:
+- Should add co-supervisors to a thesis proposal:
+```
+- Login as usr:michael@docenti.polito.com psw:d100001
+- Should be visible the Proposals page
+- Click on the 'View' button in the first row of the Active Proposal Table, in order to open the proposal ["Exploring Advanced Programming Paradigms"].
+- Click on the "UPDATE" button
+- Should be visible a form with all the current data of the proposal
+- Click on the Academic Co-Supervisor field and select two co-supervisors: Emily Brown and Wei Chen
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the decision to update the current proposal
+- Click on "Yes, update it!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the proposals table, where the proposal ["Exploring Advanced Programming Paradigms"] has now two co-supervisors: Emily Brown and Wei Chen
+```
+
+## Story #26 - Insert Student Request:
+- Should create a new thesis start request:
+```
+- Login as usr:alice@studenti.polito.com psw:s200001
+- Click on the "Request" tab
+- Enter the mandatory fields in the form: Title, Supervisor, Description. 
+(Academic Co-Supervisors field is optional).
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the submission of the thesis request
+- Click on "Yes, create!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the request page and show and show the details of the submitted thesis request and its status (Awaiting acceptance from secretary).
+```
+
+## Story #27 - Secretary Approve Student requests:
+- Should approve/reject a student request:
+```
+- Login as sergio@secretary.polito.it psw: secretary
+- Click on the "View" button of the chosen request
+- Press Accept/Reject to approve or deny a request
+- Click on "Yes, Approve!" or "Yes, reject!" to approve or deny
+- The request should be sent to the "Evaluated Requests" tab
+- The status on the request should be changed to "Awaiting acceptance from supervisor" or "Rejected".
+```
+## Story #28 - Professor Approve Student requests:
+- Should approve/reject a student request (after the secretary accepted):
+```
+- Login as michael@docenti.polito.com psw: d100001
+- Click on the "Request" tab
+- Click on the "View" button of the chosen request
+- Press Accept/Reject to approve or deny a request
+- Click on "Yes, Approve!" or "Yes, reject!" to approve or deny
+- The request should not be in the "Request" tab anymore 
+- If accepted the status on the request should be changed to "Thesis started on yyyy/mm/dd".
+```
+
+## Story #30 - Student Request from Application:
+- Should create a new thesis start request starting from an approved application:
+```
+- Login as usr:david@docenti.polito.com psw:d100003
+- Accept Alice Smith's application following the story #5 second test
+- Login as usr:alice@studenti.polito.com psw:s200001
+- Click on the "Applications" tab
+- Should see the accepted application ["Architectural Innovation in Software Development"]
+- Click on the "REVIEW APPLICATION" button
+- Should see all the details of the application
+- Click on the "THESIS REQUEST" button
+- Should be visible the thesis request form with the fields pre-filled from the accepted application
+- Click on the "SUBMIT" button
+- Should be visible a modal to confirm or cancel the submission of the thesis request
+- Click on "Yes, create!" button
+- Should be visibile a modal confirming that the operation was successful
+- The application should return to the request page and show the details of the submitted thesis request and its status (Awaiting acceptance from secretary)
+```
 

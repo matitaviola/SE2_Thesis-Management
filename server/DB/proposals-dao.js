@@ -76,7 +76,9 @@ exports.getAndAddExternalCoSupervisor = async (name, surname, email) => {
 
 exports.getCoSupervisorByProposal = async (proposalId) => {
     try{
-        const proposal = await this.getProposalById(proposalId);
+        let proposal = await this.getProposalById(proposalId);
+        if(proposal == null || !proposal || proposal == undefined)
+            proposal = await this.getArchivedProposalById(proposalId);
         const coSupervisors = proposal? proposal.coSupervisor : null;
         let externalCoSupervisors = [];
         let academicCoSupervisors = [];
@@ -124,7 +126,7 @@ exports.getCoSupervisorByProposal = async (proposalId) => {
 //exports
 exports.getActiveProposalsByProfessor = async (professorId) => {
     try {
-        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=?';
+        const sql = 'SELECT * FROM PROPOSAL WHERE Supervisor=? AND Status="Active"';
         const rows = await new Promise((dbResolve, dbReject) => {
             db.all(sql, [professorId], (err, rows) => {
                 if (err) {
@@ -371,7 +373,7 @@ exports.archiveProposalWithoutApplication = (proposalId, cause) => {
 
 exports.getAvailableProposals = async (studentId, filter, order) => {
     try{
-        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND P.CdS LIKE "%"||D.COD_DEGREE||"%" AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ?';
+        let sql = 'SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D, STUDENT S WHERE T.ID=P.Supervisor AND P.CdS LIKE "%"||D.COD_DEGREE||"%" AND S.CODE_DEGREE=D.COD_DEGREE AND S.ID= ? AND P.Status="Active"';
         const dep = [studentId];
         //#region Filters
         if(filter.title){
@@ -497,7 +499,7 @@ exports.addProposal = (body) => {
   } = body;
   return new Promise((resolve, reject) => {
     const sql =
-      "insert into proposal (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS ) values (?,?,?,?,?,?,?,?,?,?,?,?)";
+      "insert into proposal (Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
     db.run(
       sql,
       [
@@ -512,7 +514,8 @@ exports.addProposal = (body) => {
         notes,
         expiration,
         level,
-        cds
+        cds,
+        'Active'
       ],
       (err) => {
         if (err) {
@@ -573,8 +576,8 @@ exports.updateProposal = (body, proposalId) => {
 
 exports.deleteProposal = (proposalId) => {
     return new Promise((resolve, reject) => {
-        const sqlDeleteProp = 'DELETE FROM PROPOSAL WHERE Id = ?';
-        const sqlCancelApps = 'UPDATE APPLICATION SET Status="Cancelled" WHERE Proposal_ID IS NULL and Archived_Proposal_ID IS NULL';
+        const sqlDeleteProp = 'UPDATE PROPOSAL SET Status="Deleted" WHERE Id = ?';
+        const sqlCancelApps = 'UPDATE APPLICATION SET Status="Cancelled" WHERE Proposal_ID=? and Archived_Proposal_ID IS NULL';
         db.serialize(() => {
             db.run("BEGIN TRANSACTION");
             db.run(sqlDeleteProp, [proposalId], function (err) {
@@ -584,7 +587,7 @@ exports.deleteProposal = (proposalId) => {
                     reject({ error: 'Proposal not found' });
                 } else {
                     //we remove the applications for this proposal
-                    db.run(sqlCancelApps, [], function(err) {
+                    db.run(sqlCancelApps, [proposalId], function(err) {
                         if (err) {
                             reject(err);
                         }
@@ -593,7 +596,6 @@ exports.deleteProposal = (proposalId) => {
                     });
                 }
             });
-
         })
     });
 }
@@ -638,7 +640,7 @@ exports.deArchiveProposal = (proposalId) => {
                 const originalProposal = row;
                 // Step 2: Add the Proposal to the archived ones and delete it from the old one
                 //There's a trigger to update the remaining proposals
-                const insertSQL = "INSERT INTO PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                const insertSQL = "INSERT INTO PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 const deleteSQL = "DELETE FROM ARCHIVED_PROPOSAL WHERE Id=?";
                 const updateCancelledSQL = "UPDATE APPLICATION SET Proposal_ID=?, Archived_Proposal_ID=?, Status='Pending' WHERE Archived_Proposal_ID=? AND Status='Pending'";
                 const updateRejectedSQL = "UPDATE APPLICATION SET Proposal_ID=?, Archived_Proposal_ID=?, Status='Pending' WHERE Archived_Proposal_ID=? AND Status!='Pending'";
@@ -661,6 +663,7 @@ exports.deArchiveProposal = (proposalId) => {
                         originalProposal.Expiration,
                         originalProposal.Level,
                         originalProposal.CdS,
+                        'Active'
                     ], (err) => {
                         if (err) {
                             // Roll back the transaction if an error occurs

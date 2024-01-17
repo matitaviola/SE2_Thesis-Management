@@ -125,4 +125,18 @@ exports.isApplication = (teacherId, applicationId) => {
     });
 }
 
+exports.getApplicationById = (applicationId) => {
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM APPLICATION WHERE Id=?';
+        db.get(sql, [applicationId], function (err, row) {
+            if (err) {
+                reject(err);
+            } else {
+                if(row)
+                    resolve(row)
+                reject(new Error(`No such application with Id:${applicationId}`)); //Maybe it should be reject?
+            }
+        });
+    });
+}
 

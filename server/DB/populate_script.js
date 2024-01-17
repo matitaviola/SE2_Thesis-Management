@@ -82,6 +82,7 @@ const createTables = () => {
                 Expiration TEXT NOT NULL,
                 Level TEXT NOT NULL,
                 CdS TEXT NOT NULL,
+                Status TEXT,
                 FOREIGN KEY(Supervisor) REFERENCES TEACHER(ID)
             )`, (err) => {
                 if (err) {
@@ -158,6 +159,42 @@ const createTables = () => {
                 }
                 resolve();
             });
+
+            //SECRETARY CLERK
+            db.run(`CREATE TABLE IF NOT EXISTS SECRETARY_CLERK (
+                Email TEXT UNIQUE NOT NULL,
+                Name TEXT NOT NULL,
+                Surname TEXT NOT NULL,
+                PRIMARY KEY (Email)
+            )`, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+
+            //REQUEST
+            //The status are: Created -> SEC_Approved -> Approved (-> Accepted?)
+            db.run(`CREATE TABLE IF NOT EXISTS REQUEST (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Title TEXT NOT NULL,
+                Student_Id TEXT NOT NULL,
+                Supervisor_Id TEXT NOT NULL,
+                Co_Supervisor TEXT,
+                Description TEXT NOT NULL,
+                Application_Id TEXT,
+                Approval_Date TEXT,
+                Status TEXT,
+                Required_Changes TEXT,
+                FOREIGN KEY(Student_Id) REFERENCES STUDENT(ID),
+                FOREIGN KEY(Supervisor_Id) REFERENCES TEACHER(ID),
+                FOREIGN KEY(Application_Id) REFERENCES APPLICATION(Id) ON DELETE SET NULL
+            )`, (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
         });
     });
 };
@@ -167,6 +204,9 @@ const emptyTables = () => {
     return new Promise((resolve, reject) => {
         try{
             db.serialize(() => {
+                // Empty the Request table
+                db.run('DELETE FROM REQUEST');
+
                 // Empty the APPLICATION table
                 db.run('DELETE FROM APPLICATION');
 
@@ -364,30 +404,30 @@ const insertData = () => {
 
             const insertProposalData = () => {
                 const proposalData = [
-                    [1, 'Exploring Advanced Programming Paradigms', 'd100001', null, 'programming, algorithms, null', 'Company', 'GroupA', 'Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.', 'Knowledge about programming', 'Some notes', '2024-12-31', 'BSc', 'ENG202 BIO303 CS101'],
-                    [2, 'Unveiling New Horizons in Data Analysis', 'd200002', 'd100001 esterna@notpoli.com', 'mathematics, data silos', 'Research', 'GroupB GroupA', 'Engage in an innovative project focused on data analysis, exploring new horizons and contributing to the evolving world of data science.', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
-                    [3, 'Architectural Innovation in Software Development', 'd100003', null, 'design, architecture, development', 'Development', 'GroupC', 'Explore the intricate realms of software engineering, emphasizing design and architecture, contributing to the evolution of technology and development.', 'Knowledge about software engineering', 'Additional info', '2024-11-20', 'MSc', 'CS101 ENG202 BIO303'],
-                    [4, 'Safeguarding the Digital Future: Cybersecurity Focus', 'd100001', 'd200002 esterna@notpoli.com', 'networks, security, protocols', 'Abroad', 'GroupA GroupB', 'Contribute to the ever-growing field of cybersecurity, focusing on networks and protocols, and play a vital role in securing the digital future.', 'Knowledge about cybersecurity', 'Important notes', '2024-06-30', 'MSc', 'CS101'],
-                    [6, 'Pioneering Groundbreaking Medical Research Projects', 'd100003', 'd200002 fuori@dalluni.it', 'medicine, health, research', 'Research', 'GroupC GroupB', 'Join a groundbreaking project in medical research, where your contributions can make a critical impact on the fields of medicine, health, and research.', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
-                    [8, 'Navigating Financial Economics Frontiers with Insight', 'd200002', null, 'economics, finance, markets', 'Development', 'GroupB', 'Embark on a journey into the dynamic field of financial economics, contributing to cutting-edge research and gaining insights into the world of economics and finance.', 'Knowledge about financial economics', 'Important data', '2024-04-18', 'MSc', 'DEGREE909'],
-                    [9, 'Linguistic Studies: Unraveling Language and Communication', 'd100003', 'd100011', 'linguistics, language, communication', 'Company', 'GroupC GroupA', 'Delve into linguistic studies with a focus on language and communication, contributing to the understanding and evolution of linguistic phenomena.', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202'],
-                    [11, 'Innovating Web Technologies and Digital Experiences', 'd100011', null, 'web development, programming, design', 'Company', 'GroupA', 'Embark on an exciting project in web development, programming, and design, contributing to the future of web technologies and digital experiences.', 'Knowledge about web technologies', 'Important notes', '2024-12-31', 'BSc', 'CS101'],
-                    [12, 'Genomic Data Exploration: Advancements in Genetics', 'd200012', null, 'bioinformatics, data analysis', 'Research', 'GroupB', 'Explore the vast world of genomic data in this cutting-edge bioinformatics and data analysis project, contributing to advancements in the field of genetics.', 'Knowledge about genomic data', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404'],
-                    [13, 'Innovations in Software Engineering and Architecture', 'd100003', '1', 'software development, architecture', 'Development', 'GroupC', 'Immerse yourself in software engineering, with a focus on development and architecture, contributing to the innovation and evolution of software technologies.', 'Knowledge about software engineering', 'Additional info', '2024-11-20', 'MSc', 'CS101'],
-                    [14, 'Defending Digital Landscapes: Network Security Focus', 'd100011', 'd100001', 'networks, cybersecurity, protocols', 'Abroad', 'GroupA', 'Explore the critical world of network security and cybersecurity, contributing to the development of robust security protocols and safeguarding digital landscapes.', 'Knowledge about network security', 'Important notes', '2024-06-30', 'MSc', 'CS101'],
-                    [16, 'Impactful Contributions to Medical Research Exploration', 'd100003', 'd100001', 'medicine, health, research', 'Research', 'GroupC GroupA', 'Contribute to critical medical research, where your efforts can save lives and provide invaluable insights into the realms of medicine, health, and research.', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303'],
-                    [18, 'Unveiling Financial Frontiers: Insights in Economics', 'd200012', 'd200002', 'economics, finance, markets', 'Development', 'GroupB', 'Embark on a journey into the dynamic field of financial economics, contributing to cutting-edge research and gaining insights into the world of economics and finance.', 'Knowledge about financial economics', 'Important data', '2024-04-18', 'MSc', 'DEGREE909'],
-                    [19, 'Linguistic Phenomena: Evolution through Language and Communication', 'd100000', 'd200002', 'linguistics, language, communication', 'Company', 'GroupA', 'Delve into linguistic studies with a focus on language and communication, contributing to the understanding and evolution of linguistic phenomena.', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'CS101 ENG202 BIO303'],
+                    [1, 'Exploring Advanced Programming Paradigms', 'd100001', null, 'programming, algorithms, null', 'Company', 'GroupA', 'Embark on an exciting journey into programming and algorithms, contributing to cutting-edge advancements in knowledge and technology.', 'Knowledge about programming', 'Some notes', '2024-12-31', 'BSc', 'ENG202 BIO303 CS101','Active'],
+                    [2, 'Unveiling New Horizons in Data Analysis', 'd200002', 'd100001 esterna@notpoli.com', 'mathematics, data silos', 'Research', 'GroupB GroupA', 'Engage in an innovative project focused on data analysis, exploring new horizons and contributing to the evolving world of data science.', 'Knowledge about data analysis', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404','Active'],
+                    [3, 'Architectural Innovation in Software Development', 'd100003', null, 'design, architecture, development', 'Development', 'GroupC', 'Explore the intricate realms of software engineering, emphasizing design and architecture, contributing to the evolution of technology and development.', 'Knowledge about software engineering', 'Additional info', '2024-11-20', 'MSc', 'CS101 ENG202 BIO303','Active'],
+                    [4, 'Safeguarding the Digital Future: Cybersecurity Focus', 'd100001', 'd200002 esterna@notpoli.com', 'networks, security, protocols', 'Abroad', 'GroupA GroupB', 'Contribute to the ever-growing field of cybersecurity, focusing on networks and protocols, and play a vital role in securing the digital future.', 'Knowledge about cybersecurity', 'Important notes', '2024-06-30', 'MSc', 'CS101','Active'],
+                    [6, 'Pioneering Groundbreaking Medical Research Projects', 'd100003', 'd200002 fuori@dalluni.it', 'medicine, health, research', 'Research', 'GroupC GroupB', 'Join a groundbreaking project in medical research, where your contributions can make a critical impact on the fields of medicine, health, and research.', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303','Active'],
+                    [8, 'Navigating Financial Economics Frontiers with Insight', 'd200002', null, 'economics, finance, markets', 'Development', 'GroupB', 'Embark on a journey into the dynamic field of financial economics, contributing to cutting-edge research and gaining insights into the world of economics and finance.', 'Knowledge about financial economics', 'Important data', '2024-04-18', 'MSc', 'DEGREE909','Active'],
+                    [9, 'Linguistic Studies: Unraveling Language and Communication', 'd100003', 'd100011', 'linguistics, language, communication', 'Company', 'GroupC GroupA', 'Delve into linguistic studies with a focus on language and communication, contributing to the understanding and evolution of linguistic phenomena.', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'ENG202','Active'],
+                    [11, 'Innovating Web Technologies and Digital Experiences', 'd100011', null, 'web development, programming, design', 'Company', 'GroupA', 'Embark on an exciting project in web development, programming, and design, contributing to the future of web technologies and digital experiences.', 'Knowledge about web technologies', 'Important notes', '2024-12-31', 'BSc', 'CS101','Active'],
+                    [12, 'Genomic Data Exploration: Advancements in Genetics', 'd200012', null, 'bioinformatics, data analysis', 'Research', 'GroupB', 'Explore the vast world of genomic data in this cutting-edge bioinformatics and data analysis project, contributing to advancements in the field of genetics.', 'Knowledge about genomic data', 'Additional notes', '2024-01-15', 'BSc', 'DEGREE404','Active'],
+                    [13, 'Innovations in Software Engineering and Architecture', 'd100003', null, 'software development, architecture', 'Development', 'GroupC', 'Immerse yourself in software engineering, with a focus on development and architecture, contributing to the innovation and evolution of software technologies.', 'Knowledge about software engineering', 'Additional info', '2024-11-20', 'MSc', 'CS101','Active'],
+                    [14, 'Defending Digital Landscapes: Network Security Focus', 'd100011', 'd100001', 'networks, cybersecurity, protocols', 'Abroad', 'GroupA', 'Explore the critical world of network security and cybersecurity, contributing to the development of robust security protocols and safeguarding digital landscapes.', 'Knowledge about network security', 'Important notes', '2024-06-30', 'MSc', 'CS101','Active'],
+                    [16, 'Impactful Contributions to Medical Research Exploration', 'd100003', 'd100001', 'medicine, health, research', 'Research', 'GroupC GroupA', 'Contribute to critical medical research, where your efforts can save lives and provide invaluable insights into the realms of medicine, health, and research.', 'Knowledge about medical research', 'Critical information', '2024-03-05', 'BSc', 'BIO303','Active'],
+                    [18, 'Unveiling Financial Frontiers: Insights in Economics', 'd200012', 'd200002', 'economics, finance, markets', 'Development', 'GroupB', 'Embark on a journey into the dynamic field of financial economics, contributing to cutting-edge research and gaining insights into the world of economics and finance.', 'Knowledge about financial economics', 'Important data', '2024-04-18', 'MSc', 'DEGREE909','Active'],
+                    [19, 'Linguistic Phenomena: Evolution through Language and Communication', 'd100000', 'd200002', 'linguistics, language, communication', 'Company', 'GroupA', 'Delve into linguistic studies with a focus on language and communication, contributing to the understanding and evolution of linguistic phenomena.', 'Knowledge about linguistic studies', 'Latest info', '2024-07-22', 'BSc', 'CS101 ENG202 BIO303','Active'],
                     //archived, will be deleted, used because the ID is self-increasing and might cause issues otherwise
-                    [5, 'Linguistic Phenomena: Evolution through Language-Advancing Data-Driven Decision-Making through Statistical Analysis and Communication', 'd200002', 'd100001', 'statistics, analysis, modeling', 'Company', 'GroupB GroupA', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404'],
-                    [7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'd100001', null, 'AI, machine learning, robotics', 'Development', 'GroupA', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101'],
-                    [10, 'Advancing Environmental Sustainability and Climate Studies', 'd100001', 'd100003 esterna@notpoli.com', 'environment, sustainability, climate', 'Company', 'GroupA GroupC', 'Contribute to environmental sustainability and climate studies, making a positive impact on the planet through advanced knowledge and research.', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303 CS101'],
-                    [15, 'Elevating Data-Driven Decision-Making through Statistical Analysis', 'd200012', 'd100003', 'statistics, machine learning, modeling', 'Company', 'GroupB GroupC', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'ENG202 BIO303 DEGREE404'],
-                    [17, 'Breaking Ground in AI, Machine Learning, and Robotics', 'd100011', 'd200016', 'AI, machine learning, robotics', 'Development', 'GroupA GroupF', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101'],
-                    [20, 'Revolutionizing Environmental Sustainability and Climate Studies', 'd100011', null, 'environment, sustainability, climate', 'Research', 'GroupA', 'Contribute to environmental sustainability and climate studies, making a positive impact on the planet through advanced knowledge and research.', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303'],
+                    [5, 'Linguistic Phenomena: Evolution through Language-Advancing Data-Driven Decision-Making through Statistical Analysis and Communication', 'd200002', 'd100001', 'statistics, analysis, modeling', 'Company', 'GroupB GroupA', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404','Active'],
+                    [7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'd100001', null, 'AI, machine learning, robotics', 'Development', 'GroupA', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101','Active'],
+                    [10, 'Advancing Environmental Sustainability and Climate Studies', 'd100001', 'd100003 esterna@notpoli.com', 'environment, sustainability, climate', 'Company', 'GroupA GroupC', 'Contribute to environmental sustainability and climate studies, making a positive impact on the planet through advanced knowledge and research.', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303 CS101','Active'],
+                    [15, 'Elevating Data-Driven Decision-Making through Statistical Analysis', 'd200012', 'd100003', 'statistics, machine learning, modeling', 'Company', 'GroupB GroupC', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'ENG202 BIO303 DEGREE404','Active'],
+                    [17, 'Breaking Ground in AI, Machine Learning, and Robotics', 'd100011', 'd200016', 'AI, machine learning, robotics', 'Development', 'GroupA GroupF', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101','Active'],
+                    [20, 'Revolutionizing Environmental Sustainability and Climate Studies', 'd100011', null, 'environment, sustainability, climate', 'Research', 'GroupA', 'Contribute to environmental sustainability and climate studies, making a positive impact on the planet through advanced knowledge and research.', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303','Active'],
                 ];
 
-                const stmt = db.prepare('INSERT INTO PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                const stmt = db.prepare('INSERT INTO PROPOSAL (Id, Title, Supervisor, Co_supervisor, Keywords, Type, Groups, Description, Req_knowledge, Notes, Expiration, Level, CdS, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 proposalData.forEach(proposal => {
                     stmt.run(proposal, (err) => {
                         if (err) {
@@ -402,7 +442,7 @@ const insertData = () => {
             const insertArchivedProposalData = () => {
                 const archProposalData = [
                     [5, 'Linguistic Phenomena: Evolution through Language-Advancing Data-Driven Decision-Making through Statistical Analysis and Communication', 'd200002', 'd100001', 'statistics, analysis, modeling', 'Company', 'GroupB GroupA', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'DEGREE404', "Expired", null],
-                    [7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'd100001', null, 'AI, machine learning, robotics', 'Development', 'GroupA', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", "s200009"],
+                    [7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'd100001', 'd100003 esterna@notpoli.com', 'AI, machine learning, robotics', 'Development', 'GroupA', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Archived", "s200009"],
                     [10, 'Advancing Environmental Sustainability and Climate Studies', 'd100001', 'd100003 esterna@notpoli.com', 'environment, sustainability, climate', 'Company', 'GroupA GroupC', 'Contribute to environmental sustainability and climate studies, making a positive impact on the planet through advanced knowledge and research.', 'Knowledge about environmental science', 'Updated notes', '2022-07-15', 'MSc', 'BIO303', "Archived","s200008"],
                     [15, 'Elevating Data-Driven Decision-Making through Statistical Analysis', 'd200012', 'd100003', 'statistics, machine learning, modeling', 'Company', 'GroupB GroupC', 'Engage in statistical analysis and modeling, contributing to advancements in data-driven decision-making and statistical methodologies.', 'Knowledge about statistical analysis', 'New notes', '2022-09-10', 'BSc', 'ENG202 BIO303 DEGREE404', "Expired", null],
                     [17, 'Breaking Ground in AI, Machine Learning, and Robotics', 'd100011', 'd200016', 'AI, machine learning, robotics', 'Development', 'GroupA GroupF', 'Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.', 'Knowledge about artificial intelligence', 'Urgent notes', '2022-12-01', 'MSc', 'CS101', "Expired", null],
@@ -435,34 +475,34 @@ const insertData = () => {
 
             const insertApplicationData = () => {
                 const applicationData = [
-                    ['s200000', 1, null, 'Exploring Advanced Programming Paradigms', 'Pending'],
-                    ['s200000', 2, null, 'Unveiling New Horizons in Data Analysis', 'Rejected'],
-                    ['s200000', null, 7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Cancelled'],
-                    ['s200001', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
-                    ['s200002', 2, null, 'Unveiling New Horizons in Data Analysis', 'Rejected'],
-                    ['s200003', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
-                    ['s200004', 4, null, 'Safeguarding the Digital Future: Cybersecurity Focus', 'Rejected'],
-                    ['s200005', 5, null, 'Linguistic Phenomena: Evolution through Language-Advancing Data-Driven Decision-Making through Statistical Analysis and Communication', 'Pending'],
-                    ['s200006', 6, null, 'Pioneering Groundbreaking Medical Research Projects', 'Rejected'],
-                    ['s200007', null, 7,  'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Cancelled'],
-                    ['s200010', 11, null, 'Innovating Web Technologies and Digital Experiences', 'Pending'],
-                    ['s200010', 8, null, 'Navigating Financial Economics Frontiers with Insight', 'Rejected'],
-                    ['s200011', 13, null, 'Innovations in Software Engineering and Architecture', 'Pending'],
-                    ['s200012', 12, null, 'Genomic Data Exploration: Advancements in Genetics', 'Rejected'],
-                    ['s200013', 13, null, 'Innovations in Software Engineering and Architecture', 'Pending'],
-                    ['s200014', 14, null, 'Defending Digital Landscapes: Network Security Focus', 'Pending'],
-                    ['s200015', 15, null, 'Elevating Data-Driven Decision-Making through Statistical Analysis', 'Pending'],
-                    ['s200016', 4, null, 'Safeguarding the Digital Future: Cybersecurity Focus', 'Rejected'],
-                    ['s200017', 17, null, 'Breaking Ground in AI, Machine Learning, and Robotics', 'Pending'],
-                    ['s200018', 18, null, 'Unveiling Financial Frontiers: Insights in Economics', 'Pending'],
-                    ['s200009', null, 7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Accepted'],
-                    ['s200008', null, 10, 'Advancing Environmental Sustainability and Climate Studies', 'Accepted'],
-                    ['s000001', 1, null, 'Exploring Advanced Programming Paradigms', 'Pending'],
-                    ['s000002', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
+                    [1,'s200000', 1, null, 'Exploring Advanced Programming Paradigms', 'Pending'],
+                    [2,'s200000', 2, null, 'Unveiling New Horizons in Data Analysis', 'Rejected'],
+                    [3,'s200000', null, 7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Cancelled'],
+                    [4,'s200001', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
+                    [5,'s200002', 2, null, 'Unveiling New Horizons in Data Analysis', 'Rejected'],
+                    [6,'s200003', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
+                    [7,'s200004', 4, null, 'Safeguarding the Digital Future: Cybersecurity Focus', 'Rejected'],
+                    [8,'s200005', 5, null, 'Linguistic Phenomena: Evolution through Language-Advancing Data-Driven Decision-Making through Statistical Analysis and Communication', 'Pending'],
+                    [9,'s200006', 6, null, 'Pioneering Groundbreaking Medical Research Projects', 'Rejected'],
+                    [10,'s200007', null, 7,  'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Cancelled'],
+                    [11,'s200010', 11, null, 'Innovating Web Technologies and Digital Experiences', 'Pending'],
+                    [12,'s200010', 8, null, 'Navigating Financial Economics Frontiers with Insight', 'Rejected'],
+                    [13,'s200011', 13, null, 'Innovations in Software Engineering and Architecture', 'Pending'],
+                    [14,'s200012', 12, null, 'Genomic Data Exploration: Advancements in Genetics', 'Rejected'],
+                    [15,'s200013', 13, null, 'Innovations in Software Engineering and Architecture', 'Pending'],
+                    [16,'s200014', 14, null, 'Defending Digital Landscapes: Network Security Focus', 'Pending'],
+                    [17,'s200015', 15, null, 'Elevating Data-Driven Decision-Making through Statistical Analysis', 'Pending'],
+                    [18,'s200016', 4, null, 'Safeguarding the Digital Future: Cybersecurity Focus', 'Rejected'],
+                    [19,'s200017', 17, null, 'Breaking Ground in AI, Machine Learning, and Robotics', 'Pending'],
+                    [20,'s200018', 18, null, 'Unveiling Financial Frontiers: Insights in Economics', 'Pending'],
+                    [21,'s200009', null, 7, 'Pushing Boundaries in AI, Machine Learning, and Robotics', 'Accepted'],
+                    [22,'s200008', null, 10, 'Advancing Environmental Sustainability and Climate Studies', 'Accepted'],
+                    [23,'s000001', 1, null, 'Exploring Advanced Programming Paradigms', 'Pending'],
+                    [24,'s000002', 3, null, 'Architectural Innovation in Software Development', 'Pending'],
                     // Add more data as needed
                 ];
 
-                const stmt = db.prepare('INSERT INTO APPLICATION (Student_ID, Proposal_ID, Archived_Proposal_ID, Proposal, Status) VALUES (?, ?, ?, ?, ?)');
+                const stmt = db.prepare('INSERT INTO APPLICATION (Id,Student_ID, Proposal_ID, Archived_Proposal_ID, Proposal, Status) VALUES (?,?, ?, ?, ?, ?)');
                 applicationData.forEach(application => {
                     stmt.run(application, (err) => {
                         if (err) {
@@ -521,6 +561,41 @@ const insertData = () => {
                 
             };
 
+            const insertRequestData = () => {
+                requestData = [
+                    [1, "Technical Misteries of bio-automatics","s200000","d100001",null, "An interesting investigation on the possibilities of a newborn field.", null, null, "Created"],
+                    [2, "Pushing Boundaries in AI, Machine Learning, and Robotics","s200009","d100001",'d100003', "Explore the realms of AI, machine learning, and robotics, contributing to cutting-edge technologies and pushing the boundaries of artificial intelligence.", 21, null, "Created"]
+                ];
+                const stmt = db.prepare('INSERT INTO REQUEST (Id,Title,Student_Id,Supervisor_Id,Co_Supervisor,Description,Application_Id, Approval_Date, Status) VALUES(?,?,?,?,?,?,?,?,?)');
+                requestData.forEach(req => {
+                    stmt.run(req, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                });
+                stmt.finalize();
+            };
+
+            const insertSecretaryClerkData = () => {
+                const secClerkData = [
+                    ['sergio@secretary.polito.it','Sergio', 'Clerico'],  
+                    ['giuse@secretary.polito.it','Giuse', 'Pina']
+                    // Add more entries as needed
+                ];
+
+                const stmt = db.prepare('INSERT INTO SECRETARY_CLERK (Email, Name, Surname) VALUES (?, ?, ?)');
+                secClerkData.forEach(sC => {
+                    stmt.run(sC, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                });
+                stmt.finalize();
+                
+            };
+
             // Call the function for each table
             insertDegreeData();
             insertDepartmentData();
@@ -531,7 +606,9 @@ const insertData = () => {
             insertArchivedProposalData();
             insertApplicationData();
             insertExternalCosupervisorData();
-            
+            insertRequestData();
+            insertSecretaryClerkData();
+
             resolve();
         });
     });
