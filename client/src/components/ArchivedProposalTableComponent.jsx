@@ -7,10 +7,6 @@ import { AuthContext } from "../App.jsx";
 
 export default function ArchivedProposalsTableComponent({proposals, filter, setFilter}) {
   
-
-  if(proposals.length===0){
-    return <p>No archived thesis proposals</p> 
-  }
 	return(
       <div className="proposal-table">
 
@@ -48,6 +44,14 @@ function ProposalRow(props) {
 
   const navigate = useNavigate();
 
+  const fixOrder = (s) => {
+    let vec = s.split(', ').sort();
+    let ret = '';
+    vec.forEach(a => ret = ret+', '+ a);
+    ret = ret.slice(2);
+    return ret;
+  }
+
   const handleViewClick = () => {
     const proposal = props.proposal;
     navigate(`/proposals/${props.proposal.id}`, { state: { proposal, archived: true } });
@@ -58,7 +62,7 @@ function ProposalRow(props) {
             <td>{props.proposal.title}</td>
             <td>
                 {props.proposal.coSupervisor
-                    ? props.proposal.coSupervisorNames
+                    ? fixOrder(props.proposal.coSupervisorNames)
                     : "Not assigned"}
             </td>
             <td>{props.proposal.keywords}</td>
