@@ -41,6 +41,7 @@ function TeacherApplicationDetail(props){
         const getProposalData = async () => {
             try {
                 const retrievedProposalData = await API.getSingleProposal(proposalId);
+                console.log(retrievedProposalData);
                 setProposalData(retrievedProposalData);
             } catch (err) {
                 //should use toast instead
@@ -221,6 +222,7 @@ function StudentApplicationDetail(props){
         const getProposalData = async () => {
             try {
                 const retrievedProposalData = await API.getSingleProposal(proposalId);
+                console.log(retrievedProposalData);
                 setProposalData(retrievedProposalData);
             } catch (err) {
                 //should use toast instead

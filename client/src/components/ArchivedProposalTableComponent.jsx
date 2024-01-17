@@ -5,23 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../App.jsx";
 
 
-export default function ArchivedProposalsTableComponent(props) {
-	const [proposals, setProposals] = useState([]);
-	const loggedInUser = useContext(AuthContext);
-    const [filter, setFilter] = useState('');
-
-
-	useEffect(() => {
-		const getProposals = async () => {
-			try {
-				const retrievedProposals = await API.getArchivedProposals(loggedInUser, filter);
-				setProposals(retrievedProposals);
-			} catch (err) {
-				props.setErrorMessage(`${err}`);
-			}
-		};
-		getProposals();
-	}, [filter]);
+export default function ArchivedProposalsTableComponent({proposals, filter, setFilter}) {
+  
 
   if(proposals.length===0){
     return <p>No archived thesis proposals</p> 

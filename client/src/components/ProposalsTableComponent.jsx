@@ -27,6 +27,26 @@ export default function ProposalsTableComponent(props) {
 }
 
 function TeacherProposalsTableComponent(props) {
+  const [key, setKey] = useState('active');
+
+	const [proposals, setProposals] = useState([]);
+	const loggedInUser = useContext(AuthContext);
+  const [filter, setFilter] = useState('');
+
+
+	useEffect(() => {
+		const getProposals = async () => {
+			try {
+				const retrievedProposals = await API.getArchivedProposals(loggedInUser, filter);
+				setProposals(retrievedProposals);
+			} catch (err) {
+				props.setErrorMessage(`${err}`);
+			}
+		};
+		getProposals();
+	}, [filter, key]);
+
+
   return(
     <div className="proposal-table">
       <h1>Thesis Proposals</h1>
@@ -35,13 +55,15 @@ function TeacherProposalsTableComponent(props) {
         defaultActiveKey="active"
         id="clerks-tab"
         className="mb-3"
+        onSelect={(k) => setKey(k)}
+        activeKey={key}
     >
       <Tab eventKey="active" title="Active">
         <TeacherActiveProposalsTableComponent setErrorMessage={props.setErrorMessage}></TeacherActiveProposalsTableComponent>
       </Tab>
 
       <Tab eventKey="archived" title="Archived">
-        <ArchivedProposalsTableComponent setErrorMessage={props.setErrorMessage}/>
+        <ArchivedProposalsTableComponent setErrorMessage={props.setErrorMessage} proposals={proposals} filter={filter} setFilter={setFilter}/>
       </Tab>
     </Tabs>
     </div>
@@ -83,7 +105,7 @@ function TeacherActiveProposalsTableComponent(props) {
 
 	return (
 		<div className="proposal-table">
-      <Row mt-2>
+      <Row className='mt-2'>
         <Col><TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/></Col>
       </Row>
       <Row className="mb-2" >
