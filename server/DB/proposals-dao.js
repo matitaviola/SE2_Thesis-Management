@@ -602,9 +602,9 @@ exports.deleteProposal = (proposalId) => {
 exports.getProposalById = (proposalId) => {
     return new Promise(async (resolve, reject) => {
       const sql = "SELECT *, P.Id as pID, T.NAME as tName, T.SURNAME as tSurname FROM PROPOSAL P, TEACHER T, DEGREE D WHERE P.ID=? AND P.Supervisor=T.ID";
-      const row = await new Promise((resolveTwo, rejectTwo) =>{
+            const row = await new Promise((resolveTwo, rejectTwo) =>{
                 db.get(sql, [proposalId], async (err, row) => {
-                if (err) rejectTwo(err);
+                if (err) reject(err);
                 else if (row === undefined || row.length === 0) {
                     resolveTwo();
                 } else {
