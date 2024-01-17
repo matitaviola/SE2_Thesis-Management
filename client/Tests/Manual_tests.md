@@ -337,6 +337,17 @@ Please note that each of the following test is written to be executed on a fresh
 - The "Open Resumee" button should not be visible
 ```
 
+## Story #14 - Notify Application
+- Should notify professor when a new application is sent to be evaluated
+```
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Select the "view" button next to the proposal "Architectural Innovation in Software Development" (you may also select any proposal you wish)
+- In the proposal page click on "Apply" button
+- In the modal opened, click on "Send Application"
+- An email is sent to the supervisor assigned to the selected proposal (David Martinez) to notify him/her about the new application to be evaluated. The email subject is: "New application submitted" and the content of the email will be as following:
+"A new application has been submitted for your proposal "Architectural Innovation in Software Development" by the student with id: s200002. The proposal will expire on Tue, 19 Nov 2024 23:00:00 GMT"
+```
+
 ## Story #16 - Serach Archive:
 - Should see 2 proposals and their data
 ```
@@ -379,6 +390,18 @@ Please note that each of the following test is written to be executed on a fresh
 - The application should return to the proposals table, where the proposal ["Exploring Advanced Programming Paradigms"] has now two co-supervisors: Emily Brown and Wei Chen
 ```
 
+## Story #18 - Notify Expiration
+- Should notify the professor a week before the proposal expiration date
+```
+- Login as usr:doc_docenti.polito@libero.it psw:d100000
+- Check the expiration date of the first proposal which is "Linguistic Phenomena: Evolution through Language and Communication" and the expiration date is 2024-07-22
+- Click on the calendar next to the time travel button and select 2024-07-15 which is one week before proposal expiration date
+- Click on the "Time Travel" button so it's applied
+- Click on "Yes, allons-y!"
+- An email with subject "Application expiring soon" will be sent to the supervisor with the following content:
+"Your proposal "Linguistic Phenomena: Evolution through Language and Communication" will expire in 7 days, on 2024-07-22."
+```
+
 ## Story #26 - Insert Student Request:
 - Should create a new thesis start request:
 ```
@@ -413,6 +436,21 @@ Please note that each of the following test is written to be executed on a fresh
 - Click on "Yes, Approve!" or "Yes, reject!" to approve or deny
 - The request should not be in the "Request" tab anymore 
 - If accepted the status on the request should be changed to "Thesis started on yyyy/mm/dd".
+```
+
+## Story #29 - Notify Professor Thesis Request
+- Should notify professor when a new thesis request is made by a student with him/her as supervisor
+So that he/she can accept or reject it
+```
+- Login as usr:carlos@studenti.polito.com psw:s200002
+- Click in the tab "Request"
+- Fill the form (title, supervisor, and description are mandatory fields)
+- Click on "submit" button
+- An email with subject "New Thesis Request: <title>" will be sent to the supervisor you selected for the thesis request. The content of the email will be:
+"You received a new thesis request from the student with id: s200002.
+Request description:
+<description>
+You will be able to approve or reject the request if it passes the evaluation from the secretary."
 ```
 
 ## Story #30 - Student Request from Application:
