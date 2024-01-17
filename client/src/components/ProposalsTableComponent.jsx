@@ -27,6 +27,7 @@ export default function ProposalsTableComponent(props) {
 }
 
 function TeacherProposalsTableComponent(props) {
+
   return(
     <div className="proposal-table">
       <h1>Thesis Proposals</h1>
@@ -83,7 +84,7 @@ function TeacherActiveProposalsTableComponent(props) {
 
 	return (
 		<div className="proposal-table">
-      <Row mt-2>
+      <Row className='mt-2'>
         <Col><TimeTravelComponent setErrorMessage={props.setErrorMessage} refresh={setTimeTravelled}/></Col>
       </Row>
       <Row className="mb-2" >

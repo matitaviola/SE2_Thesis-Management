@@ -68,7 +68,7 @@ export function ProposalComponent(props) {
 						<p><strong>Thesist:</strong>{proposal.thesist ? proposal.thesist:<i> Not yet assigned</i>}</p>
 					</Col>
 					<Col className='proposal-show-field' style={{height:'fit-content'}}>
-					<p><strong>CdS:</strong> {proposal.cds}</p>
+					<p><strong>CdS:</strong> {proposal.cds? proposal.cds : proposal.cdsId}</p>
 					<p><strong>Level:</strong> {proposal.level}</p>
 					</Col>
 					<Col className='proposal-show-field' style={{height:'fit-content'}}>
