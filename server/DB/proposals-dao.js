@@ -611,7 +611,7 @@ exports.getProposalById = (proposalId) => {
                     this.getCoSupervisorNames(proposal.coSupervisor? proposal.coSupervisor : '').then(cosup => {
                         proposal.coSupervisorNames = cosup;
                         resolve(proposal);
-                    }).catch(err => reject(err));
+                    });
                 }
         });
     });
@@ -629,7 +629,7 @@ exports.getArchivedProposalById = (proposalId) => {
                 this.getCoSupervisorNames(proposal.coSupervisor? proposal.coSupervisor : '').then(cosup => {
                     proposal.coSupervisorNames = cosup;
                     resolve(proposal);
-                }).catch(err => reject(err));
+                });
             }
         });
     });
