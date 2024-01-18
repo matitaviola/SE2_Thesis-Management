@@ -1,12 +1,11 @@
 import './custom.scss';
-import { useCallback, useContext, useEffect, useState, createContext } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import NavHeader from './components/NavBarComponent.jsx';
-import { Container, Row, Alert } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import './App.css'
 import NotFound from './components/NotFoundComponent';
 import {ProposalComponent, StudentProposalComponent} from './components/ProposalComponent.jsx';
-import ArchivedProposalsTableComponent from './components/ArchivedProposalTableComponent.jsx';
 import ProposalsFormComponent from './components/ProposalsFormComponent.jsx';
 import ProposalsTableComponent from './components/ProposalsTableComponent.jsx';
 import ApplicationsTable from './components/ApplicationsTableComponent.jsx';
@@ -23,7 +22,7 @@ export const AuthContext = createContext(null);
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  //const [dirty, setDirty] = useState(false);
+  
   const [errorMessage, setErrorMessage] = useState(false);
 
 
