@@ -63,7 +63,7 @@ exports.timelyDeArchive = async (date) => {
 
 exports.timelyExpiringEmails = async (date, remainingDays) => {
     try{
-        sqlFindByDate = "SELECT Id, Supervisor, Title, Expiration FROM PROPOSAL WHERE Expiration = ?"
+        const sqlFindByDate = "SELECT Id, Supervisor, Title, Expiration FROM PROPOSAL WHERE Expiration = ?"
         const props = await new Promise((resolve, reject) => {
             db.all(sqlFindByDate,[date.add(remainingDays, 'day').format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
