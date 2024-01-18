@@ -35,7 +35,7 @@ exports.timelyArchive = async (date) => {
 
 exports.timelyDeArchive = async (date) => {
     try{
-        sqlFindByDate = "SELECT Id FROM ARCHIVED_PROPOSAL WHERE Expiration > ? AND Status='Expired'"
+        const sqlFindByDate = "SELECT Id FROM ARCHIVED_PROPOSAL WHERE Expiration > ? AND Status='Expired'"
         const ids = await new Promise((resolve, reject) => {
             db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){

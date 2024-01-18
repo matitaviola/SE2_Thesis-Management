@@ -1070,7 +1070,7 @@ app.patch('/api/requests/:reqId',
       //check on cosupervisors
       if(reqData.coSupervisorId?.length>0){
         const coSupIds = reqData.coSupervisorId.trim().split(' ');
-        for(id of coSupIds){
+        for(let id of coSupIds){
           if(/d[0-9]{6}/.test(id)){
             const coSup = await supervisorDao.getSupervisorById(id); //it can be used for the academic supervisors as they are teachers
             if (!coSup) {
