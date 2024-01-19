@@ -14,7 +14,7 @@ sections:
 
 - Number of stories committed vs done 10 vs 10
 - Total points committed vs done 21 vs 21
-- Nr of hours planned vs spent (as a team) 80 vs 80.4
+- Nr of hours planned vs spent (as a team) 80 vs 80.75
 
 **Remember**  a story is done ONLY if it fits the Definition of Done:
  
@@ -45,13 +45,13 @@ sections:
 
 - Hours per task average, standard deviation (estimate and actual)
     - Estimated hours per task avarage: 80 / 39 ≈ 2.76 hours
-    - Actual hours per task avarage:  80.75 / 39 ≈ 2.06 hours
+    - Actual hours per task avarage:  80.75 / 39 ≈ 2.07 hours
 
     - Estimated standard deviation: ≈ 2.64 hours
     - Actual standard deviation: ≈ 2.66 hours
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1
-    - Total Task Estimation Error Ratio = (80 / 80.4) - 1 ≈ - 0.004
+    - Total Task Estimation Error Ratio = (80 / 80.75) - 1 ≈ - 0.01
 
   
 ## QUALITY MEASURES 
