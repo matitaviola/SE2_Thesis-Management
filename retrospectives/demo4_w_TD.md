@@ -83,7 +83,7 @@ sections:
 Nothing, this time we estimated everything correctly.
 
 - What lessons did you learn (both positive and negative) in this sprint?
-Despite tests looks exaustive, bugs still may be present.
+Despite tests looking exaustive, bugs still may be present.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
 Not underestimating manual testing (for E-to-E testing). 
@@ -93,8 +93,8 @@ None, we achieved every goal we set.
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.).
 > Propose one or two
-Using more extensively the application allows to find hidden bugs.
-Spend more time on tests allows to design better ones.
+Using more extensively the application allows to find hidden bugs (try a fuzzing-like approach).
+Improve technical debt management by reducing code smells.
 
 - One thing you are proud of as a Team!!
 We come very far from the first demo, both in terms of product and team strenght.
