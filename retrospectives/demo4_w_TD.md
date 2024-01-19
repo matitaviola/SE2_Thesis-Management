@@ -51,7 +51,7 @@ sections:
     - Actual standard deviation: ≈ 2.66 hours
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent - 1
-    - Total Task Estimation Error Ratio = (80 / 80.75) - 1 ≈ - 0.01
+    - Total Task Estimation Error Ratio = (80 / 80.4) - 1 ≈ - 0.004
 
   
 ## QUALITY MEASURES 
