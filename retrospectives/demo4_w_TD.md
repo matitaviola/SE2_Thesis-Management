@@ -14,7 +14,7 @@ sections:
 
 - Number of stories committed vs done 10 vs 10
 - Total points committed vs done 21 vs 21
-- Nr of hours planned vs spent (as a team) 80 vs 80.75
+- Nr of hours planned vs spent (as a team) 80 vs 80.4
 
 **Remember**  a story is done ONLY if it fits the Definition of Done:
  
@@ -29,7 +29,7 @@ sections:
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| _#0_   |    12   |    -   |   49h 30m  |    49h       |
+| _#0_   |    12   |    -   |   49h 30m  |    49h 30m   |
 | 14     |    2    |    1   |    1h 30m  |     1h 30m   |
 | 26     |    3    |    2   |    5h      |     5h 5m    |
 | 15     |    3    |    5   |    4h      |     4h       |   
@@ -45,7 +45,7 @@ sections:
 
 - Hours per task average, standard deviation (estimate and actual)
     - Estimated hours per task avarage: 80 / 39 ≈ 2.76 hours
-    - Actual hours per task avarage:  80.75 / 39 ≈ 2.07 hours
+    - Actual hours per task avarage:  80.75 / 39 ≈ 2.06 hours
 
     - Estimated standard deviation: ≈ 2.64 hours
     - Actual standard deviation: ≈ 2.66 hours
