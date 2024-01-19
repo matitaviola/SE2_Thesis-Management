@@ -83,7 +83,7 @@ sections:
 Nothing, this time we estimated everything correctly.
 
 - What lessons did you learn (both positive and negative) in this sprint?
-Despite tests looking exaustive, bugs still may be present.
+Despite tests looking exaustive, bugs may still be present.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
 Not underestimating manual testing (for E-to-E testing). 
