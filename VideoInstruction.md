@@ -33,7 +33,7 @@ __Note__: words in brackets [] are actions to show on screen while the narrator 
 Group 06 presents: the new Thesis Management System.
 Don't let yourself be tricked by the minimalistic and easy-to-use interface: the TMS is packed with useful functions:
 - Professors can create new Thesis Proposals, either from scratch or from existing ones [show in parallel on screen the creation of a thesis from nothing and from an existing one using  'copy proposal'], update them, and even add more collaborators, both academics and external [show updating adding a collaborator]! And if a proposal does not convince you anymore, simply delete it [show delete] or archive it for later [show using the searchbar in the application Archive], but don't worry, the management of students' applications for deleted or archived proposals is automatically done by the system, just like when a proposal expires. 
-- Yes, because the system is also able to manage the archiving of old proposals once their time has come. Fret not, TMS will send you an email notice a week before that happens if you want to extend the proposal.
+- Yes, because the system is also able to manage the archiving of old proposals once their time has come. Fret not, TMS will send you an email notice a week before that happens if you want to extend the proposal [show email].
 - Students can navigate the proposals to find the ones best suited for them, and apply with the possibility to upload their personal CV [show serach of a proposal, add application uploading CV] for the professor to see [show professor opening the application, clicking on cv, scroll down and accept] and evaluate.
 - And once the application has been approved, or the student already has something in mind, they can try making a new Thesis Request [show making a new thesis request, split screen, one side from scratch, the other from an accepted application]. This multi-phases process might require some changes [show clerk accepting, show teacher writing a change request], but once it gets the final approval, it's time to get to work [zooms in on the status that show 'Thesis started on ...' seen from the student].
 ```
@@ -44,10 +44,10 @@ Analysis of Rector Elections". The thesis is for students in Computer Engineerin
 3) Student Elmo Moss enrolled in Computer Engineering master browses proposals searching for
 keyword "data analysis" and applies for the proposal, __uploading the file Elmo_CV.pdf that you can find on the root folder__.
 4) Also Student Bryan Woods enrolled in Computer Engineering master browses proposals searching for
-keyword "Elections" and applies for the proposal.
-5) The supervisor examines the applications and accepts Elmo Moss.
-6) The two students are notified about the decision.
-7) Elmo Moss creates a thesis request.
+keyword "Elections" and applies for the proposal. [Show the professor email that notifies somebody applied]
+5) The supervisor examines the applications and accepts Elmo Moss [the prof opens the cv and rapidly scrolls it].
+6) The two students are notified about the decision [show the two emails, split the screen so they are shown at the same time].
+7) Elmo Moss creates a thesis request [show professor's email that notifies them a new thesis request has been done].
 8) Clerk Pam Beesly looks at pending thesis requests, looks at the details of the one by Elmo and
 approves it.
 9) The supervisors as soon as notified looks the proposal and approve it.
