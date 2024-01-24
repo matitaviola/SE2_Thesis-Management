@@ -7,7 +7,7 @@ const { db } = require('../DB/db');
 
 exports.timelyArchive = async (date) => {
     try{
-        sqlFindByDate = "SELECT Id FROM PROPOSAL WHERE Expiration < ?"
+        const sqlFindByDate = "SELECT Id FROM PROPOSAL WHERE Expiration < ?"
         const ids = await new Promise((resolve, reject) => {
             db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
@@ -35,7 +35,7 @@ exports.timelyArchive = async (date) => {
 
 exports.timelyDeArchive = async (date) => {
     try{
-        sqlFindByDate = "SELECT Id FROM ARCHIVED_PROPOSAL WHERE Expiration > ? AND Status='Expired'"
+        const sqlFindByDate = "SELECT Id FROM ARCHIVED_PROPOSAL WHERE Expiration > ? AND Status='Expired'"
         const ids = await new Promise((resolve, reject) => {
             db.all(sqlFindByDate,[date.format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){
@@ -63,7 +63,7 @@ exports.timelyDeArchive = async (date) => {
 
 exports.timelyExpiringEmails = async (date, remainingDays) => {
     try{
-        sqlFindByDate = "SELECT Id, Supervisor, Title, Expiration FROM PROPOSAL WHERE Expiration = ?"
+        const sqlFindByDate = "SELECT Id, Supervisor, Title, Expiration FROM PROPOSAL WHERE Expiration = ?"
         const props = await new Promise((resolve, reject) => {
             db.all(sqlFindByDate,[date.add(remainingDays, 'day').format('YYYY-MM-DD')], (err,rows) =>{
                 if(err){

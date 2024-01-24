@@ -30,4 +30,4 @@
 - __NavBarComponent__: navigation bar.
 - __LoadingComponent__: used in pages requiring server-side data for slow connection.
 - __ErrorToastComponent__: widget to show errors.
-- __TimeTravel__: used for testing the auto-archiviation of proposals (and corresponding applications). It is Doctor Who inspired.
+- __TimeTravel__: used for testing the auto-archiviation of proposals (and corresponding applications) setting the server virtual clock. It is Doctor Who inspired.

@@ -6,7 +6,7 @@ docker login
 docker-compose build
 
 # Release number
-$release = "2"
+$release = "2_demo_4"
 
 # Docker Hub repository
 $dockerhub_repo = "matitaviola/thesis_management_06"
